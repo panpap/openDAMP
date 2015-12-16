@@ -1,5 +1,4 @@
 require 'digest/sha1'
-require 'define'
 require 'utilities'
 require 'core'
 
@@ -21,7 +20,7 @@ class Operations
                 Dir.mkdir @@adsDir unless File.exists?(@@adsDir)
 		puts "> Loading Trace..."
 		@@totalNumofRows=@@func.loadTrace(filename)
-		puts "\t"+@@totalNumofRows.to_s+" have been loaded successfully!"
+		puts "\t"+@@totalNumofRows.to_s+" requests have been loaded successfully!"
 	end
 
         def separate()

@@ -77,7 +77,7 @@ class Core
         end
 
         def separateField(att,dir);
-                puts "Separate files and calculate instances for "+att
+                puts "> Separate files and calculate instances for "+att
                 fw=File.new(dir+att,'w')
                 for r in @@rows do
                         fw.puts r[att]

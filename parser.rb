@@ -1,7 +1,9 @@
+require 'define'
 require 'optparse'
 require 'ops'
 
 ops = Operations.new()
+puts "Name of input file: "+@@trace
 
 OptionParser.new { |opts|
   opts.banner = "Usage: #{File.basename($0)} -p -s -a -f -h"

@@ -1,3 +1,5 @@
+@@trace='trace'
+
 #DIRECTORIES
 @@dataDir="dataset/"
 @@adsDir="parseResults/"
