@@ -69,7 +69,7 @@ class Operations
 		puts "Total users in trace: "+trace.users.size.to_s
 		puts "Traffic from  mobile devices: "+trace.mobDev.to_s+"/"+totalNumofRows.to_s
 		puts "3rd Party content detected:\n"
-#		filterTypes.each { |key,value| print key+" => "+value.to_s+" "}
+		trace.party3rd.each { |key,value| print key+" => "+value.to_s+" "}
 		puts "\nSize of the unnecessary 3rd Party content (i.e. Adverising+Analytics+Social)\nTotal: "+sizeStats['sum'].to_s+" Bytes - Average: "+sizeStats['avg'].to_s+" Bytes"
 		puts "Total Ads-related requests found: "+sums['numOfAds'].to_s+"/"+totalNumofRows.to_s
 		puts "Ad-related traffic using mobile devices: "+sums['numOfAdMobile'].to_s+"/"+sums['numOfAds'].to_s
@@ -83,6 +83,7 @@ class Operations
 #        puts "Average latency "+avgL.to_s
 
 		puts "PER USER STATS"
+		@func.perUserAnalysis()
 		puts "TODO"
 	#	puts adsTypes
 	

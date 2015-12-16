@@ -92,6 +92,7 @@ class Core
         if(type3rd!=nil)
             @trace.users[@@curUser].adsType["adInUrl"]+=1
             @trace.users[@@curUser].filterType[type3rd]+=1
+			@trace.party3rd[type3rd]+=1
 			if not type3rd.eql? "Content"
 				if type3rd.eql? "Advertising"
 					isAdinURL=true
@@ -132,6 +133,10 @@ class Core
 		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close
 	end
 
+	def perUserAnalysis
+		users=@trace.users
+
+	end
 
 
 

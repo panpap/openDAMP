@@ -1,7 +1,7 @@
 require 'user'
 
 class Trace
-	attr_accessor :rows, :mobDev, :numOfMobileAds, :totalBeacons, :totalAdBeacons, :totalImps, :users, :detectedPrices, :sizes, :totalNumOfAds, :totalParamNum
+	attr_accessor :rows, :mobDev, :numOfMobileAds, :totalBeacons, :totalAdBeacons, :totalImps, :users, :detectedPrices, :party3rd, :sizes, :totalNumOfAds, :totalParamNum
 
 	def initialize
 		@rows=Array.new
@@ -15,6 +15,7 @@ class Trace
 		@totalAdBeacons=0
 		@numOfMobileAds=0
 		@totalNumOfAds=0
+		@party3rd={"Advertising"=>0,"Social"=>0,"Analytics"=>0,"Content"=>0}
 	end
 
 	def getTotalVariables
