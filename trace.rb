@@ -1,13 +1,12 @@
 require 'user'
 
 class Trace
-	attr_reader :rows :detPrices :mobDev :devices :users
+	attr_accessor :rows, :detPrices, :mobDev, :adDevice, :users
 
 	def initialize
 		@rows=Array.new
 		@mobDev=0
-        @adDevice=Array.new
-		@device=Array.new
+        	@adDevice=0
 		@users=Hash.new
 		@detPrices=-1
 		@numOfImps=-1

@@ -1,5 +1,7 @@
 
 class User
+	attr_accessor :dPrices, :sizes3rd, :imp, :latency, :ads, :adBeacon, :filterType, :adsType, :beacons, :paramNum, :mobAds
+
 	def initialize
 		@dPrices=Array.new
 		@ads=Array.new
@@ -13,5 +15,4 @@ class User
 		@mobAds=0
 		@filterType={"Advertising"=>0,"Social"=>0,"Analytics"=>0,"Content"=>0}
 	end
-	attr_reader :dPrices :sizes3rd :imp :latency :ads :adBeacon :filterType :adsType :beacons
 end

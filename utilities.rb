@@ -68,8 +68,8 @@ class Utilities
         fw.puts "------------------------------------------------"
     end
 
-	def countInstances(dir,att)
-        system('sort -n '+dir+att+' | uniq > '+dir+att+"_uniq")
-        system('sort -n '+dir+att+' | uniq -c | sort -n  |tac > '+dir+ att+"_cnt") #calculate distribution
+	def countInstances(file)
+        system('sort -n '+file+' | uniq > '+file+"_uniq")
+        system('sort -n '+file+' | uniq -c | sort -n  |tac > '+file+"_cnt") #calculate distribution
 	end	
 end

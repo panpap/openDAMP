@@ -1,39 +1,41 @@
-require 'digest/sha1'
+require 'define'
 require 'utilities'
 require 'core'
+require 'digest/sha1'
+
 
 #IP_Port--UserIP--URL--UserAgent--Host--Timestamp--ResponseCode--ContentLength--DeliveredData--Duration--HitOrMiss
 
 class Operations
-	@@func=Core.new
+	@@func=nil
+	@@loadedRows=nil
+	@@utils=Utilities.new
 
-	def load(filename)
-		puts "> Creating Directories..."
-		Dir.mkdir @@dataDir unless File.exists?(@@dataDir)
-        Dir.mkdir @@adsDir unless File.exists?(@@adsDir)
+	def load
+		puts "> Name of input file: "+@@traceFile
+		@@func=Core.new
 		puts "> Loading Trace..."
-		@totalNumofRows=@@func.loadTrace(filename)
-		puts "\t"+@totalNumofRows.to_s+" requests have been loaded successfully!"
+		@@loadedRows=@@func.loadRows(@@traceFile)
+		puts "\t"+@@loadedRows.size.to_s+" requests have been loaded successfully!"
 	end
 
-    def separate()
-        for key in @totalNumofRows[0].keys() do
-            @@func.separateField(key,@@dataDir)
+    def separate
+        for key in @@loadedRows[0].keys() do
+            @@func.separateField(key)
    		end
 	end
 
-	def clearAll()
+	def clearAll
         system('rm -rf '+@@dataDir)
         system('rm -rf '+@@adsDir)
 		system('rm -f *.out')
 	end
 
-  	def stripURL()      
+  	def stripURL      
 		puts "> Stripping parameters, detecting and classifying Third-Party content..."
 		adsTypes=nil
-		fi,fa,fl,fp,fn,fd1,fb,fm,fz,fd2=Utilities.openFiles
-		for r in @totalNumofRows do
-			@@func.parseRequest(r,fa,fl,fi,fp,fn,fd1,fb,fz,fd2,fb)
+		for r in @@loadedRows do
+			@@func.parseRequest(r)
 		end
 		trace=@@func.getTrace
 		parseResults(trace)
@@ -42,7 +44,7 @@ class Operations
 	def parseResults(trace)
 		puts "> Calculating Statistics about detected ads..."
 		totalNumofRows=trace.rows.size		
-		paramsStats,sizeStats,sums=@trace.analyzeTotalAds()
+		paramsStats,sizeStats,sums=trace.analyzeTotalAds
 		#LATENCY
 	#	lat=@@func.getLatency
 	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.size
@@ -59,7 +61,7 @@ class Operations
             end
         end
 		pricesStats=makeStats(numericPrices)
-        Utilities.countInstances(@@adsDir,@@beaconT)
+        @@utils.countInstances(@@adsDir,@@beaconT)
 
 		#PRINTING RESULTS		
 		puts "Printing Results...\nTRACE STATS\n------------"
@@ -99,7 +101,7 @@ class Operations
 					count+=1
 					if(printable)
 						url=r['url'].split('?')
-						Utilities.printRow(r,STDOUT)
+						@@utils.printRow(r,STDOUT)
 					end
 					found.push(r)					
 					break

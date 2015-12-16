@@ -1,4 +1,4 @@
-@@trace='100k_trace' #'trace'
+@@traceFile='100k_trace' #'trace'
 
 #DIRECTORIES
 @@dataDir="dataset/"
@@ -6,7 +6,7 @@
 @@resources='resources/'
 
 #FILENAMES
-@@impB=@@adsDir+"imprBeacons"
+@@impFile=@@adsDir+"impressions"
 @@adfile=@@adsDir+"ads.out"
 @@prices=@@adsDir+"prices"
 @@paramsNum=@@adsDir+"paramsNum"

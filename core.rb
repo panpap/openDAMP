@@ -1,16 +1,19 @@
 require 'trace'
 require 'filters'
 
-
-
 class Core
    	@@isBeacon=false
 	@@filters=Filters.new
 	@@adFilter=nil
+	@@utils=Utilities.new
 
 	def initialize 
-        @fi=File.new(@@impB,'w')
-        @fa=File.new(@@adsDir+@@adfile,'w')
+	puts "> Creating Directories..."
+        Dir.mkdir @@dataDir unless File.exists?(@@dataDir)
+        Dir.mkdir @@adsDir unless File.exists?(@@adsDir)
+
+        @fi=File.new(@@impFile,'w')
+        @fa=File.new(@@adfile,'w')
         @fl=File.new(@@leftovers,'w')
         @fp=File.new(@@prices,'w')
         @fn=File.new(@@paramsNum,'w')
@@ -18,7 +21,7 @@ class Core
         @fb=File.new(@@bcnFile,'w')
         @fz=File.new(@@size3rdFile,'w')
         @fd2=File.new(@@adDevices,'w')
-        @fb=File.new(@@beaconT,'w')
+        @fbt=File.new(@@beaconT,'w')
 		@clients=Hash.new
 		@numOfBeacons=0
 		@trace=Trace.new
@@ -32,7 +35,7 @@ class Core
 		return @trace.rows
 	end
 
-    def loadTrace(filename)
+    def loadRows(filename)
         f=File.new(filename,'r')
         line=f.gets     #get rid of headers
         while(line=f.gets)
@@ -53,28 +56,29 @@ class Core
         end
         f.close
 @@adFilter=@@filters.loadExternalFilter
-        return @trace.rows.length
+        return @trace.rows
     end
 
-    def separateField(att,dir);
+    def separateField(att);
         puts "> Separate files and calculate instances for "+att
-        fw=File.new(dir+att,'w')
+	path=@@dataDir+att
+        fw=File.new(path,'w')
         for r in @trace.rows do
             fw.puts r[att]
         end
-		Utilities.countInstances(dir,att)
+		@@utils.countInstances(path)
         fw.close
     end
 
     def detectPrice(keyVal);          	# Detect possible price in parameters and returns URL Parameters in String 
 		if (@@filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
-          	fa.puts keyVal[0]+"\t"+keyVal[1]
-			@trace.users[@@curUser].dPrices.push(keyVal[1])
+          	@fp.puts keyVal[0]+"\t"+keyVal[1]
+		@trace.users[@@curUser].dPrices.push(keyVal[1])
 			return true
 	#else
 	# 	HEURISTIC 1: all prices seem to be float and <4 chars.
 	# 	HEURISTIC 2: price will definately be 0<price
-	#	if (keyVal[1].length < 5 and Utilities.is_float?(keyVal[1]) and keyVal[1].to_f>0) 
+	#	if (keyVal[1].length < 5 and @@utils.is_float?(keyVal[1]) and keyVal[1].to_f>0) 
 	#		fw=File.new('possible_prices.out','a')
 	#      		fw.puts "> "+keyVal[0]+" => "+keyVal[1]
 	#		fw.close
@@ -85,9 +89,8 @@ class Core
 
     def detectImpressions(url,row);     	#Impression term in path
         if @@filters.is_Impression?(url[0])
-			Utilities.printRow(row,@fw)
+			@@utils.printRow(row,@fi)
 		    @trace.users[@@curUser].imp.push(row)
-			@trace.numOfImps+=1
 			return true
         end
 		return false
@@ -118,9 +121,8 @@ class Core
 			
 	def beaconSave(url,row)         #findBeacons
 		@@isBeacon=true
-		@trace.numOfBeacons+=1
     	@trace.users[@@curUser].beacons.push(row)
-		Utilities.printRow(row,@fb)
+		@@utils.printRow(row,@fb)
 		urlStr=url.split("%")[0].split(";")[0]
 
 		temp=urlStr.split("/")	   #beacon type
@@ -168,8 +170,7 @@ class Core
 		if mob
 			@trace.mobDev+=1
 		end
-        @@device.push(dev)
-        fd1.puts dev
+        @fd1.puts dev
 
 		#FILTER ROW
 		isPorI,noOfparam=beaconImprParamCkeck(url,row)
@@ -184,15 +185,15 @@ class Core
 				end
 				#CALCULATE SIZE
 				sz=row['length']
-				fz.puts sz
+				@fz.puts sz
 				@trace.users[@@curUser].sizes3rd.push(sz.to_i)
 			end
         end
 		if(isAdinURL or isPorI>0)
 	#		puts row['url']+"\n"+@@adsType.to_s+" "+@@dPrices.size.to_s+" $"+noOfparam.to_s
-            @trace.users[@@curUser].@ads.push(row)
-            @trace.users[@@curUser].@paramNum.push(noOfparam)
-			fn.puts noOfparam
+            @trace.users[@@curUser].ads.push(row)
+            @trace.users[@@curUser].paramNum.push(noOfparam)
+			@fn.puts noOfparam
 			if (@@isBeacon)			#is it ad-related Beacon?
 				@trace.users[@@curUser].adBeacon+=1
 				@@isBeacon=false
@@ -200,17 +201,16 @@ class Core
 			if(mob)
 				@trace.users[@@curUser].mobAds+=1
 			end
-			@trace.adDevice.push(dev)
-			fd2.puts(dev)
-            Utilities.printStrippedURL(url,@fw)
+			@fd2.puts(dev)
+            @@utils.printStrippedURL(url,@fa)
 		elsif(not @@isBeacon and type3rd==nil)	#no beacon||no imp||no third party => leftovers
-			Utilities.printStrippedURL(url,@fl)
+			@@utils.printStrippedURL(url,@fl)
 		else
 			#Analytics/Social/Beacons do nothing
 		end
 	end
 
 	def close
-		@fb.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close
+		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close
 	end
 end
