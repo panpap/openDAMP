@@ -48,15 +48,16 @@ class Operations
 		#LATENCY
 	#	lat=@@func.getLatency
 	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.size
-	#	Utilities.makeDistrib_LaPr(@@adsDir)
+	#	@@utils.makeDistrib_LaPr(@@adsDir)
 
 		#DETECTED ADS
 	#	totalAds,adsTypes,filterTypes,adBeacon=@@func.getAdResults
 
 		#PRICES
         numericPrices=Array.new
+	prices=type.prices
         for p in prices do
-            if Utilities.is_float?(p)
+            if @@utils.is_float?(p)
                 numericPrices.push(p)
             end
         end
@@ -65,6 +66,7 @@ class Operations
 
 		#PRINTING RESULTS		
 		puts "Printing Results...\nTRACE STATS\n------------"
+		puts "Total users in trace: "+trace.users.size
 		puts "Traffic from  mobile devices: "+trace.mobDev.to_s+"/"+totalNumofRows.to_s
 		puts "3rd Party content detected:\n"
 #		filterTypes.each { |key,value| print key+" => "+value.to_s+" "}

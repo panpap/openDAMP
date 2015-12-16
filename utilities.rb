@@ -17,7 +17,7 @@ class Utilities
 		result=Hash.new
 		result['sum']=arr.inject{ |s, el| s + el }.to_f
 		result['avg']=result['sum']/arr.size
-		result['median']=@@utils.median(arr)
+		result['median']=median(arr)
 		result['min']=arr.min
 		result['max']=arr.max
 		return result

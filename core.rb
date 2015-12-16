@@ -127,6 +127,13 @@ class Core
 		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close
 	end
 
+
+
+
+#------------------------------------------------------------------------------------------------
+
+
+
 	private
 
     def detectPrice(keyVal);          	# Detect possible price in parameters and returns URL Parameters in String 

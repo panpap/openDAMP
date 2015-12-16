@@ -1,14 +1,13 @@
 require 'user'
 
 class Trace
-	attr_accessor :rows, :detPrices, :mobDev, :adDevice, :users
+	attr_accessor :rows, :mobDev, :adDevice, :users, :prices
 
 	def initialize
 		@rows=Array.new
 		@mobDev=0
         	@adDevice=0
 		@users=Hash.new
-		@detPrices=-1
 		@numOfImps=-1
 		@totalParamNum=Array.new
 		@prices=Array.new
@@ -17,18 +16,19 @@ class Trace
 
 	def sumUsersVariables
 		sumAdB=0;sumImps=0;sumB=0;sumOfAds=0;sumOfMAd=0
-		for user in @users do
+		for user in @users.values do
 			@totalParamNum+=user.paramNum
 			@prices+=user.dPrices
 			@sizes+=user.sizes3rd
 			sumB+=user.beacons.size
-			sumAdB+=user.adBeacons
+			sumAdB+=user.adBeacon
 			sumImps+=user.imp.size
 			sumOfAds+=user.ads.size
 			sumOfMAd+=user.mobAds
 #TODO sum hashtables
 		end
-		sums['numOfBeacons']=v
+		sums=Hash.new
+		sums['numOfBeacons']=sumB
 		sums['numOfAdBeacons']=sumAdB
 		sums['numOfImps']=sumImps
 		sums['numOfAds']=sumOfAds
@@ -44,5 +44,4 @@ class Trace
 		sums=sumUsersVariables()
 		return utils.makeStats(@totalParamNum),utils.makeStats(@sizes),sums
 	end
-
 end
