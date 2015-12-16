@@ -1,22 +1,22 @@
-@@trace='trace'
+@@trace='100k_trace' #'trace'
 
 #DIRECTORIES
 @@dataDir="dataset/"
 @@adsDir="parseResults/"
+@@resources='resources/'
 
 #FILENAMES
-@@impB="imprBeacons"
-@@adfile="ads.out"
-@@prices="prices"
-@@paramsNum="paramsNum"
-@@devices="devices"
-@@bcnFile="beacons"
-@@size3rdFile="sizes3rd"
-@@paramsNum="paramsNum"
-@@prices="prices"
-@@adDevices="adDevices"
-@@beaconT="beaconsTypes"
-@@filterFile='resources/disconnect_merged.json'
+@@impB=@@adsDir+"imprBeacons"
+@@adfile=@@adsDir+"ads.out"
+@@prices=@@adsDir+"prices"
+@@paramsNum=@@adsDir+"paramsNum"
+@@devices=@@adsDir+"devices"
+@@bcnFile=@@adsDir+"beacons"
+@@size3rdFile=@@adsDir+"sizes3rd"
+@@paramsNum=@@adsDir+"paramsNum"
+@@adDevices=@@adsDir+"adDevices"
+@@beaconT=@@adsDir+"beaconsTypes"
+@@filterFile=@@resources+'disconnect_merged.json'
 @@leftovers="leftovers.out"
 
 #KEYWORDS
