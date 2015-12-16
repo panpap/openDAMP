@@ -1,38 +1,30 @@
 require 'user'
 
 class Trace
-	attr_accessor :rows, :mobDev, :adDevice, :users, :prices
+	attr_accessor :rows, :mobDev, :numOfMobileAds, :totalBeacons, :totalAdBeacons, :totalImps, :users, :detectedPrices
 
 	def initialize
 		@rows=Array.new
 		@mobDev=0
-        	@adDevice=0
 		@users=Hash.new
-		@numOfImps=-1
 		@totalParamNum=Array.new
-		@prices=Array.new
+		@detectedPrices=Array.new
 		@sizes=Array.new
+		@totalImps=0
+		@totalBeacons=0
+		@totalAdBeacons=0
+		@numOfMobileAds=0
+		@totalNumOfAds=0
 	end
 
-	def sumUsersVariables
-		sumAdB=0;sumImps=0;sumB=0;sumOfAds=0;sumOfMAd=0
-		for user in @users.values do
-			@totalParamNum+=user.paramNum
-			@prices+=user.dPrices
-			@sizes+=user.sizes3rd
-			sumB+=user.beacons.size
-			sumAdB+=user.adBeacon
-			sumImps+=user.imp.size
-			sumOfAds+=user.ads.size
-			sumOfMAd+=user.mobAds
+	def getTotalVariables
 #TODO sum hashtables
-		end
 		sums=Hash.new
-		sums['numOfBeacons']=sumB
-		sums['numOfAdBeacons']=sumAdB
-		sums['numOfImps']=sumImps
-		sums['numOfAds']=sumOfAds
-		sums['numOfAdMobile']=sumOfMAd
+		sums['numOfBeacons']=totalBeacons
+		sums['numOfAdBeacons']=totalAdBeacons
+		sums['numOfImps']=totalImps
+		sums['numOfAds']=totalNumOfAds
+		sums['numOfAdMobile']=numOfMobileAds
 		return sums
 	end
 

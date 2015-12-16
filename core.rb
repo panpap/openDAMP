@@ -100,19 +100,24 @@ class Core
 				sz=row['length']
 				@fz.puts sz
 				@trace.users[@@curUser].sizes3rd.push(sz.to_i)
+				@trace.sizes.push(sz.to_i)
 			end
         end
 		if(isAdinURL or isPorI>0)
 	#		puts row['url']+"\n"+@@adsType.to_s+" "+@@dPrices.size.to_s+" $"+noOfparam.to_s
             @trace.users[@@curUser].ads.push(row)
             @trace.users[@@curUser].paramNum.push(noOfparam)
+			@trace.totalParamNum.push(noOfparam)
+			@trace.totalNumOfAds+=1
 			@fn.puts noOfparam
 			if (@@isBeacon)			#is it ad-related Beacon?
 				@trace.users[@@curUser].adBeacon+=1
+				@trace.totalAdBeacons+=1
 				@@isBeacon=false
 			end
 			if(mob)
 				@trace.users[@@curUser].mobAds+=1
+				@trace.numOfMobileAds+=1
 			end
 			@fd2.puts(dev)
             @@utils.printStrippedURL(url,@fa)
@@ -139,7 +144,8 @@ class Core
     def detectPrice(keyVal);          	# Detect possible price in parameters and returns URL Parameters in String 
 		if (@@filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
           	@fp.puts keyVal[0]+"\t"+keyVal[1]
-		@trace.users[@@curUser].dPrices.push(keyVal[1])
+			@trace.users[@@curUser].dPrices.push(keyVal[1])
+			@trace.detectedPrices.push(keyVal[1])
 			return true
 	#else
 	# 	HEURISTIC 1: all prices seem to be float and <4 chars.
@@ -156,6 +162,7 @@ class Core
     def detectImpressions(url,row);     	#Impression term in path
         if @@filters.is_Impression?(url[0])
 			@@utils.printRow(row,@fi)
+			@trace.totalImps+=1
 		    @trace.users[@@curUser].imp.push(row)
 			return true
         end
@@ -188,6 +195,7 @@ class Core
 	def beaconSave(url,row)         #findBeacons
 		@@isBeacon=true
     	@trace.users[@@curUser].beacons.push(row)
+		@trace.totalBeacons+=1
 		@@utils.printRow(row,@fb)
 		urlStr=url.split("%")[0].split(";")[0]
 
