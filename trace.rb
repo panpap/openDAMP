@@ -37,11 +37,12 @@ class Trace
 	end
 
 	def analyzeTotalAds    #Analyze global variables
-		@@utils.countInstances(@@paramsNum)
-		@@utils.countInstances(@@devices)
-		@@utils.countInstances(@@size3rdFile)
+		utils=Utilities.new
+		utils.countInstances(@@paramsNum)
+		utils.countInstances(@@devices)
+		utils.countInstances(@@size3rdFile)
 		sums=sumUsersVariables()
-		return Utilities.makeStats(@totalParamNum),Utilities.makeStats(@sizes),sums
+		return utils.makeStats(@totalParamNum),utils.makeStats(@sizes),sums
 	end
 
 end

@@ -11,7 +11,7 @@ class Operations
 	@@loadedRows=nil
 	@@utils=Utilities.new
 
-	def load
+	def loadFile
 		puts "> Name of input file: "+@@traceFile
 		@@func=Core.new
 		puts "> Loading Trace..."

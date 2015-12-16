@@ -70,6 +70,65 @@ class Core
         fw.close
     end
 
+	def parseRequest(row)
+		url=row['url'].split("?")
+		host=row['host']
+		@@curUser=row['IPport']
+		if @trace.users[@@curUser]==nil		#first seen user
+			@trace.users[@@curUser]=User.new	
+		end
+
+		#CHECK IF ITS MOBILE USER
+		mob,dev=@@filters.is_MobileType?(row)   # check the device type of the request
+		if mob
+			@trace.mobDev+=1
+		end
+        @fd1.puts dev
+
+		#FILTER ROW
+		isPorI,noOfparam=beaconImprParamCkeck(url,row)
+		iaAdinURL=false
+		type3rd=@@filters.is_Ad?(url[0],host,@@adFilter)
+        if(type3rd!=nil)
+            @trace.users[@@curUser].adsType["adInUrl"]+=1
+            @trace.users[@@curUser].filterType[type3rd]+=1
+			if not type3rd.eql? "Content"
+				if type3rd.eql? "Advertising"
+					isAdinURL=true
+				end
+				#CALCULATE SIZE
+				sz=row['length']
+				@fz.puts sz
+				@trace.users[@@curUser].sizes3rd.push(sz.to_i)
+			end
+        end
+		if(isAdinURL or isPorI>0)
+	#		puts row['url']+"\n"+@@adsType.to_s+" "+@@dPrices.size.to_s+" $"+noOfparam.to_s
+            @trace.users[@@curUser].ads.push(row)
+            @trace.users[@@curUser].paramNum.push(noOfparam)
+			@fn.puts noOfparam
+			if (@@isBeacon)			#is it ad-related Beacon?
+				@trace.users[@@curUser].adBeacon+=1
+				@@isBeacon=false
+			end
+			if(mob)
+				@trace.users[@@curUser].mobAds+=1
+			end
+			@fd2.puts(dev)
+            @@utils.printStrippedURL(url,@fa)
+		elsif(not @@isBeacon and type3rd==nil)	#no beacon||no imp||no third party => leftovers
+			@@utils.printStrippedURL(url,@fl)
+		else
+			#Analytics/Social/Beacons do nothing
+		end
+	end
+
+	def close
+		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close
+	end
+
+	private
+
     def detectPrice(keyVal);          	# Detect possible price in parameters and returns URL Parameters in String 
 		if (@@filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
           	@fp.puts keyVal[0]+"\t"+keyVal[1]
@@ -155,62 +214,5 @@ class Core
             @trace.users[@@curUser].adsType["imp"]+=1
         end
 		return isAd,paramNum
-	end
-
-	def parseRequest(row)
-		url=row['url'].split("?")
-		host=row['host']
-		@@curUser=row['IPport']
-		if @trace.users[@@curUser]==nil		#first seen user
-			@trace.users[@@curUser]=User.new	
-		end
-
-		#CHECK IF ITS MOBILE USER
-		mob,dev=@@filters.is_MobileType?(row)   # check the device type of the request
-		if mob
-			@trace.mobDev+=1
-		end
-        @fd1.puts dev
-
-		#FILTER ROW
-		isPorI,noOfparam=beaconImprParamCkeck(url,row)
-		iaAdinURL=false
-		type3rd=@@filters.is_Ad?(url[0],host,@@adFilter)
-        if(type3rd!=nil)
-            @trace.users[@@curUser].adsType["adInUrl"]+=1
-            @trace.users[@@curUser].filterType[type3rd]+=1
-			if not type3rd.eql? "Content"
-				if type3rd.eql? "Advertising"
-					isAdinURL=true
-				end
-				#CALCULATE SIZE
-				sz=row['length']
-				@fz.puts sz
-				@trace.users[@@curUser].sizes3rd.push(sz.to_i)
-			end
-        end
-		if(isAdinURL or isPorI>0)
-	#		puts row['url']+"\n"+@@adsType.to_s+" "+@@dPrices.size.to_s+" $"+noOfparam.to_s
-            @trace.users[@@curUser].ads.push(row)
-            @trace.users[@@curUser].paramNum.push(noOfparam)
-			@fn.puts noOfparam
-			if (@@isBeacon)			#is it ad-related Beacon?
-				@trace.users[@@curUser].adBeacon+=1
-				@@isBeacon=false
-			end
-			if(mob)
-				@trace.users[@@curUser].mobAds+=1
-			end
-			@fd2.puts(dev)
-            @@utils.printStrippedURL(url,@fa)
-		elsif(not @@isBeacon and type3rd==nil)	#no beacon||no imp||no third party => leftovers
-			@@utils.printStrippedURL(url,@fl)
-		else
-			#Analytics/Social/Beacons do nothing
-		end
-	end
-
-	def close
-		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close
 	end
 end
