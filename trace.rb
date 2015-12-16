@@ -1,7 +1,7 @@
 require 'user'
 
 class Trace
-	attr_accessor :rows, :mobDev, :numOfMobileAds, :totalBeacons, :totalAdBeacons, :totalImps, :users, :detectedPrices
+	attr_accessor :rows, :mobDev, :numOfMobileAds, :totalBeacons, :totalAdBeacons, :totalImps, :users, :detectedPrices, :sizes, :totalNumOfAds, :totalParamNum
 
 	def initialize
 		@rows=Array.new
@@ -33,7 +33,7 @@ class Trace
 		utils.countInstances(@@paramsNum)
 		utils.countInstances(@@devices)
 		utils.countInstances(@@size3rdFile)
-		sums=sumUsersVariables()
+		sums=getTotalVariables()
 		return utils.makeStats(@totalParamNum),utils.makeStats(@sizes),sums
 	end
 end
