@@ -83,7 +83,7 @@ class Operations
 #        puts "Average latency "+avgL.to_s
 
 		puts "PER USER STATS"
-		@func.perUserAnalysis()
+		@@func.perUserAnalysis()
 		puts "TODO"
 	#	puts adsTypes
 	
