@@ -9,6 +9,7 @@ class Core
 
 	def initialize 
 	puts "> Creating Directories..."
+		Dir.mkdir @@rootDir unless File.exists?(@@rootDir)
         Dir.mkdir @@dataDir unless File.exists?(@@dataDir)
         Dir.mkdir @@adsDir unless File.exists?(@@adsDir)
 		Dir.mkdir @@userDir unless File.exists?(@@userDir)
@@ -91,6 +92,7 @@ class Core
 		iaAdinURL=false
 		type3rd=@@filters.is_Ad?(url[0],host,@@adFilter)
         if(type3rd!=nil)
+			@trace.users[@@curUser].row3rdparty[type3rd].push(row)
             @trace.users[@@curUser].adsType["adInUrl"]+=1
             @trace.users[@@curUser].filterType[type3rd]+=1
 			@trace.party3rd[type3rd]+=1
@@ -104,7 +106,9 @@ class Core
 				@trace.users[@@curUser].sizes3rd.push(sz.to_i)
 				@trace.sizes.push(sz.to_i)
 			end
-        end
+		else
+			@trace.users[@@curUser].row3rdparty["Unfiltered"].push(row)
+		end
 		if(isAdinURL or isPorI>0)
 	#		puts row['url']+"\n"+@@adsType.to_s+" "+@@dPrices.size.to_s+" $"+noOfparam.to_s
             @trace.users[@@curUser].ads.push(row)
@@ -141,7 +145,9 @@ class Core
 			@fu.print id+";"+type3rd['Advertising'].to_s+";"+type3rd['Analytics'].to_s+";"+type3rd['Social'].to_s+";"+type3rd['Content'].to_s+";"
 			paramsStats=@@utils.makeStats(user.paramNum)
 			sizeStats=@@utils.makeStats(user.sizes3rd)
-			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s+"\n"
+			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
+
+			@fu.print ";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+"\n"
 		end
 	end
 
