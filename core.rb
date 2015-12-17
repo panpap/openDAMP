@@ -93,11 +93,10 @@ class Core
 		type3rd=@@filters.is_Ad?(url[0],host,@@adFilter)
 		if @@isBeacon 	#Beacon
 			@trace.users[@@curUser].row3rdparty["Beacons"].push(row)
+			@trace.party3rd["Beacons"]+=1
 		elsif type3rd!=nil	#	3rd PARTY CONTENT
 				@trace.users[@@curUser].row3rdparty[type3rd].push(row)
         		@trace.users[@@curUser].adsType["adInUrl"]+=1
-        		@trace.users[@@curUser].filterType[type3rd]+=1
-				@trace.party3rd[type3rd]+=1
 				if not type3rd.eql? "Content"
 					if	type3rd.eql? "Advertising"
 						ad_detected(row,noOfparam,mob,dev,url)
@@ -110,6 +109,7 @@ class Core
 				end
 		elsif isPorI<1	# Rest
 			@trace.users[@@curUser].row3rdparty["Other"].push(row)
+			@trace.party3rd["Other"]+=1
 			@trace.users[@@curUser].restNumOfParams.push(noOfparam.to_i)
 			@@utils.printStrippedURL(url,@fl)	# dump leftovers
 		elsif isPorI>0	# Impression or ad in param
@@ -134,7 +134,6 @@ class Core
 			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+adParamsStats['min'].to_s+";"+adParamsStats['max'].to_s+";"+adParamsStats['avg'].to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
 
 
-@fu.print ";;"+type3rd['Advertising'].to_s+";"+type3rd['Analytics'].to_s+";"+type3rd['Social'].to_s+";"+type3rd['Content'].to_s+"\n"
 if id=="5.56.61.185:11879"
 	user.row3rdparty['Content'].each {|row| puts "> "+row['url']}
 end
@@ -195,7 +194,6 @@ end
 	def beaconSave(url,row)         #findBeacons
 		@@isBeacon=true
     	@trace.users[@@curUser].beacons.push(row)
-		@trace.totalBeacons+=1
 		@@utils.printRow(row,@fb)
 		urlStr=url.split("%")[0].split(";")[0]
 
@@ -235,7 +233,7 @@ end
         @trace.users[@@curUser].ads.push(row)
         @trace.users[@@curUser].adNumOfParams.push(noOfparam.to_i)
 		@trace.totalParamNum.push(noOfparam)
-		@trace.totalNumOfAds+=1
+		@trace.party3rd["Advertising"]+=1
 		@fn.puts noOfparam
 		if (@@isBeacon)			#is it ad-related Beacon?
 			@trace.users[@@curUser].adBeacon+=1
