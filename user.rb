@@ -1,6 +1,6 @@
 
 class User
-	attr_accessor :dPrices, :row3rdparty, :sizes3rd, :imp, :latency, :ads, :adBeacon, :filterType, :adsType, :beacons, :paramNum
+	attr_accessor :dPrices, :row3rdparty, :adNumOfParams, :sizes3rd, :imp, :latency, :ads, :adBeacon, :filterType, :adsType, :beacons, :restNumOfParams
 
 	def initialize
 		@dPrices=Array.new
@@ -8,7 +8,8 @@ class User
 		@rows=Array.new
 		@imp=Array.new
 		@adBeacon=0
-		@paramNum=Array.new
+		@restNumOfParams=Array.new
+		@adNumOfParams=Array.new
 		@beacons=Array.new
 		@sizes3rd=Array.new
 		@adsType={"adInUrl"=>0,"params"=>0,"imp"=>0}

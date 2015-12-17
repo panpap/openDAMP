@@ -110,7 +110,7 @@ class Core
 				end
 		elsif isPorI<1	# Rest
 			@trace.users[@@curUser].row3rdparty["Other"].push(row)
-			@trace.users[@@curUser].restParamNum.push(noOfparam.to_i)
+			@trace.users[@@curUser].restNumOfParams.push(noOfparam.to_i)
 			@@utils.printStrippedURL(url,@fl)	# dump leftovers
 		elsif isPorI>0	# Impression or ad in param
 			@trace.users[@@curUser].row3rdparty["AdExtra"].push(row)
@@ -124,13 +124,14 @@ class Core
 
 	def perUserAnalysis
 		puts "> Per user analysis..."
-		@fu.puts "ID;Advertising;AdExtra;Analytics;Social;Content;other;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;NumOfParams(min);NumOfParams(max);NumOfParams(avg);Beacons;adBeacons;Impressions"
+		@fu.puts "ID;Advertising;AdExtra;Analytics;Social;Content;other;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;AdNumOfParams(min);AdNumOfParams(max);AdNumOfParams(avg);RestNumOfParams(min);RestNumOfParams(max);RestNumOfParams(avg);Beacons;adBeacons;Impressions"
 		for id,user in @trace.users do
 			type3rd=user.filterType
 			@fu.print id+";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['Other'].size.to_s+";"+user.row3rdparty['Beacon'].size.to_s+";"
-			paramsStats=@@utils.makeStats(user.paramNum)
+			paramsStats=@@utils.makeStats(user.restNumOfParams)
+			adParamsStats=@@utils.makeStats(user.adNumOfParams)
 			sizeStats=@@utils.makeStats(user.sizes3rd)
-			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
+			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+adParamsStats['min']+";"+adParamsStats['max']+";"+adParamsStats['avg']+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
 
 
 @fu.print ";;"+type3rd['Advertising'].to_s+";"+type3rd['Analytics'].to_s+";"+type3rd['Social'].to_s+";"+type3rd['Content'].to_s+"\n"
@@ -232,7 +233,7 @@ end
 
 	def ad_detected (row,noOfparam)
         @trace.users[@@curUser].ads.push(row)
-        @trace.users[@@curUser].adParamNum.push(noOfparam.to_i)
+        @trace.users[@@curUser].adNumOfParams.push(noOfparam.to_i)
 		@trace.totalParamNum.push(noOfparam)
 		@trace.totalNumOfAds+=1
 		@fn.puts noOfparam
