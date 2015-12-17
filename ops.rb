@@ -69,7 +69,7 @@ class Operations
 		puts "Total users in trace: "+trace.users.size.to_s
 		puts "Traffic from  mobile devices: "+trace.mobDev.to_s+"/"+totalNumofRows.to_s
 		puts "3rd Party content detected:"
-		puts "Advertising => "+trace.party3rd['Advertising'].to_s+" Analytics"+trace.party3rd['Analytics'].to_s+"Social"+trace.party3rd['Social'].to_s+" Content"+trace.party3rd['Content'].to_s+" Beacons"+trace.party3rd['Beacons'].to_s+" Other"+trace.party3rd['Other'].to_s}
+		puts "Advertising => "+trace.party3rd['Advertising'].to_s+" Analytics"+trace.party3rd['Analytics'].to_s+" Social"+trace.party3rd['Social'].to_s+" Content"+trace.party3rd['Content'].to_s+" Beacons"+trace.party3rd['Beacons'].to_s+" Other"+trace.party3rd['Other'].to_s
 		puts "\nSize of the unnecessary 3rd Party content (i.e. Adverising+Analytics+Social)\nTotal: "+sizeStats['sum'].to_s+" Bytes - Average: "+sizeStats['avg'].to_s+" Bytes"
 		puts "Total Ads-related requests found: "+sums['numOfAds'].to_s+"/"+totalNumofRows.to_s
 		puts "Ad-related traffic using mobile devices: "+sums['numOfAdMobile'].to_s+"/"+trace.party3rd['Advertising'].to_s
