@@ -91,47 +91,30 @@ class Core
 		isPorI,noOfparam=beaconImprParamCkeck(url,row)
 		iaAdinURL=false
 		type3rd=@@filters.is_Ad?(url[0],host,@@adFilter)
-        if(type3rd!=nil)
-			@trace.users[@@curUser].row3rdparty[type3rd].push(row)
-            @trace.users[@@curUser].adsType["adInUrl"]+=1
-            @trace.users[@@curUser].filterType[type3rd]+=1
-			@trace.party3rd[type3rd]+=1
-			if not type3rd.eql? "Content"
-				if type3rd.eql? "Advertising"
-					isAdinURL=true
+		if @@isBeacon 	#Beacon
+			@trace.users[@@curUser].row3rdparty["Beacon"].push(row)
+		elsif type3rd!=nil	#	3rd PARTY CONTENT
+				@trace.users[@@curUser].row3rdparty[type3rd].push(row)
+        		@trace.users[@@curUser].adsType["adInUrl"]+=1
+        		@trace.users[@@curUser].filterType[type3rd]+=1
+				@trace.party3rd[type3rd]+=1
+				if not type3rd.eql? "Content"
+					if	type3rd.eql? "Advertising"
+						ad_detected(row,noOfparam)
+					end
+					#CALCULATE SIZE
+					sz=row['length']
+					@fz.puts sz
+					@trace.users[@@curUser].sizes3rd.push(sz.to_i)
+					@trace.sizes.push(sz.to_i)
 				end
-				#CALCULATE SIZE
-				sz=row['length']
-				@fz.puts sz
-				@trace.users[@@curUser].sizes3rd.push(sz.to_i)
-				@trace.sizes.push(sz.to_i)
-			end
-		elsif(type3rd==nil and isPorI<1 and @@isBeacon==false)
-			@trace.users[@@curUser].row3rdparty["other"].push(row)
-		end
-		if(isAdinURL or isPorI>0)
-			if (type3rd==nil and isPorI>0)
-				@trace.users[@@curUser].row3rdparty["AdExtra"].push(row)
-			end
-            @trace.users[@@curUser].ads.push(row)
-            @trace.users[@@curUser].paramNum.push(noOfparam.to_i)
-			@trace.totalParamNum.push(noOfparam)
-			@trace.totalNumOfAds+=1
-			@fn.puts noOfparam
-			if (@@isBeacon)			#is it ad-related Beacon?
-				@trace.users[@@curUser].adBeacon+=1
-				@trace.totalAdBeacons+=1
-				@@isBeacon=false
-			end
-			if(mob)
-				@trace.numOfMobileAds+=1
-			end
-			@fd2.puts(dev)
-            @@utils.printStrippedURL(url,@fa)
-		elsif(not @@isBeacon and type3rd==nil)	#no beacon||no imp||no third party => leftovers
-			@@utils.printStrippedURL(url,@fl)
-		else
-			#Analytics/Social/Beacons do nothing
+		elsif isPorI<1	# Rest
+			@trace.users[@@curUser].row3rdparty["Other"].push(row)
+			@trace.users[@@curUser].restParamNum.push(noOfparam.to_i)
+			@@utils.printStrippedURL(url,@fl)	# dump leftovers
+		elsif isPorI>0	# Impression or ad in param
+			@trace.users[@@curUser].row3rdparty["AdExtra"].push(row)
+			ad_detected(row,noOfparam)
 		end
 	end
 
@@ -144,15 +127,16 @@ class Core
 		@fu.puts "ID;Advertising;AdExtra;Analytics;Social;Content;other;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;NumOfParams(min);NumOfParams(max);NumOfParams(avg);Beacons;adBeacons;Impressions"
 		for id,user in @trace.users do
 			type3rd=user.filterType
-			@fu.print id+";"+type3rd['Advertising'].to_s+";"+type3rd['Analytics'].to_s+";"+type3rd['Social'].to_s+";"+type3rd['Content'].to_s+";"
+			@fu.print id+";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['Other'].size.to_s+";"+user.row3rdparty['Beacon'].size.to_s+";"
 			paramsStats=@@utils.makeStats(user.paramNum)
 			sizeStats=@@utils.makeStats(user.sizes3rd)
 			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
 
-			@fu.print ";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['other'].size.to_s+"\n"
-			if id=="5.56.61.185:11879"
-				user.row3rdparty['Content'].each {|row| puts "> "+row['url']}
-			end
+
+@fu.print ";;"+type3rd['Advertising'].to_s+";"+type3rd['Analytics'].to_s+";"+type3rd['Social'].to_s+";"+type3rd['Content'].to_s+"\n"
+if id=="5.56.61.185:11879"
+	user.row3rdparty['Content'].each {|row| puts "> "+row['url']}
+end
 		end
 	end
 
@@ -244,5 +228,23 @@ class Core
             @trace.users[@@curUser].adsType["imp"]+=1
         end
 		return isAd,paramNum
+	end
+
+	def ad_detected (row,noOfparam)
+        @trace.users[@@curUser].ads.push(row)
+        @trace.users[@@curUser].adParamNum.push(noOfparam.to_i)
+		@trace.totalParamNum.push(noOfparam)
+		@trace.totalNumOfAds+=1
+		@fn.puts noOfparam
+		if (@@isBeacon)			#is it ad-related Beacon?
+			@trace.users[@@curUser].adBeacon+=1
+			@trace.totalAdBeacons+=1
+			@@isBeacon=false
+		end
+		if(mob)
+			@trace.numOfMobileAds+=1
+		end
+		@fd2.puts(dev)	#adRelated Devices
+        @@utils.printStrippedURL(url,@fa)
 	end
 end
