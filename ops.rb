@@ -78,7 +78,7 @@ class Operations
         puts numericPrices.size.to_s+"/"+prices.size.to_s+" are actually numeric values"
         puts "Average price "+pricesStats['avg'].to_s
 
-		puts "Beacons found: "+sums['numOfBeacons'].to_s+"\nAds-related beacons: "+sums['numOfAdBeacons'].to_s+"/"+sums['numOfBeacons'].to_s
+		puts "Beacons found: "+trace.party3rd['Beacons'].to_s+"\nAds-related beacons: "+sums['numOfAdBeacons'].to_s+"/"+trace.party3rd['Beacons'].to_s
         puts "Impressions detected "+sums['numOfImps'].to_s
 #        puts "Average latency "+avgL.to_s
 

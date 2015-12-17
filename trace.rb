@@ -18,7 +18,6 @@ class Trace
 
 	def getTotalVariables
 		sums=Hash.new
-		sums['numOfBeacons']=totalBeacons
 		sums['numOfAdBeacons']=totalAdBeacons
 		sums['numOfImps']=totalImps
 		sums['numOfAdMobile']=numOfMobileAds
