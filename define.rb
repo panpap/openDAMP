@@ -1,8 +1,9 @@
-@@traceFile='100k_trace' #'trace'
+@@traceFile='100k_trace' #'full_trace'
 
 #DIRECTORIES
-@@dataDir="dataset/"
-@@adsDir="parseResults/"
+@@rootDir=@@traceFile+"_results/"
+@@dataDir=@@rootDir+"dataset/"
+@@adsDir=@@rootDir+"adRelated/"
 @@resources='resources/'
 @@userDir=@@adsDir+"perUser/"
 

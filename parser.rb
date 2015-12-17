@@ -1,6 +1,7 @@
 require 'optparse'
 require 'ops'
 
+start = Time.now
 ops=Operations.new
 
 OptionParser.new { |opts|
@@ -37,3 +38,5 @@ OptionParser.new { |opts|
 #  end
 
 }.parse!
+finish = Time.now
+puts "Total Elapsed time "+(finish - start).to_s+" seconds"
