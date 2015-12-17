@@ -110,7 +110,9 @@ class Core
 			@trace.users[@@curUser].row3rdparty["Unfiltered"].push(row)
 		end
 		if(isAdinURL or isPorI>0)
-	#		puts row['url']+"\n"+@@adsType.to_s+" "+@@dPrices.size.to_s+" $"+noOfparam.to_s
+			if (type3rd==nil and isPorI>0)
+				@trace.users[@@curUser].row3rdparty["Advertising"].push(row)
+			end
             @trace.users[@@curUser].ads.push(row)
             @trace.users[@@curUser].paramNum.push(noOfparam.to_i)
 			@trace.totalParamNum.push(noOfparam)
@@ -147,7 +149,7 @@ class Core
 			sizeStats=@@utils.makeStats(user.sizes3rd)
 			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
 
-			@fu.print ";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+"\n"
+			@fu.print ";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['Unfiltered'].size.to_s+"\n"
 		end
 	end
 
