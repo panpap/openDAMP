@@ -231,7 +231,7 @@ end
 		return isAd,paramNum
 	end
 
-	def ad_detected (row,noOfparam,mob,dev)
+	def ad_detected (row,noOfparam,mob,dev,url)
         @trace.users[@@curUser].ads.push(row)
         @trace.users[@@curUser].adNumOfParams.push(noOfparam.to_i)
 		@trace.totalParamNum.push(noOfparam)
