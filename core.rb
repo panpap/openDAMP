@@ -106,7 +106,7 @@ class Core
 				@trace.users[@@curUser].sizes3rd.push(sz.to_i)
 				@trace.sizes.push(sz.to_i)
 			end
-		elsif(type3rd==nil and isPorI==0 and @@isBeacon==false)
+		elsif(type3rd==nil and isPorI<1 and @@isBeacon==false)
 			@trace.users[@@curUser].row3rdparty["other"].push(row)
 		end
 		if(isAdinURL or isPorI>0)
@@ -141,7 +141,7 @@ class Core
 
 	def perUserAnalysis
 		puts "> Per user analysis..."
-		@fu.puts "ID;Advertising;Analytics;Social;Content;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;NumOfParams(min);NumOfParams(max);NumOfParams(avg);Beacons;adBeacons;Impressions"
+		@fu.puts "ID;Advertising;AdExtra;Analytics;Social;Content;other;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;NumOfParams(min);NumOfParams(max);NumOfParams(avg);Beacons;adBeacons;Impressions"
 		for id,user in @trace.users do
 			type3rd=user.filterType
 			@fu.print id+";"+type3rd['Advertising'].to_s+";"+type3rd['Analytics'].to_s+";"+type3rd['Social'].to_s+";"+type3rd['Content'].to_s+";"
@@ -150,6 +150,9 @@ class Core
 			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
 
 			@fu.print ";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['other'].size.to_s+"\n"
+			if id=="5.56.61.185:11879"
+				user.row3rdparty['Content'].each {|row| puts "> "+row['url']}
+			end
 		end
 	end
 
@@ -167,14 +170,6 @@ class Core
 			@trace.users[@@curUser].dPrices.push(keyVal[1])
 			@trace.detectedPrices.push(keyVal[1])
 			return true
-	#else
-	# 	HEURISTIC 1: all prices seem to be float and <4 chars.
-	# 	HEURISTIC 2: price will definately be 0<price
-	#	if (keyVal[1].length < 5 and @@utils.is_float?(keyVal[1]) and keyVal[1].to_f>0) 
-	#		fw=File.new('possible_prices.out','a')
-	#      		fw.puts "> "+keyVal[0]+" => "+keyVal[1]
-	#		fw.close
-	#	end
 		end
 		return false
     end
