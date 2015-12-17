@@ -14,12 +14,14 @@ class Utilities
         end
 
 	def makeStats (arr)
-		result=Hash.new
-		result['sum']=arr.inject{ |s, el| s + el }.to_f
-		result['avg']=result['sum']/arr.size
-		result['median']=median(arr)
-		result['min']=arr.min
-		result['max']=arr.max
+		result=['sum'=>0,'avg'=>0,'median'=>0,'max'=>0,'min'=>0,'sum'=>0]
+		if user.paramNum!=nil
+			result['sum']=arr.inject{ |s, el| s + el }.to_f
+			result['avg']=result['sum']/arr.size
+			result['median']=median(arr)
+			result['min']=arr.min
+			result['max']=arr.max
+		end
 		return result
 	end
 
