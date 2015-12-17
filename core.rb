@@ -9,6 +9,7 @@ class Core
 
 	def initialize 
 	puts "> Creating Directories..."
+	Dir.mkdir @@rootDir unless File.exists?(@@rootDir)	
         Dir.mkdir @@dataDir unless File.exists?(@@dataDir)
         Dir.mkdir @@adsDir unless File.exists?(@@adsDir)
 		Dir.mkdir @@userDir unless File.exists?(@@userDir)
