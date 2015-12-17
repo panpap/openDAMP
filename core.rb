@@ -139,8 +139,8 @@ class Core
 		for id,user in @trace.users do
 			type3rd=user.filterType
 			@fu.print id+";"+type3rd['Advertising'].to_s+";"+type3rd['Analytics'].to_s+";"+type3rd['Social'].to_s+";"+type3rd['Content'].to_s+";"
-			sizeStats=@@utils.makeStats(user.sizes3rd)
 			paramsStats=@@utils.makeStats(user.paramNum)
+			sizeStats=@@utils.makeStats(user.sizes3rd)
 			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+users.ads.length.to_s+";"+users.dPrices.length.to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s+"\n"
 		end
 	end
