@@ -100,7 +100,7 @@ class Core
 				@trace.party3rd[type3rd]+=1
 				if not type3rd.eql? "Content"
 					if	type3rd.eql? "Advertising"
-						ad_detected(row,noOfparam,mob)
+						ad_detected(row,noOfparam,mob,dev)
 					end
 					#CALCULATE SIZE
 					sz=row['length']
@@ -114,7 +114,7 @@ class Core
 			@@utils.printStrippedURL(url,@fl)	# dump leftovers
 		elsif isPorI>0	# Impression or ad in param
 			@trace.users[@@curUser].row3rdparty["AdExtra"].push(row)
-			ad_detected(row,noOfparam,mob)
+			ad_detected(row,noOfparam,mob,dev)
 		end
 	end
 
@@ -231,7 +231,7 @@ end
 		return isAd,paramNum
 	end
 
-	def ad_detected (row,noOfparam,mob)
+	def ad_detected (row,noOfparam,mob,dev)
         @trace.users[@@curUser].ads.push(row)
         @trace.users[@@curUser].adNumOfParams.push(noOfparam.to_i)
 		@trace.totalParamNum.push(noOfparam)
