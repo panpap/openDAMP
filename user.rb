@@ -11,7 +11,6 @@ class User
 		@restNumOfParams=Array.new
 		@adNumOfParams=Array.new
 		@sizes3rd=Array.new
-		@adsType={"adInUrl"=>0,"params"=>0,"imp"=>0}
 		@row3rdparty={"Advertising"=>[],"AdExtra"=>[],"Beacons"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"Other"=>[]}
 	end
 end

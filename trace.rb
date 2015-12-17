@@ -16,20 +16,11 @@ class Trace
 		@party3rd={"Advertising"=>0,"Social"=>0,"Analytics"=>0,"Content"=>0, "Other"=>0, "Beacons"=>0}
 	end
 
-	def getTotalVariables
-		sums=Hash.new
-		sums['numOfAdBeacons']=totalAdBeacons
-		sums['numOfImps']=totalImps
-		sums['numOfAdMobile']=numOfMobileAds
-		return sums
-	end
-
 	def analyzeTotalAds    #Analyze global variables
 		utils=Utilities.new
 		utils.countInstances(@@paramsNum)
 		utils.countInstances(@@devices)
 		utils.countInstances(@@size3rdFile)
-		sums=getTotalVariables()
-		return utils.makeStats(@totalParamNum),utils.makeStats(@sizes),sums
+		return utils.makeStats(@totalParamNum),utils.makeStats(@sizes)
 	end
 end

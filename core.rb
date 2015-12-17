@@ -96,7 +96,6 @@ class Core
 			@trace.party3rd["Beacons"]+=1
 		elsif type3rd!=nil	#	3rd PARTY CONTENT
 				@trace.users[@@curUser].row3rdparty[type3rd].push(row)
-        		@trace.users[@@curUser].adsType["adInUrl"]+=1
 				if not type3rd.eql? "Content"
 					if	type3rd.eql? "Advertising"
 						ad_detected(row,noOfparam,mob,dev,url)
@@ -127,11 +126,11 @@ class Core
 		@fu.puts "ID;Advertising;AdExtra;Analytics;Social;Content;noAdBeacons;Other;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;AdNumOfParams(min);AdNumOfParams(max);AdNumOfParams(avg);RestNumOfParams(min);RestNumOfParams(max);RestNumOfParams(avg);adBeacons;Impressions"
 		for id,user in @trace.users do
 			type3rd=user.filterType
-			@fu.print id+";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['Beacons'].size.to_s+";"+user.row3rdparty['Other'].size.to_s+"\n"
 			paramsStats=@@utils.makeStats(user.restNumOfParams)
 			adParamsStats=@@utils.makeStats(user.adNumOfParams)
 			sizeStats=@@utils.makeStats(user.sizes3rd)
-			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+adParamsStats['min'].to_s+";"+adParamsStats['max'].to_s+";"+adParamsStats['avg'].to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
+			@fu.puts id+";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['Beacons'].size.to_s+";"+user.row3rdparty['Other'].size.to_s+sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+adParamsStats['min'].to_s+";"+adParamsStats['max'].to_s+";"+adParamsStats['avg'].to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
+
 
 
 if id=="5.56.61.185:11879"
@@ -217,14 +216,8 @@ end
             beaconSave(url[0],row)
         end
         paramNum, result=checkParams(row,url)             #find ads
-        if(result)
+        if(result==true or detectImpressions(url,row))
             isAd=1
-            @trace.users[@@curUser].adsType['params']+=1
-        end
-        if(detectImpressions(url,row))
-            isAd=1
-            @trace.users[@@curUser].adsType["imp"]+=1
-        end
 		return isAd,paramNum
 	end
 

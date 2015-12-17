@@ -44,7 +44,7 @@ class Operations
 	def parseResults(trace)
 		puts "> Calculating Statistics about detected ads..."
 		totalNumofRows=trace.rows.size		
-		paramsStats,sizeStats,sums=trace.analyzeTotalAds
+		paramsStats,sizeStats=trace.analyzeTotalAds
 		#LATENCY
 	#	lat=@@func.getLatency
 	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.size
@@ -72,16 +72,15 @@ class Operations
 		puts "Advertising => "+trace.party3rd['Advertising'].to_s+" Analytics"+trace.party3rd['Analytics'].to_s+" Social => "+trace.party3rd['Social'].to_s+" Content => "+trace.party3rd['Content'].to_s+" Beacons => "+trace.party3rd['Beacons'].to_s+" Other => "+trace.party3rd['Other'].to_s
 		puts "\nSize of the unnecessary 3rd Party content (i.e. Adverising+Analytics+Social)\nTotal: "+sizeStats['sum'].to_s+" Bytes - Average: "+sizeStats['avg'].to_s+" Bytes"
 		puts "Total Ads-related requests found: "+trace.party3rd['Advertising'].to_s+"/"+totalNumofRows.to_s
-		puts "Ad-related traffic using mobile devices: "+sums['numOfAdMobile'].to_s+"/"+trace.party3rd['Advertising'].to_s
+		puts "Ad-related traffic using mobile devices: "+trace.numOfMobileAds.to_s+"/"+trace.party3rd['Advertising'].to_s
 		puts "Number of parameters:\nmax => "+paramsStats['max'].to_s+" min=>"+paramsStats['min'].to_s+" avg=>"+paramsStats['avg'].to_s
         puts "Price tags found: "+prices.length.to_s
         puts numericPrices.size.to_s+"/"+prices.size.to_s+" are actually numeric values"
         puts "Average price "+pricesStats['avg'].to_s
 
-		puts "Beacons found: "+trace.party3rd['Beacons'].to_s+"\nAds-related beacons: "+sums['numOfAdBeacons'].to_s+"/"+trace.party3rd['Beacons'].to_s
-        puts "Impressions detected "+sums['numOfImps'].to_s
+		puts "Beacons found: "+trace.party3rd['Beacons'].to_s+"\nAds-related beacons: "+trace.totalAdBeacons.to_s+"/"+trace.party3rd['Beacons'].to_s
+        puts "Impressions detected "+trace.totalImps.to_s
 #        puts "Average latency "+avgL.to_s
-
 		puts "PER USER STATS"
 		@@func.perUserAnalysis()
 		puts "TODO"
