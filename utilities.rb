@@ -15,7 +15,7 @@ class Utilities
 
 	def makeStats (arr)
 		result={'sum'=>0,'avg'=>0,'median'=>0,'max'=>0,'min'=>0}
-		if arr!=nil or arr.length==0
+		if arr!=nil or arr.length>0
 			result['sum']=arr.inject{ |s, el| s + el}.to_f
 			result['avg']=result['sum']/arr.size
 			result['median']=median(arr)

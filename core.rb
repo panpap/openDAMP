@@ -108,7 +108,7 @@ class Core
 		if(isAdinURL or isPorI>0)
 	#		puts row['url']+"\n"+@@adsType.to_s+" "+@@dPrices.size.to_s+" $"+noOfparam.to_s
             @trace.users[@@curUser].ads.push(row)
-            @trace.users[@@curUser].paramNum.push(noOfparam)
+            @trace.users[@@curUser].paramNum.push(noOfparam.to_i)
 			@trace.totalParamNum.push(noOfparam)
 			@trace.totalNumOfAds+=1
 			@fn.puts noOfparam
@@ -141,7 +141,7 @@ class Core
 			@fu.print id+";"+type3rd['Advertising'].to_s+";"+type3rd['Analytics'].to_s+";"+type3rd['Social'].to_s+";"+type3rd['Content'].to_s+";"
 			paramsStats=@@utils.makeStats(user.paramNum)
 			sizeStats=@@utils.makeStats(user.sizes3rd)
-			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+users.ads.length.to_s+";"+users.dPrices.length.to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s+"\n"
+			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s+"\n"
 		end
 	end
 
