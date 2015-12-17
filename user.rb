@@ -13,6 +13,6 @@ class User
 		@sizes3rd=Array.new
 		@adsType={"adInUrl"=>0,"params"=>0,"imp"=>0}
 		@filterType={"Advertising"=>0,"Social"=>0,"Analytics"=>0,"Content"=>0}
-		@row3rdparty={"Advertising"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"Unfiltered"=>[]}
+		@row3rdparty={"Advertising"=>[],"AdExtra"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"other"=>[]}
 	end
 end
