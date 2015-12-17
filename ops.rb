@@ -73,7 +73,7 @@ class Operations
 		puts "\nSize of the unnecessary 3rd Party content (i.e. Adverising+Analytics+Social)\nTotal: "+sizeStats['sum'].to_s+" Bytes - Average: "+sizeStats['avg'].to_s+" Bytes"
 		puts "Total Ads-related requests found: "+sums['numOfAds'].to_s+"/"+totalNumofRows.to_s
 		puts "Ad-related traffic using mobile devices: "+sums['numOfAdMobile'].to_s+"/"+sums['numOfAds'].to_s
-		puts "Number of parameters:\nmax => "+paramsStats['max'].to_s+" min=>"+paramsStats['min'].to_s+" avg=>"+paramsStats['avg'].to_s+" median=>"+paramsStats['median'].to_s
+		puts "Number of parameters:\nmax => "+paramsStats['max'].to_s+" min=>"+paramsStats['min'].to_s+" avg=>"+paramsStats['avg'].to_s
         puts "Price tags found: "+prices.length.to_s
         puts numericPrices.size.to_s+"/"+prices.size.to_s+" are actually numeric values"
         puts "Average price "+pricesStats['avg'].to_s

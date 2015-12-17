@@ -135,7 +135,7 @@ class Core
 
 	def perUserAnalysis
 		puts "> Per user analysis..."
-		@fu.puts "ID;Advertising;Analytics;Social;Content;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfParams(min);NumOfParams(max);NumOfParams(avg);Beacons;adBeacons;Impressions"
+		@fu.puts "ID;Advertising;Analytics;Social;Content;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;NumOfParams(min);NumOfParams(max);NumOfParams(avg);Beacons;adBeacons;Impressions"
 		for id,user in @trace.users do
 			type3rd=user.filterType
 			@fu.print id+";"+type3rd['Advertising'].to_s+";"+type3rd['Analytics'].to_s+";"+type3rd['Social'].to_s+";"+type3rd['Content'].to_s+";"
@@ -153,9 +153,9 @@ class Core
 
 	private
 
-    def detectPrice(keyVal);          	# Detect possible price in parameters and returns URL Parameters in String 
+    def detectPrice(keyVal,domain);          	# Detect possible price in parameters and returns URL Parameters in String 
 		if (@@filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
-          	@fp.puts keyVal[0]+"\t"+keyVal[1]
+          	@fp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+domain
 			@trace.users[@@curUser].dPrices.push(keyVal[1])
 			@trace.detectedPrices.push(keyVal[1])
 			return true
@@ -193,7 +193,7 @@ class Core
 				if(@@filters.is_Beacon_param?(keyVal) and not @@isBeacon)
 					beaconSave(url[0],row)
 				end
-				if(detectPrice(keyVal))
+				if(detectPrice(keyVal,row['host']))
 					isAd=true
 				end
 				if(@@filters.is_Ad_param?(keyVal))
