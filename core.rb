@@ -11,7 +11,7 @@ class Core
 	puts "> Creating Directories..."
         Dir.mkdir @@dataDir unless File.exists?(@@dataDir)
         Dir.mkdir @@adsDir unless File.exists?(@@adsDir)
-
+		Dir.mkdir @@userDir unless File.exists?(@@userDir)
         @fi=File.new(@@impFile,'w')
         @fa=File.new(@@adfile,'w')
         @fl=File.new(@@leftovers,'w')
@@ -22,6 +22,7 @@ class Core
         @fz=File.new(@@size3rdFile,'w')
         @fd2=File.new(@@adDevices,'w')
         @fbt=File.new(@@beaconT,'w')
+		@fu=File.new(@@userFile,'w')
 		@clients=Hash.new
 		@numOfBeacons=0
 		@trace=Trace.new
@@ -117,7 +118,6 @@ class Core
 				@@isBeacon=false
 			end
 			if(mob)
-				@trace.users[@@curUser].mobAds+=1
 				@trace.numOfMobileAds+=1
 			end
 			@fd2.puts(dev)
@@ -130,12 +130,20 @@ class Core
 	end
 
 	def close
-		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close
+		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close;@fu.close
 	end
 
 	def perUserAnalysis
+		puts "> Per user analysis..."
 		users=@trace.users
-
+		@fu.puts "ID;Advertising;Analytics;Social;Content;3rdSize(avgPerReq),3rdSize(sum);Ad-content;NumOfParams(min);NumOfParams(max);NumOfParams(avg);Beacons;adBeacons;Impressions"
+		for id,u in users do
+			type3rd=users.filterType
+			@fu.print id+";"+type3rd['Advertising']+";"+type3rd['Analytics']+";"+type3rd['Social']+";"+type3rd['Content']+";"
+			sizeStats=makeStats(user.sizes3rd)
+			paramsStats=makeStats(user.paramNum)
+			@fu.print sizeStats['avg']+";"+sizeStats['sum']+";"+users.ads.length+";"+users.dPrices.length+";"+paramsStats['min']+";"+paramsStats['max']+";"+paramsStats['avg']+";"+user.beacons.length+";"+user.adBeacon+";"+user.imp.length+"\n"
+		end
 	end
 
 

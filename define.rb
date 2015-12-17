@@ -4,18 +4,19 @@
 @@dataDir="dataset/"
 @@adsDir="parseResults/"
 @@resources='resources/'
+@@userDir=@@adsDir+"perUser/"
 
 #FILENAMES
-@@impFile=@@adsDir+"impressions"
+@@impFile=@@adsDir+"impressions.out"
 @@adfile=@@adsDir+"ads.out"
-@@prices=@@adsDir+"prices"
-@@paramsNum=@@adsDir+"paramsNum"
-@@devices=@@adsDir+"devices"
-@@bcnFile=@@adsDir+"beacons"
-@@size3rdFile=@@adsDir+"sizes3rd"
-@@paramsNum=@@adsDir+"paramsNum"
-@@adDevices=@@adsDir+"adDevices"
-@@beaconT=@@adsDir+"beaconsTypes"
+@@prices=@@adsDir+"prices.csv"
+@@devices=@@adsDir+"devices.csv"
+@@bcnFile=@@adsDir+"beacons.out"
+@@size3rdFile=@@adsDir+"sizes3rd.csv"
+@@paramsNum=@@adsDir+"paramsNum.csv"
+@@adDevices=@@adsDir+"adDevices.csv"
+@@beaconT=@@adsDir+"beaconsTypes.csv"
+@@userFile=@@userDir+"userAnalysis.csv"
 @@filterFile=@@resources+'disconnect_merged.json'
 @@leftovers="leftovers.out"
 
