@@ -135,10 +135,9 @@ class Core
 
 	def perUserAnalysis
 		puts "> Per user analysis..."
-		users=@trace.users
 		@fu.puts "ID;Advertising;Analytics;Social;Content;3rdSize(avgPerReq),3rdSize(sum);Ad-content;NumOfParams(min);NumOfParams(max);NumOfParams(avg);Beacons;adBeacons;Impressions"
-		for id,u in users do
-			type3rd=users.filterType
+		for id,user in @trace.users do
+			type3rd=user.filterType
 			@fu.print id+";"+type3rd['Advertising']+";"+type3rd['Analytics']+";"+type3rd['Social']+";"+type3rd['Content']+";"
 			sizeStats=makeStats(user.sizes3rd)
 			paramsStats=makeStats(user.paramNum)
