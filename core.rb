@@ -91,29 +91,31 @@ class Core
 		isPorI,noOfparam=beaconImprParamCkeck(url,row)
 		iaAdinURL=false
 		type3rd=@@filters.is_Ad?(url[0],host,@@adFilter)
-		if @@isBeacon 	#Beacon
-			@trace.users[@@curUser].row3rdparty["Beacons"].push(row)
-			@trace.party3rd["Beacons"]+=1
-		elsif type3rd!=nil	#	3rd PARTY CONTENT
-				@trace.users[@@curUser].row3rdparty[type3rd].push(row)
-				if not type3rd.eql? "Content"
-					if	type3rd.eql? "Advertising"
-						ad_detected(row,noOfparam,mob,dev,url)
-					end
-					#CALCULATE SIZE
-					sz=row['length']
-					@fz.puts sz
-					@trace.users[@@curUser].sizes3rd.push(sz.to_i)
-					@trace.sizes.push(sz.to_i)
+		if type3rd!=nil	#	3rd PARTY CONTENT
+			@trace.users[@@curUser].row3rdparty[type3rd].push(row)
+			if not type3rd.eql? "Content"
+				if	type3rd.eql? "Advertising"
+					ad_detected(row,noOfparam,mob,dev,url)
 				end
-		elsif isPorI<1	# Rest
-			@trace.users[@@curUser].row3rdparty["Other"].push(row)
-			@trace.party3rd["Other"]+=1
-			@trace.users[@@curUser].restNumOfParams.push(noOfparam.to_i)
-			@@utils.printStrippedURL(url,@fl)	# dump leftovers
-		elsif isPorI>0	# Impression or ad in param
-			@trace.users[@@curUser].row3rdparty["AdExtra"].push(row)
-			ad_detected(row,noOfparam,mob,dev,url)
+				#CALCULATE SIZE
+				sz=row['length']
+				@fz.puts sz
+				@trace.users[@@curUser].sizes3rd.push(sz.to_i)
+				@trace.sizes.push(sz.to_i)
+			end
+		else		
+			if @@isBeacon 	#Beacon NOT ad-related
+				@trace.users[@@curUser].row3rdparty["Beacons"].push(row)
+				@trace.party3rd["Beacons"]+=1
+			elsif isPorI>0	# Impression or ad in param
+				@trace.users[@@curUser].row3rdparty["AdExtra"].push(row)
+				ad_detected(row,noOfparam,mob,dev,url)
+			elsif isPorI<1	# Rest
+				@trace.users[@@curUser].row3rdparty["Other"].push(row)
+				@trace.party3rd["Other"]+=1
+				@trace.users[@@curUser].restNumOfParams.push(noOfparam.to_i)
+				@@utils.printStrippedURL(url,@fl)	# dump leftovers
+			end
 		end
 	end
 
