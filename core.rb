@@ -138,10 +138,10 @@ class Core
 		@fu.puts "ID;Advertising;Analytics;Social;Content;3rdSize(avgPerReq),3rdSize(sum);Ad-content;NumOfParams(min);NumOfParams(max);NumOfParams(avg);Beacons;adBeacons;Impressions"
 		for id,user in @trace.users do
 			type3rd=user.filterType
-			@fu.print id+";"+type3rd['Advertising']+";"+type3rd['Analytics']+";"+type3rd['Social']+";"+type3rd['Content']+";"
+			@fu.print id+";"+type3rd['Advertising'].to_s+";"+type3rd['Analytics'].to_s+";"+type3rd['Social'].to_s+";"+type3rd['Content'].to_s+";"
 			sizeStats=makeStats(user.sizes3rd)
 			paramsStats=makeStats(user.paramNum)
-			@fu.print sizeStats['avg']+";"+sizeStats['sum']+";"+users.ads.length+";"+users.dPrices.length+";"+paramsStats['min']+";"+paramsStats['max']+";"+paramsStats['avg']+";"+user.beacons.length+";"+user.adBeacon+";"+user.imp.length+"\n"
+			@fu.print sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+users.ads.length.to_s+";"+users.dPrices.length.to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.beacons.length.to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s+"\n"
 		end
 	end
 
