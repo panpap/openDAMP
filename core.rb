@@ -106,7 +106,6 @@ class Core
 		else		
 			if @@isBeacon 	#Beacon NOT ad-related
 				@trace.users[@@curUser].row3rdparty["Beacons"].push(row)
-				@trace.party3rd["Beacons"]+=1
 			elsif isPorI>0	# Impression or ad in param
 				@trace.users[@@curUser].row3rdparty["AdExtra"].push(row)
 				ad_detected(row,noOfparam,mob,dev,url)
@@ -195,7 +194,7 @@ end
 		@@isBeacon=true
 		@@utils.printRow(row,@fb)
 		urlStr=url.split("%")[0].split(";")[0]
-
+		@trace.party3rd["totalBeacons"]+=1
 		temp=urlStr.split("/")	   #beacon type
 		words=temp.size
 		slashes=urlStr.count("/")

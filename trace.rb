@@ -13,7 +13,7 @@ class Trace
 		@totalImps=0
 		@totalAdBeacons=0
 		@numOfMobileAds=0
-		@party3rd={"Advertising"=>0,"Social"=>0,"Analytics"=>0,"Content"=>0, "Other"=>0, "Beacons"=>0}
+		@party3rd={"Advertising"=>0,"Social"=>0,"Analytics"=>0,"Content"=>0, "Other"=>0, "totalBeacons"=>0}
 	end
 
 	def analyzeTotalAds    #Analyze global variables
