@@ -124,10 +124,10 @@ class Core
 
 	def perUserAnalysis
 		puts "> Per user analysis..."
-		@fu.puts "ID;Advertising;AdExtra;Analytics;Social;Content;other;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;AdNumOfParams(min);AdNumOfParams(max);AdNumOfParams(avg);RestNumOfParams(min);RestNumOfParams(max);RestNumOfParams(avg);Beacons;adBeacons;Impressions"
+		@fu.puts "ID;Advertising;AdExtra;Analytics;Social;Content;noAdBeacons;Other;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;AdNumOfParams(min);AdNumOfParams(max);AdNumOfParams(avg);RestNumOfParams(min);RestNumOfParams(max);RestNumOfParams(avg);Beacons;adBeacons;Impressions"
 		for id,user in @trace.users do
 			type3rd=user.filterType
-			@fu.print id+";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['Other'].size.to_s+";"+user.row3rdparty['Beacons'].size.to_s+";"
+			@fu.print id+";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['Beacons'].size.to_s+";"+user.row3rdparty['Other'].size.to_s+"\n"
 			paramsStats=@@utils.makeStats(user.restNumOfParams)
 			adParamsStats=@@utils.makeStats(user.adNumOfParams)
 			sizeStats=@@utils.makeStats(user.sizes3rd)
@@ -193,7 +193,6 @@ end
 			
 	def beaconSave(url,row)         #findBeacons
 		@@isBeacon=true
-    	@trace.users[@@curUser].beacons.push(row)
 		@@utils.printRow(row,@fb)
 		urlStr=url.split("%")[0].split(";")[0]
 
