@@ -21,6 +21,14 @@ class Filters
                 return filter
         end
 
+		def is_inInria_PriceTagList? (domain,keyVal)
+			temp=@@inria[domain]
+			if temp!=nil and temp.downcase.eql? keyVal[0]
+				return true
+			end
+			return false
+		end
+
         def is_Beacon_param?(params)
                 return (@@beacon_key.any? {|word| params[0].downcase.include?(word)})
         end
@@ -102,14 +110,8 @@ class Filters
                 str=url
                 urlParts=url.split("/")
                 parts=urlParts[0].split(".")
-		# FIND TLD
-                if (url.include? 'co.jp' or url.include? 'co.uk' or url.include? 'co.in')
-			tld=parts[parts.size-2]+"."+parts[parts.size-1]
-                        domain=parts[parts.size-3]
-		else
-                        tld=parts[parts.size-1]
-                        domain=parts[parts.size-2]
-                end
+		# FIND TLD AND DOMAIN
+				domain,tld=@@utils.tokenizeHost(host)
 	
 		# FILTER USING DISCONNECT
                 if result=filter[host]                                  # APPLY FILTER

@@ -13,7 +13,18 @@ class Utilities
             end
         end
 
-	def makeStats (arr)
+	def tokenizeHost(domain)
+		if (url.include? 'co.jp' or url.include? 'co.uk' or url.include? 'co.in')
+			tld=parts[parts.size-2]+"."+parts[parts.size-1]
+            domain=parts[parts.size-3]
+		else
+            tld=parts[parts.size-1]
+            domain=parts[parts.size-2]
+        end
+		return domain,tld
+	end
+
+	def makeStats(arr)
 		result={'sum'=>-1,'avg'=>-1,'median'=>-1,'max'=>-1,'min'=>-1}
 		if arr!=nil or arr.length>0
 			result['sum']=arr.inject{ |s, el| s + el}.to_f
@@ -25,40 +36,40 @@ class Utilities
 		return result
 	end
 
-        def is_numeric?(object)
-           	if object==nil
-            	return false
-            end
-            true if Float(object) rescue false
+    def is_numeric?(object)
+       	if object==nil
+        	return false
         end
+        true if Float(object) rescue false
+    end
 
-       	def stripper(str)
-           if (str==nil)
-               return ""
-           end
-           parts=str.split('&')
-           s=""
-           for param in parts do
-               s=s+"->\t"+param+"\n"
-           end
-           return s
+   	def stripper(str)
+       if (str==nil)
+           return ""
+       end
+       parts=str.split('&')
+       s=""
+       for param in parts do
+           s=s+"->\t"+param+"\n"
+       end
+       return s
+   	end
+
+   	def printStrippedURL(url,fw)
+		params=stripper(url[1])
+        fw.puts "\n"+url[0]+" "
+        if params!=""
+                fw.puts params
+        else
+            	fw.puts "----"
        	end
+    end
 
-       	def printStrippedURL(url,fw)
-			params=stripper(url[1])
-            fw.puts "\n"+url[0]+" "
-            if params!=""
-                    fw.puts params
-            else
-                	fw.puts "----"
-           	end
-        end
-
-        def makeDistrib_LaPr(adsDir)            # Calculate Latency and Price distribution
-            countInstances("./","latency.out")        #latency
-            system("awk \'{print $2\" \"$1}\' "+adsDir+"prices | sort -n | uniq -c | sort -n | tac > "+adsDir+"prices_cnt")
-            system("awk \'{print $2\" \"$1}\' "+adsDir+"prices | sort -n | uniq > "+adsDir+"prices_uniq")
-        end
+    def makeDistrib_LaPr(adsDir)            # Calculate Latency and Price distribution
+        countInstances("./","latency.out")        #latency
+        system("awk \'{print $2\" \"$1}\' "+adsDir+"prices | sort -n | uniq -c | sort -n | tac > "+adsDir+"prices_cnt")
+        system("awk \'{print $2\" \"$1}\' "+adsDir+"prices | sort -n | uniq > "+adsDir+"prices_uniq")
+    end
 
 	def printRow(row,fw)
 		for key in row.keys
