@@ -82,8 +82,8 @@ class Operations
 		puts "Beacons found: "+trace.party3rd['totalBeacons'].to_s+"\nAds-related beacons: "+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s
         puts "Impressions detected "+trace.totalImps.to_s
 #        puts "Average latency "+avgL.to_s
-		system("sort "+@@priceTagFile+" | uniq >"+@@priceTagFile+".csv")
-		system("rm -f "+@@priceTagFile)
+		system("sort "+@@priceTagsFile+" | uniq >"+@@priceTagsFile+".csv")
+		system("rm -f "+@@priceTagsFile)
 		puts "PER USER STATS"
 		@@func.perUserAnalysis()
 		puts "TODO"
