@@ -110,6 +110,7 @@ class Core
 			elsif isPorI>0	# Impression or ad in param
 				@trace.users[@@curUser].row3rdparty["AdExtra"].push(row)
 				ad_detected(row,noOfparam,mob,dev,url)
+				@trace.party3rd["Advertising"]+=1
 			elsif isPorI<1	# Rest
 				@trace.users[@@curUser].row3rdparty["Other"].push(row)
 				@trace.party3rd["Other"]+=1
@@ -222,7 +223,6 @@ class Core
         @trace.users[@@curUser].ads.push(row)
         @trace.users[@@curUser].adNumOfParams.push(noOfparam.to_i)
 		@trace.totalParamNum.push(noOfparam)
-		@trace.party3rd["Advertising"]+=1
 		@fn.puts noOfparam
 		if (@@isBeacon)			#is it ad-related Beacon?
 			@trace.users[@@curUser].adBeacon+=1
