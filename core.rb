@@ -24,7 +24,7 @@ class Core
         @fd2=File.new(@@adDevices,'w')
         @fbt=File.new(@@beaconT,'w')
 		@fu=File.new(@@userFile,'w')
-		@fnp=File.new(@@Numeric_prices,'w')
+		@fnp=File.new(@@priceTagsFile,'w')
 		@clients=Hash.new
 		@numOfBeacons=0
 		@trace=Trace.new
@@ -151,7 +151,7 @@ class Core
 		if (@@filters.is_inInria_PriceTagList?(host,keyVal) or @@filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
           	@fp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
 			if (@@utils.is_numeric?(keyVal[1]))
-				@fnp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
+				@fnp.puts host+"\t"+keyVal[0]
 			end
 			@trace.users[@@curUser].dPrices.push(keyVal[1])
 			@trace.detectedPrices.push(keyVal[1])

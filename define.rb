@@ -11,7 +11,7 @@
 @@impFile=@@adsDir+"impressions.out"
 @@adfile=@@adsDir+"ads.out"
 @@prices=@@adsDir+"prices.csv"
-@@Numeric_prices=@@adsDir+"numeric_prices.csv"
+@@priceTagsFile=@@adsDir+"priceTags"
 @@devices=@@adsDir+"devices.csv"
 @@bcnFile=@@adsDir+"beacons.out"
 @@size3rdFile=@@adsDir+"sizes3rd.csv"
