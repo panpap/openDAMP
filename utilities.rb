@@ -14,6 +14,7 @@ class Utilities
         end
 
 	def tokenizeHost(host)
+		parts=host.split(".")
 		if (host.include? 'co.jp' or host.include? 'co.uk' or host.include? 'co.in')
 			tld=parts[parts.size-2]+"."+parts[parts.size-1]
             domain=parts[parts.size-3]

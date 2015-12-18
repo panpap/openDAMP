@@ -109,7 +109,7 @@ class Filters
 				utils=Utilities.new
                 str=url
                 urlParts=url.split("/")
-                parts=urlParts[0].split(".")
+                
 		# FIND TLD AND DOMAIN
 				domain,tld=utils.tokenizeHost(host)
 	
