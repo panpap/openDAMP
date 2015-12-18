@@ -148,9 +148,6 @@ class Core
     def detectPrice(keyVal,domainStr);          	# Detect possible price in parameters and returns URL Parameters in String
 		domain,tld=@@utils.tokenizeHost(domainStr)
 		host=domain+"."+tld
-		if(@@filters.is_inInria_PriceTagList?(host,keyVal))
-			puts "Inria "+host+" "+keyVal[0]+" => "+keyVal[1] 
-		end
 		if (@@filters.is_inInria_PriceTagList?(host,keyVal) or @@filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
           	@fp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
 			if (@@utils.is_Numeric(keyVal[1]))
