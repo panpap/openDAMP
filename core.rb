@@ -150,7 +150,7 @@ class Core
 		host=domain+"."+tld
 		if (@@filters.is_inInria_PriceTagList?(host,keyVal) or @@filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
           	@fp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
-			if (@@utils.is_Numeric(keyVal[1]))
+			if (@@utils.is_numeric(keyVal[1]))
 				@fnp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
 			end
 			@trace.users[@@curUser].dPrices.push(keyVal[1])
