@@ -6,11 +6,11 @@
 		'full_trace2'=>2} 	#awazza dataset 1million reqs
 
 #DIRECTORIES
-@@rootDir="results_"+@@traceFile+"/"
-@@dataDir=@@rootDir+"dataset/"
-@@adsDir=@@rootDir+"adRelated/"
+@@rootDir=nil
+@@dataDir=nil
+@@adsDir=nil
+@@userDir=nil
 @@resources='resources/'
-@@userDir=@@adsDir+"perUser/"
 
 #FILENAMES
 @@parseResults=@@rootDir+"parseResults.out"

@@ -1,6 +1,7 @@
 module Format
 	def Format.columnsFormat(part,dataset)
 		h=Hash.new(-1)
+		connect=false
 		if dataset==1
 			#IP_Port	UserIP	URL	UserAgent	Host	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss
 			h['IPport']=part[0]
@@ -22,6 +23,7 @@ module Format
 				h['url']=h['host']+part[12]	#host+path
 			elsif h['verb'].downcase=="connect" 
 				h['url']=part[12]
+				connect=true
 			else
 				puts "--------> UKNOWN HTTP VERB: "+h['verb']
 			end
@@ -34,6 +36,6 @@ module Format
 		else
 			abort("Error: Wrong column format... File cannot be read!")
 		end
-		return h
+		return h,connect
 	end
 end

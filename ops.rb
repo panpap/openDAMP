@@ -17,6 +17,10 @@ class Operations
 				abort("Error: Input file <"+filename+"> could not be found!")
 			end
 		end
+		@@rootDir="results_"+@@traceFile+"/"
+		@@dataDir=@@rootDir+"dataset/"
+		@@adsDir=@@rootDir+"adRelated/"
+		@@userDir=@@adsDir+"perUser/"
 	end
 
 	def loadFile()

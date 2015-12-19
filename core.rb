@@ -26,8 +26,8 @@ class Core
         line=f.gets     #get rid of headers
         while(line=f.gets)
             part=line.chop.split("\t")
-			h=Format.columnsFormat(part,@@columnsFormat[filename])
-			if h['verb']!=nil
+			h,connect=Format.columnsFormat(part,@@columnsFormat[filename])
+			if connect
 				@fpub.puts h['IPport'].to_s+" "+h['tmstp'].to_s+" "+h['url'].to_s
 			end
             @trace.rows.push(h)
@@ -147,7 +147,7 @@ class Core
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
           	@fp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
 			if (Utilities.is_numeric?(keyVal[1]))
-				@fnp.puts host+"\t"+keyVal[0]
+				@fnp.puts host+"\t"+keyVal[0].downcase
 			end
 			@trace.users[@@curUser].dPrices.push(keyVal[1])
 			@trace.detectedPrices.push(keyVal[1])
