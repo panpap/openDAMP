@@ -3,7 +3,7 @@
 
 @@columnsFormat={'100k_trace'=>1, 
 		'full_trace'=>1, 	#awazza dataset 6million reqs
-		'full_trace2'=>2} 	#awazza dataset 1million reqs
+		'souneil_trace'=>2} 	#awazza dataset 1million reqs
 
 #DIRECTORIES
 @@rootDir=nil
