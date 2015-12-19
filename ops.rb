@@ -20,7 +20,7 @@ class Operations
 		end
 	end
 
-	def loadFile(filename)
+	def loadFile()
 		puts "> Loading Trace..."
 		@@loadedRows=@@func.loadRows(@@traceFile)
 		puts "\t"+@@loadedRows.size.to_s+" requests have been loaded successfully!"
