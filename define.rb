@@ -7,13 +7,13 @@ class Defines
 
 	def initialize(filename)
 		if filename==nil
-			puts "Warning: Using pre-defined input file..."			
+			puts "Warning: Using pre-defined input file..."
+			@traceFile='100k_trace'
 		else
-			if File.exist?(filename)
-			@@traceFile=filename
-			else
-				abort("Error: Input file <"+filename+"> could not be found!")
-			end
+			@traceFile=filename
+		end
+		if File.exist?(@traceFile)
+			abort("Error: Input file <"+filename+"> could not be found!")
 		end
 		#DIRECTORIES
 		@rootDir="results_"+@traceFile+"/"
