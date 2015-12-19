@@ -6,7 +6,7 @@
 		'full_trace2'=>2} 	#awazza dataset 1million reqs
 
 #DIRECTORIES
-@@rootDir=@@traceFile+"_results/"
+@@rootDir="results_"+@@traceFile+"/"
 @@dataDir=@@rootDir+"dataset/"
 @@adsDir=@@rootDir+"adRelated/"
 @@resources='resources/'
