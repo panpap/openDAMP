@@ -2,31 +2,36 @@ require 'optparse'
 require 'ops'
 
 start = Time.now
-ops=Operations.new(ARGV[2])
+
 
 OptionParser.new { |opts|
   opts.banner = "Usage: #{File.basename($0)} -p -s -a -h -f <string> <(optional)filename>"
 
   opts.on( '-s', '--separate', 'Separate fields to files. Produced files are stored in ./data/ folder') do
+	ops=Operations.new(ARGV[0])
     ops.loadFile()
     ops.separate
   end
 
   opts.on('-p', '--strip', 'Strip parameters from URLs. Output is stored in ./stripParam.out') do
+	ops=Operations.new(ARGV[0])
     ops.loadFile()
     ops.stripURL
   end
 
   opts.on('-r', '--remove', 'Remove all folders and files') do
+	ops=Operations.new(ARGV[0])
     ops.clearAll
   end	
 	
   opts.on('-f', '--find STRING', 'Search particular string in the dataset.') do |str|
+	ops=Operations.new(ARGV[0])
     ops.loadFile()
     ops.findStrInRows(str,true)
   end
 
   opts.on('-a', '--all', 'Load dataset, separate parameters, detect ads') do
+	ops=Operations.new(ARGV[0])
     ops.loadFile()
     ops.separate
     ops.stripURL
