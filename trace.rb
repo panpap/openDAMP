@@ -3,7 +3,8 @@ require 'user'
 class Trace
 	attr_accessor :rows, :mobDev, :numOfMobileAds, :totalAdBeacons, :totalImps, :users, :detectedPrices, :party3rd, :sizes, :totalParamNum
 
-	def initialize
+	def initialize(defs)
+		@defines=defs
 		@rows=Array.new
 		@mobDev=0
 		@users=Hash.new
@@ -17,9 +18,9 @@ class Trace
 	end
 
 	def analyzeTotalAds    #Analyze global variables
-		Utilities.countInstances(@@paramsNum)
-		Utilities.countInstances(@@devices)
-		Utilities.countInstances(@@size3rdFile)
+		Utilities.countInstances(@defines.paramsNum)
+		Utilities.countInstances(@defines.devices)
+		Utilities.countInstances(@defines.size3rdFile)
 		return Utilities.makeStats(@totalParamNum),Utilities.makeStats(@sizes)
 	end
 end

@@ -3,11 +3,11 @@ require 'filters'
 require 'columnsFormat'
 
 class Core
-   	@@isBeacon=false
-	@@adFilter=nil
+   	@isBeacon=false
 
-	def initialize
-		@filters=Filters.new
+	def initialize(defs)
+		@defines=defs
+		@filters=Filters.new(@defines)
 		makeDirsFiles()
 		@trace=Trace.new
 	end
@@ -26,20 +26,20 @@ class Core
         line=f.gets     #get rid of headers
         while(line=f.gets)
             part=line.chop.split("\t")
-			h,connect=Format.columnsFormat(part,@@columnsFormat[filename])
+			h,connect=Format.columnsFormat(part,@defines.columnsFormat[filename])
 			if connect
 				@fpub.puts h['IPport'].to_s+" "+h['tmstp'].to_s+" "+h['url'].to_s
 			end
             @trace.rows.push(h)
         end
         f.close
-		@@adFilter=@filters.loadExternalFilter()
+		@adFilter=@filters.loadExternalFilter()
         return @trace.rows
     end
 
     def separateField(att);
         puts "> Separate files and calculate instances for "+att
-	path=@@dataDir+att
+		path=@defines.dataDir+att
         fw=File.new(path,'w')
         for r in @trace.rows do
             fw.puts r[att]
@@ -51,24 +51,22 @@ class Core
 	def parseRequest(row)
 		url=row['url'].split("?")
 		host=row['host']
-		@@curUser=row['IPport']
-		if @trace.users[@@curUser]==nil		#first seen user
-			@trace.users[@@curUser]=User.new	
+		@curUser=row['IPport']
+		if @trace.users[@curUser]==nil		#first seen user
+			@trace.users[@curUser]=User.new	
 		end
-
 		#CHECK IF ITS MOBILE USER
 		mob,dev=@filters.is_MobileType?(row)   # check the device type of the request
 		if mob
 			@trace.mobDev+=1
 		end
         @fd1.puts dev
-
 		#FILTER ROW
 		isPorI,noOfparam=beaconImprParamCkeck(url,row)
 		iaAdinURL=false
-		type3rd=@filters.is_Ad?(url[0],host,@@adFilter)
+		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
 		if type3rd!=nil	#	3rd PARTY CONTENT
-			@trace.users[@@curUser].row3rdparty[type3rd].push(row)
+			@trace.users[@curUser].row3rdparty[type3rd].push(row)
 			@trace.party3rd[type3rd]+=1
 			if not type3rd.eql? "Content"
 				if	type3rd.eql? "Advertising"
@@ -77,20 +75,20 @@ class Core
 				#CALCULATE SIZE
 				sz=row['length']
 				@fz.puts sz
-				@trace.users[@@curUser].sizes3rd.push(sz.to_i)
+				@trace.users[@curUser].sizes3rd.push(sz.to_i)
 				@trace.sizes.push(sz.to_i)
 			end
 		else		
-			if @@isBeacon 	#Beacon NOT ad-related
-				@trace.users[@@curUser].row3rdparty["Beacons"].push(row)
+			if @isBeacon 	#Beacon NOT ad-related
+				@trace.users[@curUser].row3rdparty["Beacons"].push(row)
 			elsif isPorI>0	# Impression or ad in param
-				@trace.users[@@curUser].row3rdparty["AdExtra"].push(row)
+				@trace.users[@curUser].row3rdparty["AdExtra"].push(row)
 				ad_detected(row,noOfparam,mob,dev,url)
 				@trace.party3rd["Advertising"]+=1
 			elsif isPorI<1	# Rest
-				@trace.users[@@curUser].row3rdparty["Other"].push(row)
+				@trace.users[@curUser].row3rdparty["Other"].push(row)
 				@trace.party3rd["Other"]+=1
-				@trace.users[@@curUser].restNumOfParams.push(noOfparam.to_i)
+				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
 				Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
 		end
@@ -122,23 +120,23 @@ class Core
 
 	def makeDirsFiles
 		puts "> Creating Directories..."
-		Dir.mkdir @@rootDir unless File.exists?(@@rootDir)
-		Dir.mkdir @@dataDir unless File.exists?(@@dataDir)
-        Dir.mkdir @@adsDir unless File.exists?(@@adsDir)
-		Dir.mkdir @@userDir unless File.exists?(@@userDir)
-        @fi=File.new(@@impFile,'w')
-        @fa=File.new(@@adfile,'w')
-        @fl=File.new(@@leftovers,'w')
-        @fp=File.new(@@prices,'w')
-		@fpub=File.new(@@publishers,'w')
-        @fn=File.new(@@paramsNum,'w')
-        @fd1=File.new(@@devices,'w')
-        @fb=File.new(@@bcnFile,'w')
-        @fz=File.new(@@size3rdFile,'w')
-        @fd2=File.new(@@adDevices,'w')
-        @fbt=File.new(@@beaconT,'w')
-		@fu=File.new(@@userFile,'w')
-		@fnp=File.new(@@priceTagsFile,'w')
+		Dir.mkdir @defines.rootDir unless File.exists?(@defines.rootDir)
+		Dir.mkdir @defines.dataDir unless File.exists?(@defines.dataDir)
+        Dir.mkdir @defines.adsDir unless File.exists?(@defines.adsDir)
+		Dir.mkdir @defines.userDir unless File.exists?(@defines.serDir)
+        @fi=File.new(@defines.impFile,'w')
+        @fa=File.new(@defines.adfile,'w')
+        @fl=File.new(@defines.leftovers,'w')
+        @fp=File.new(@defines.prices,'w')
+		@fpub=File.new(@defines.ublishers,'w')
+        @fn=File.new(@defines.paramsNum,'w')
+        @fd1=File.new(@defines.devices,'w')
+        @fb=File.new(@defines.bcnFile,'w')
+        @fz=File.new(@defines.size3rdFile,'w')
+        @fd2=File.new(@defines.adDevices,'w')
+        @fbt=File.new(@defines.beaconT,'w')
+		@fu=File.new(@defines.userFile,'w')
+		@fnp=File.new(@defines.priceTagsFile,'w')
 	end
 
     def detectPrice(keyVal,domainStr);          	# Detect possible price in parameters and returns URL Parameters in String
@@ -149,7 +147,7 @@ class Core
 			if (Utilities.is_numeric?(keyVal[1]))
 				@fnp.puts host+"\t"+keyVal[0].downcase
 			end
-			@trace.users[@@curUser].dPrices.push(keyVal[1])
+			@trace.users[@curUser].dPrices.push(keyVal[1])
 			@trace.detectedPrices.push(keyVal[1])
 			return true
 		end
@@ -160,7 +158,7 @@ class Core
         if @filters.is_Impression?(url[0])
 			Utilities.printRow(row,@fi)
 			@trace.totalImps+=1
-		    @trace.users[@@curUser].imp.push(row)
+		    @trace.users[@curUser].imp.push(row)
 			return true
         end
 		return false
@@ -175,7 +173,7 @@ class Core
         for field in fields do
             keyVal=field.split("=")
             if(not @filters.is_GarbageOrEmpty?(keyVal))
-				if(@filters.is_Beacon_param?(keyVal) and not @@isBeacon)
+				if(@filters.is_Beacon_param?(keyVal) and not @isBeacon)
 					beaconSave(url[0],row)
 				end
 				if(detectPrice(keyVal,row['host']))
@@ -190,7 +188,7 @@ class Core
 	end
 			
 	def beaconSave(url,row)         #findBeacons
-		@@isBeacon=true
+		@isBeacon=true
 		Utilities.printRow(row,@fb)
 		urlStr=url.split("%")[0].split(";")[0]
 		@trace.party3rd["totalBeacons"]+=1
@@ -208,7 +206,7 @@ class Core
 	end
 
 	def beaconImprParamCkeck(url,row) 
-        @@isBeacon=false
+        @isBeacon=false
 		isAd=-1
         if (@filters.is_Beacon?(url[0],url[1]))  		#findBeacon in URL
             isAd=0
@@ -222,14 +220,14 @@ class Core
 	end
 
 	def ad_detected (row,noOfparam,mob,dev,url)
-        @trace.users[@@curUser].ads.push(row)
-        @trace.users[@@curUser].adNumOfParams.push(noOfparam.to_i)
+        @trace.users[@curUser].ads.push(row)
+        @trace.users[@curUser].adNumOfParams.push(noOfparam.to_i)
 		@trace.totalParamNum.push(noOfparam)
 		@fn.puts noOfparam
-		if (@@isBeacon)			#is it ad-related Beacon?
-			@trace.users[@@curUser].adBeacon+=1
+		if (@isBeacon)			#is it ad-related Beacon?
+			@trace.users[@curUser].adBeacon+=1
 			@trace.totalAdBeacons+=1
-			@@isBeacon=false
+			@isBeacon=false
 		end
 		if(mob)
 			@trace.numOfMobileAds+=1

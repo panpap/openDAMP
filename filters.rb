@@ -2,13 +2,17 @@ require 'rubygems'
 require 'json'
 
 class Filters
-        @@latency=Array.new
+        @latency=Array.new
         def getLatency
-                return @@latency
+                return @latency
         end
 
+		def initialize(defs)
+			@defines=defs
+		end
+
         def loadExternalFilter
-               	file = File.read(@@filterFile)
+               	file = File.read(@defines.filterFile)
                	json = JSON.parse(file)
                 cats=json['categories']
                	filter=Hash.new
@@ -21,7 +25,7 @@ class Filters
         end
 
 		def is_inInria_PriceTagList? (domain,keyVal)
-			temp=@@inria[domain]
+			temp=@defines.inria[domain]
 			if temp!=nil and temp.downcase.eql? keyVal[0]
 				return true
 			end
@@ -29,13 +33,13 @@ class Filters
 		end
 
         def is_Beacon_param?(params)
-                return (@@beacon_key.any? {|word| params[0].downcase.include?(word)})
+                return (@defines.beacon_key.any? {|word| params[0].downcase.include?(word)})
         end
 
         def is_Beacon?(url,params)
                 if (url.downcase.include? ".htm" or url.downcase.include? ".xml")
                         return false
-                elsif(@@beacon_key.any? { |word| url.include?(word)})
+                elsif(@defines.beacon_key.any? { |word| url.include?(word)})
                         return true
                 else
                     	return false
@@ -46,7 +50,7 @@ class Filters
 #	ua=row['ua'].downcase
 #	if (type=="Macintosh" or type=="Windows" or type=="Linux" or type=="BSD") # IS DESKTOP?
 #               return true
-#	elsif (@@browsers.any? { |word| ua.include?(word)})     # IS BROWSER?
+#	elsif (@defines.browsers.any? { |word| ua.include?(word)})     # IS BROWSER?
 #               return true
 #	else                                                    # IS APP... DO NOTHING
 #               return false
@@ -86,7 +90,7 @@ class Filters
                 if (url.include? "impl") #junk
                         return false
                 end
-                return (@@imps.any? { |word| url.downcase.include?(word)})
+                return (@defines.imps.any? { |word| url.downcase.include?(word)})
         end
 
 
@@ -97,12 +101,12 @@ class Filters
 
         def has_PriceKeyword?(param)            # Check if there is a price-related keyword and return the price
                if param[0].eql? "latency"
-                        @@latency.push(param[1].to_f)
+                        @latency.push(param[1].to_f)
                         fa=File.new('./latency.out','a')
                         fa.puts param[1]
                         fa.close
                end
-               return (@@keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
+               return (@defines.keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
         end
 
 	def is_Ad?(url,host,filter)
@@ -126,7 +130,7 @@ class Filters
                                 urlParts[1,urlParts.size].each{ |p| t+=p+"/" ""}
                                 url=s+t
                         end
-                        if (@@subStrings.any? { |word| url.include?(word)} or @@rtbCompanies.any? { |word| url.downcase.include?(word)})
+                        if (@defines.subStrings.any? { |word| url.include?(word)} or @defines.rtbCompanies.any? { |word| url.downcase.include?(word)})
                                 return "Advertising"
                         end
                         return nil
@@ -137,7 +141,7 @@ class Filters
                 if (params[0].downcase.eql? "type" and params[1].include? "ad")
                         return true
                 else
-                        return (@@adInParam.any? {|word| params[0].downcase.include?(word)})
+                        return (@defines.adInParam.any? {|word| params[0].downcase.include?(word)})
                 end
         end
 end

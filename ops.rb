@@ -5,27 +5,15 @@ require 'digest/sha1'
 
 class Operations
 	@@loadedRows=nil
-
+	
 	def initialize(filename)
-		@func=Core.new()
-		if filename==nil
-			puts "Warning: Using pre-defined input file..."			
-		else
-			if File.exist?(filename)
-				@@traceFile=filename
-			else
-				abort("Error: Input file <"+filename+"> could not be found!")
-			end
-		end
-		@@rootDir="results_"+@@traceFile+"/"
-		@@dataDir=@@rootDir+"dataset/"
-		@@adsDir=@@rootDir+"adRelated/"
-		@@userDir=@@adsDir+"perUser/"
+		@defines=Defines.new(filename)
+		@func=Core.new(@defines)		
 	end
 
 	def loadFile()
 		puts "> Loading Trace..."
-		@@loadedRows=@func.loadRows(@@traceFile)
+		@@loadedRows=@func.loadRows(@defines.traceFile)
 		puts "\t"+@@loadedRows.size.to_s+" requests have been loaded successfully!"
 	end
 
@@ -36,8 +24,8 @@ class Operations
 	end
 
 	def clearAll
-        system('rm -rf '+@@dataDir)
-        system('rm -rf '+@@adsDir)
+        system('rm -rf '+@defines.dataDir)
+        system('rm -rf '+@defines.dsDir)
 		system('rm -f *.out')
 	end
 
@@ -79,7 +67,7 @@ class Operations
 	private
 
 	def analysisResults(trace)
-		fw=File.new(@@parseResults,'w')
+		fw=File.new(@defines.parseResults,'w')
 		puts "> Calculating Statistics about detected ads..."
 		#LATENCY
 	#	lat=@func.getLatency
@@ -93,10 +81,10 @@ class Operations
                 numericPrices.push(p.to_f)
             end
         end
-        Utilities.countInstances(@@beaconT)
+        Utilities.countInstances(@defines.beaconT)
 		@func.perUserAnalysis()
-		system("sort "+@@priceTagsFile+" | uniq >"+@@priceTagsFile+".csv")
-		system("rm -f "+@@priceTagsFile)
+		system("sort "+@defines.priceTagsFile+" | uniq >"+@defines.priceTagsFile+".csv")
+		system("rm -f "+@defines.priceTagsFile)
 		results=Utilities.results_toString(trace,prices,numericPrices)
 		fw.puts results
 		puts results
