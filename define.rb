@@ -55,8 +55,9 @@
 @@rtbCompanies=["adkmob","green.erne.co","bidstalk","rtb-","openrtb","eyeota","ad-x.co.uk",
 			"qservz","hastrk","api-","clix2pix.net","exoclick"," clickadu","waiads.com"]
 
-@@adInParam=["ad_","ad_id","adv_id","bid_id","adpos","adtagid","rtb","adslot","adspace","adUrl",
-			"adposition","bidid","adsnumber","bidder","bidder_id","auction","ads_","creativity"]
+@@adInParam=["ad_","ad_id","adv_id","bid_id","adpos","adtagid","rtb","adslot","adspace","adUrl", "ads_creative_id", 
+			"creative_id","adposition","bidid","adsnumber","bidder","bidder_id","auction","ads_",
+			"adunit", "adgroup", "creativity"]
 
 @@browsers=['dolphin', 'gecko', 'opera','webkit','mozilla','gecko','browser','chrome','safari']
 
