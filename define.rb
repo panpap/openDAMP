@@ -26,7 +26,7 @@
 @@beaconT=@@adsDir+"beaconsTypes.csv"
 @@userFile=@@userDir+"userAnalysis.csv"
 @@filterFile=@@resources+'disconnect_merged.json'
-@@publishers=@dataDir+"publishers.csv"
+@@publishers=@@dataDir+"publishers.csv"
 @@leftovers="leftovers.out"
 
 #KEYWORDS
