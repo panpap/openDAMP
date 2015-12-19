@@ -8,11 +8,19 @@ class Operations
 	@@loadedRows=nil
 	@@utils=Utilities.new
 
-	def loadFile
-		puts "> Name of input file: "+@@traceFile
+	def loadFile(filename)
 		@@func=Core.new
 		puts "> Loading Trace..."
-		@@loadedRows=@@func.loadRows(@@traceFile)
+		if filename==nil
+			puts "Warning: Using pre-defined input file..."
+			@@loadedRows=@@func.loadRows(@@traceFile)
+		else
+			if File.exist?(filename)
+				@@loadedRows=@@func.loadRows(filename)
+			else
+				abort("Error: Input file could not be found!")
+			end
+		end
 		puts "\t"+@@loadedRows.size.to_s+" requests have been loaded successfully!"
 	end
 

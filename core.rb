@@ -24,6 +24,7 @@ class Core
 	end
 
     def loadRows(filename)
+	puts "> Name of input file: "+filename
         f=File.new(filename,'r')
         line=f.gets     #get rid of headers
         while(line=f.gets)
@@ -122,7 +123,7 @@ class Core
 
 	private
 
-	def makeFileDirs
+	def makeDirsFiles
 		puts "> Creating Directories..."
 		Dir.mkdir @@rootDir unless File.exists?(@@rootDir)
         Dir.mkdir @@dataDir unless File.exists?(@@dataDir)

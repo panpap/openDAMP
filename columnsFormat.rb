@@ -18,9 +18,9 @@ module Format
 			h['IPport']=part[9]
 			h['host']=part[15]
 			h['verb']=part[10]
-			if h['verb'].downcase=="GET"
+			if h['verb'].downcase=="get"
 				h['url']=h['host']+part[12]	#host+path
-			elsif h['Verb'].downcase=="connect" 
+			elsif h['verb'].downcase=="connect" 
 				h['url']=part[12]
 			else
 				puts "--------> UKNOWN HTTP VERB!"
