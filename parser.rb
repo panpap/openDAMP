@@ -2,7 +2,7 @@ require 'optparse'
 require 'ops'
 
 start = Time.now
-ops=Operations.new(ARGV[0])
+ops=Operations.new(ARGV[2])
 
 OptionParser.new { |opts|
   opts.banner = "Usage: #{File.basename($0)} -p -s -a -h -f <string> <(optional)filename>"
