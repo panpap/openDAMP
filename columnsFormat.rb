@@ -18,7 +18,7 @@ module Format
 			h['IPport']=part[9]
 			h['host']=part[15]
 			h['verb']=part[10]
-			if h['verb'].downcase=="get" or h['verb'].downcase=="post"
+			if (["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})
 				h['url']=h['host']+part[12]	#host+path
 			elsif h['verb'].downcase=="connect" 
 				h['url']=part[12]

@@ -31,7 +31,7 @@ class Core
             part=line.chop.split("\t")
 			h=Format.columnsFormat(part,@@columnsFormat[filename])
 			if h['verb']!=nil
-				@fpub.puts h['tmstp'].to_s+" "+h['url'].to_s
+				@fpub.puts h['IPport'].to_s+" "+h['tmstp'].to_s+" "+h['url'].to_s
 			end
             @trace.rows.push(h)
         end

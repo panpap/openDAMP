@@ -35,7 +35,7 @@
 @@imps=["impression","_imp","/imp","imp_"]
 
 @@keywords=["price","pp","pr","bidprice","bid_price","bp","winprice", "computedprice", "pricefloor",
-                   "win_price","wp","chargeprice","charge_price","cp","extcost","bidprice","bdrct",
+                   "win_price","wp","chargeprice","charge_price","cp","extcost","tt_bidprice","bdrct",
                    "ext_cost","cost","rtbwinprice","rtb_win_price","rtbwp","bidfloor","seatbid"]
 
 @@inria={ "rfihub.net" => "ep","invitemedia.com" => "cost","scorecardresearch.com" => "uid", 
@@ -55,7 +55,7 @@
 @@rtbCompanies=["adkmob","green.erne.co","bidstalk","rtb-","openrtb","eyeota","ad-x.co.uk",
 			"qservz","hastrk","api-","clix2pix.net","exoclick"," clickadu","waiads.com"]
 
-@@adInParam=["ad_","ad_id","adv_id","bid_id","adpos","adtagid","rtb","adslot","adspace",
+@@adInParam=["ad_","ad_id","adv_id","bid_id","adpos","adtagid","rtb","adslot","adspace","adUrl",
 			"adposition","bidid","adsnumber","bidder","bidder_id","auction","ads_","creativity"]
 
 @@browsers=['dolphin', 'gecko', 'opera','webkit','mozilla','gecko','browser','chrome','safari']
