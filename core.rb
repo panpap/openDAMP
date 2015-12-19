@@ -9,7 +9,7 @@ class Core
 		@defines=defs
 		@filters=Filters.new(@defines)
 		makeDirsFiles()
-		@trace=Trace.new
+		@trace=Trace.new(@defines)
 	end
 	
 	def getTrace
