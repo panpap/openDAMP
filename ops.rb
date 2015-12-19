@@ -15,7 +15,7 @@ class Operations
 			if File.exist?(filename)
 				@@traceFile=filename
 			else
-				abort("Error: Input file could not be found!")
+				abort("Error: Input file <"+filename+"> could not be found!")
 			end
 		end
 	end
@@ -27,6 +27,7 @@ class Operations
 	end
 
     def separate
+		Dir.mkdir @@dataDir unless File.exists?(@@dataDir)
         for key in @@loadedRows[0].keys() do
             @@func.separateField(key)
    		end
