@@ -12,7 +12,7 @@ class Defines
 		else
 			@traceFile=filename
 		end
-		if File.exist?(@traceFile)
+		if not File.exist?(@traceFile)
 			abort("Error: Input file <"+filename+"> could not be found!")
 		end
 		#DIRECTORIES
