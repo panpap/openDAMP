@@ -13,6 +13,7 @@
 @@userDir=@@adsDir+"perUser/"
 
 #FILENAMES
+@@parseResults=@@rootDir+"parseResults.out"
 @@formatFile="format.in"
 @@impFile=@@adsDir+"impressions.out"
 @@adfile=@@adsDir+"ads.out"

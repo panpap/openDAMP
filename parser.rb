@@ -8,12 +8,12 @@ OptionParser.new { |opts|
   opts.banner = "Usage: #{File.basename($0)} -p -s -a -h -f <string> <(optional)filename>"
 
   opts.on( '-s', '--separate', 'Separate fields to files. Produced files are stored in ./data/ folder') do
-    ops.loadFile()
+    ops.loadFile(ARGV[0])
     ops.separate
   end
 
   opts.on('-p', '--strip', 'Strip parameters from URLs. Output is stored in ./stripParam.out') do
-    ops.loadFile()
+    ops.loadFile(ARGV[0])
     ops.stripURL
   end
 
@@ -27,7 +27,7 @@ OptionParser.new { |opts|
   end
 
   opts.on('-a', '--all', 'Load dataset, separate parameters, detect ads') do
-    ops.loadFile()
+    ops.loadFile(ARGV[0])
     ops.separate
     ops.stripURL
   end

@@ -6,7 +6,6 @@ class Core
    	@@isBeacon=false
 	@@filters=Filters.new
 	@@adFilter=nil
-	@@utils=Utilities.new
 
 	def initialize 
 		makeDirsFiles()
@@ -47,7 +46,7 @@ class Core
         for r in @trace.rows do
             fw.puts r[att]
         end
-		@@utils.countInstances(path)
+		Utilities.countInstances(path)
         fw.close
     end
 
@@ -94,7 +93,7 @@ class Core
 				@trace.users[@@curUser].row3rdparty["Other"].push(row)
 				@trace.party3rd["Other"]+=1
 				@trace.users[@@curUser].restNumOfParams.push(noOfparam.to_i)
-				@@utils.printStrippedURL(url,@fl)	# dump leftovers
+				Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
 		end
 	end
@@ -108,9 +107,9 @@ class Core
 		@fu.puts "ID;Advertising;AdExtra;Analytics;Social;Content;noAdBeacons;Other;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;AdNumOfParams(min);AdNumOfParams(max);AdNumOfParams(avg);RestNumOfParams(min);RestNumOfParams(max);RestNumOfParams(avg);adBeacons;Impressions"
 		for id,user in @trace.users do
 			type3rd=user.filterType
-			paramsStats=@@utils.makeStats(user.restNumOfParams)
-			adParamsStats=@@utils.makeStats(user.adNumOfParams)
-			sizeStats=@@utils.makeStats(user.sizes3rd)
+			paramsStats=Utilities.makeStats(user.restNumOfParams)
+			adParamsStats=Utilities.makeStats(user.adNumOfParams)
+			sizeStats=Utilities.makeStats(user.sizes3rd)
 			@fu.puts id+";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['Beacons'].size.to_s+";"+user.row3rdparty['Other'].size.to_s+";"+sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+adParamsStats['min'].to_s+";"+adParamsStats['max'].to_s+";"+adParamsStats['avg'].to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
 		end
 	end
@@ -145,11 +144,11 @@ class Core
 	end
 
     def detectPrice(keyVal,domainStr);          	# Detect possible price in parameters and returns URL Parameters in String
-		domain,tld=@@utils.tokenizeHost(domainStr)
+		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
 		if (@@filters.is_inInria_PriceTagList?(host,keyVal) or @@filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
           	@fp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
-			if (@@utils.is_numeric?(keyVal[1]))
+			if (Utilities.is_numeric?(keyVal[1]))
 				@fnp.puts host+"\t"+keyVal[0]
 			end
 			@trace.users[@@curUser].dPrices.push(keyVal[1])
@@ -161,7 +160,7 @@ class Core
 
     def detectImpressions(url,row);     	#Impression term in path
         if @@filters.is_Impression?(url[0])
-			@@utils.printRow(row,@fi)
+			Utilities.printRow(row,@fi)
 			@trace.totalImps+=1
 		    @trace.users[@@curUser].imp.push(row)
 			return true
@@ -194,7 +193,7 @@ class Core
 			
 	def beaconSave(url,row)         #findBeacons
 		@@isBeacon=true
-		@@utils.printRow(row,@fb)
+		Utilities.printRow(row,@fb)
 		urlStr=url.split("%")[0].split(";")[0]
 		@trace.party3rd["totalBeacons"]+=1
 		temp=urlStr.split("/")	   #beacon type
@@ -238,6 +237,6 @@ class Core
 			@trace.numOfMobileAds+=1
 		end
 		@fd2.puts(dev)	#adRelated Devices
-        @@utils.printStrippedURL(url,@fa)
+        Utilities.printStrippedURL(url,@fa)
 	end
 end
