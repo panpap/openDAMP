@@ -50,7 +50,7 @@ class Operations
 	end
 
 	def analysisResults(trace)
-		fw=File.new(@@parseResults)
+		fw=File.new(@@parseResults,'w')
 		puts "> Calculating Statistics about detected ads..."
 
 		#LATENCY
