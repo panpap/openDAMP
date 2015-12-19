@@ -22,6 +22,7 @@ OptionParser.new { |opts|
   end	
 	
   opts.on('-f', '--find STRING', 'Search particular string in the dataset.') do |str|
+	puts ARG[3]
     ops.loadFile()
     ops.findStrInRows(str,true)
   end

@@ -3,9 +3,6 @@ require 'utilities'
 require 'core'
 require 'digest/sha1'
 
-
-#IP_Port--UserIP--URL--UserAgent--Host--Timestamp--ResponseCode--ContentLength--DeliveredData--Duration--HitOrMiss
-
 class Operations
 	@@func=nil
 	@@loadedRows=nil
@@ -55,7 +52,7 @@ class Operations
 
 		#PRICES
         numericPrices=Array.new
-	prices=trace.detectedPrices
+		prices=trace.detectedPrices
         for p in prices do
             if @@utils.is_float?(p)
                 numericPrices.push(p.to_f)

@@ -1,5 +1,6 @@
 require 'trace'
 require 'filters'
+require 'columnsFormat'
 
 class Core
    	@@isBeacon=false
@@ -8,23 +9,7 @@ class Core
 	@@utils=Utilities.new
 
 	def initialize 
-	puts "> Creating Directories..."
-		Dir.mkdir @@rootDir unless File.exists?(@@rootDir)
-        Dir.mkdir @@dataDir unless File.exists?(@@dataDir)
-        Dir.mkdir @@adsDir unless File.exists?(@@adsDir)
-		Dir.mkdir @@userDir unless File.exists?(@@userDir)
-        @fi=File.new(@@impFile,'w')
-        @fa=File.new(@@adfile,'w')
-        @fl=File.new(@@leftovers,'w')
-        @fp=File.new(@@prices,'w')
-        @fn=File.new(@@paramsNum,'w')
-        @fd1=File.new(@@devices,'w')
-        @fb=File.new(@@bcnFile,'w')
-        @fz=File.new(@@size3rdFile,'w')
-        @fd2=File.new(@@adDevices,'w')
-        @fbt=File.new(@@beaconT,'w')
-		@fu=File.new(@@userFile,'w')
-		@fnp=File.new(@@priceTagsFile,'w')
+		makeDirsFiles()
 		@clients=Hash.new
 		@numOfBeacons=0
 		@trace=Trace.new
@@ -42,19 +27,11 @@ class Core
         f=File.new(filename,'r')
         line=f.gets     #get rid of headers
         while(line=f.gets)
-            h = Hash.new(-1)
             part=line.chop.split("\t")
-            h['IPport']=part[0]
-            h['uIP']=part[1]
-            h['url']=part[2]
-            h['ua']=part[3]
-            h['host']=part[4]
-            h['tmstp']=part[5]
-            h['status']=part[6]
-            h['length']=part[7]
-            h['dataSz']=part[8]
-            h['dur']=part[9]
-            h['HtorM']=part[10]
+			h=Format.columnsFormat(part,@@columnsFormat[filename])
+			if h['verb']!=nil
+				@fpub.puts h['tmstp']+" "+h['url']
+			end
             @trace.rows.push(h)
         end
         f.close
@@ -122,7 +99,7 @@ class Core
 	end
 
 	def close
-		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close;@fu.close;@fnp.close
+		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close;@fu.close;@fnp.close;@fpub.close
 	end
 
 	def perUserAnalysis
@@ -144,6 +121,27 @@ class Core
 
 
 	private
+
+	def makeFileDirs
+		puts "> Creating Directories..."
+		Dir.mkdir @@rootDir unless File.exists?(@@rootDir)
+        Dir.mkdir @@dataDir unless File.exists?(@@dataDir)
+        Dir.mkdir @@adsDir unless File.exists?(@@adsDir)
+		Dir.mkdir @@userDir unless File.exists?(@@userDir)
+        @fi=File.new(@@impFile,'w')
+        @fa=File.new(@@adfile,'w')
+        @fl=File.new(@@leftovers,'w')
+        @fp=File.new(@@prices,'w')
+		@fpub=File.new(@@publishers,'w')
+        @fn=File.new(@@paramsNum,'w')
+        @fd1=File.new(@@devices,'w')
+        @fb=File.new(@@bcnFile,'w')
+        @fz=File.new(@@size3rdFile,'w')
+        @fd2=File.new(@@adDevices,'w')
+        @fbt=File.new(@@beaconT,'w')
+		@fu=File.new(@@userFile,'w')
+		@fnp=File.new(@@priceTagsFile,'w')
+	end
 
     def detectPrice(keyVal,domainStr);          	# Detect possible price in parameters and returns URL Parameters in String
 		domain,tld=@@utils.tokenizeHost(domainStr)

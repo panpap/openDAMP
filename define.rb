@@ -1,4 +1,9 @@
+#TRACES
 @@traceFile='100k_trace' #'full_trace'
+
+@@columnsFormat={'100k_trace'=>1, 
+		'full_trace'=>1, 	#awazza dataset 6million reqs
+		'full_trace2'=>2} 	#awazza dataset 1million reqs
 
 #DIRECTORIES
 @@rootDir=@@traceFile+"_results/"
@@ -8,6 +13,7 @@
 @@userDir=@@adsDir+"perUser/"
 
 #FILENAMES
+@@formatFile="format.in"
 @@impFile=@@adsDir+"impressions.out"
 @@adfile=@@adsDir+"ads.out"
 @@prices=@@adsDir+"prices.csv"
@@ -20,6 +26,7 @@
 @@beaconT=@@adsDir+"beaconsTypes.csv"
 @@userFile=@@userDir+"userAnalysis.csv"
 @@filterFile=@@resources+'disconnect_merged.json'
+@@publishers=@dataDir+"publishers.csv"
 @@leftovers="leftovers.out"
 
 #KEYWORDS
