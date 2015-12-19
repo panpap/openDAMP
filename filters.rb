@@ -1,12 +1,11 @@
 require 'rubygems'
-require 'define'
 require 'json'
 
-module Filters
-        #@@latency=Array.new
-        #def Filters.getLatency
-        #        return @@latency
-        #end
+class Filters
+        @@latency=Array.new
+        def Filters.getLatency
+                return @@latency
+        end
 
         def Filters.loadExternalFilter
                	file = File.read(@@filterFile)
