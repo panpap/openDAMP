@@ -106,12 +106,11 @@ class Filters
         end
 
 	def is_Ad?(url,host,filter)
-				utils=Utilities.new
                 str=url
                 urlParts=url.split("/")
                 parts=host.split(".")
 		# FIND TLD AND DOMAIN
-				domain,tld=utils.tokenizeHost(host)
+				domain,tld=Utilities.tokenizeHost(host)
 	
 		# FILTER USING DISCONNECT
                 if result=filter[host]                                  # APPLY FILTER
