@@ -5,7 +5,7 @@ start = Time.now
 ops=Operations.new
 
 OptionParser.new { |opts|
-  opts.banner = "Usage: #{File.basename($0)} -p -s -a -f -h"
+  opts.banner = "Usage: #{File.basename($0)} -p -s -a -h -f <string> <(optional)filename>"
 
   opts.on( '-s', '--separate', 'Separate fields to files. Produced files are stored in ./data/ folder') do
     ops.loadFile()

@@ -49,15 +49,15 @@
     	"criteo.com" => "z"}
 
 # ENHANCED BY ADBLOCK EASYLIST
-@@subStrings=["/Ad/","pagead","/adv/","/ad/","ads",".ad","adwords","admonitoring","adinteraction",
+@@subStrings=["/Ad/","pagead","/adv/","/ad/","ads",".ad","rtb-","adwords","admonitoring","adinteraction",
 				"adrum","adstat","adviewtrack","adtrk","/Ad","bidwon","/rtb"] #"market"]	
 
-@@rtbCompanies=["adkmob","green.erne.co","bidstalk","rtb-","openrtb","eyeota","ad-x.co.uk",
-			"qservz","hastrk","api-","clix2pix.net","exoclick"," clickadu","waiads.com"]
+@@rtbCompanies=["adkmob","green.erne.co","bidstalk","openrtb","eyeota","ad-x.co.uk",
+			"qservz","hastrk","api-","clix2pix.net","exoclick"," clickadu","waiads.com","taptica.com","mediasmart.es"]
 
 @@adInParam=["ad_","ad_id","adv_id","bid_id","adpos","adtagid","rtb","adslot","adspace","adUrl", "ads_creative_id", 
-			"creative_id","adposition","bidid","adsnumber","bidder","bidder_id","auction","ads_",
-			"adunit", "adgroup", "creativity"]
+			"creative_id","adposition","bidid","adsnumber","bidder","auction","ads_",
+			"adunit", "adgroup", "creativity","bid_","bidder_"]
 
 @@browsers=['dolphin', 'gecko', 'opera','webkit','mozilla','gecko','browser','chrome','safari']
 
