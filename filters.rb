@@ -1,13 +1,13 @@
 require 'rubygems'
 require 'json'
 
-class Filters
+module Filters
         @@latency=Array.new
-        def getLatency
+        def Filters.getLatency
                 return @@latency
         end
 
-        def loadExternalFilter
+        def Filters.loadExternalFilter
                	file = File.read(@@filterFile)
                	json = JSON.parse(file)
                 cats=json['categories']
@@ -20,7 +20,7 @@ class Filters
                 return filter
         end
 
-		def is_inInria_PriceTagList? (domain,keyVal)
+		def Filters.is_inInria_PriceTagList? (domain,keyVal)
 			temp=@@inria[domain]
 			if temp!=nil and temp.downcase.eql? keyVal[0]
 				return true
@@ -28,11 +28,11 @@ class Filters
 			return false
 		end
 
-        def is_Beacon_param?(params)
+        def Filters.is_Beacon_param?(params)
                 return (@@beacon_key.any? {|word| params[0].downcase.include?(word)})
         end
 
-        def is_Beacon?(url,params)
+        def Filters.is_Beacon?(url,params)
                 if (url.downcase.include? ".htm" or url.downcase.include? ".xml")
                         return false
                 elsif(@@beacon_key.any? { |word| url.include?(word)})
@@ -42,7 +42,7 @@ class Filters
                 end
         end
 
-#def is_Browser?(row,type)
+#def Filters.is_Browser?(row,type)
 #	ua=row['ua'].downcase
 #	if (type=="Macintosh" or type=="Windows" or type=="Linux" or type=="BSD") # IS DESKTOP?
 #               return true
@@ -53,7 +53,7 @@ class Filters
 #	end
 #end
 
-        def is_MobileType?(row)
+        def Filters.is_MobileType?(row)
                 ua=row["ua"].downcase
 
                 # Crossed-checked with https://fingerbank.inverse.ca
@@ -82,7 +82,7 @@ class Filters
                 end
         end
 
-        def is_Impression?(url)
+        def Filters.is_Impression?(url)
                 if (url.include? "impl") #junk
                         return false
                 end
@@ -90,12 +90,12 @@ class Filters
         end
 
 
-	def is_GarbageOrEmpty?(str) #filter out version, density parameters
+	def Filters.is_GarbageOrEmpty?(str) #filter out version, density parameters
                 return (str[1]==nil or str[0].eql? "v" or str[0].downcase.include? "ver" \
                         or str[0].eql? "density" or str[0].eql? "u_sd")
         end
 
-        def has_PriceKeyword?(param)            # Check if there is a price-related keyword and return the price
+        def Filters.has_PriceKeyword?(param)            # Check if there is a price-related keyword and return the price
                if param[0].eql? "latency"
                         @@latency.push(param[1].to_f)
                         fa=File.new('./latency.out','a')
@@ -105,7 +105,7 @@ class Filters
                return (@@keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
         end
 
-	def is_Ad?(url,host,filter)
+	def Filters.is_Ad?(url,host,filter)
                 str=url
                 urlParts=url.split("/")
                 parts=host.split(".")
@@ -133,7 +133,7 @@ class Filters
                 end
         end
 
-        def is_Ad_param?(params)
+        def Filters.is_Ad_param?(params)
                 if (params[0].downcase.eql? "type" and params[1].include? "ad")
                         return true
                 else

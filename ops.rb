@@ -49,38 +49,6 @@ class Operations
 		analysisResults(trace)
 	end
 
-	def analysisResults(trace)
-		fw=File.new(@@parseResults,'w')
-		puts "> Calculating Statistics about detected ads..."
-
-		#LATENCY
-	#	lat=@@func.getLatency
-	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.size
-	#	Utilities.makeDistrib_LaPr(@@adsDir)
-
-		#PRICES
-        numericPrices=Array.new
-		prices=trace.detectedPrices
-        for p in prices do
-            if Utilities.is_float?(p)
-                numericPrices.push(p.to_f)
-            end
-        end
-
-        Utilities.countInstances(@@beaconT)
-		@@func.perUserAnalysis()
-		system("sort "+@@priceTagsFile+" | uniq >"+@@priceTagsFile+".csv")
-		system("rm -f "+@@priceTagsFile)
-		results=results_toString(trace,prices,numericPrices)
-		fw.puts results
-		puts results
-		fw.close
-		#PLOTING CDFs
-		puts "Creating CDFs..."
-		puts "TODO... Devices, Prices, NumOfParameters,popular ad-related hosts,3rdParty Size"
-		@@func.close
-	end
-
 	def findStrInRows(str,printable)
 		count=0
 		found=Array.new
@@ -103,6 +71,38 @@ class Operations
 			puts count.to_s+" Results were found!"
 		end
 		return found
+	end
+
+#------------------------------------------------------------------------
+	private
+
+	def analysisResults(trace)
+		fw=File.new(@@parseResults,'w')
+		puts "> Calculating Statistics about detected ads..."
+		#LATENCY
+	#	lat=@@func.getLatency
+	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.size
+	#	Utilities.makeDistrib_LaPr(@@adsDir)
+		#PRICES
+        numericPrices=Array.new
+		prices=trace.detectedPrices
+        for p in prices do
+            if Utilities.is_float?(p)
+                numericPrices.push(p.to_f)
+            end
+        end
+        Utilities.countInstances(@@beaconT)
+		@@func.perUserAnalysis()
+		system("sort "+@@priceTagsFile+" | uniq >"+@@priceTagsFile+".csv")
+		system("rm -f "+@@priceTagsFile)
+		results=Utilities.results_toString(trace,prices,numericPrices)
+		fw.puts results
+		puts results
+		fw.close
+		#PLOTING CDFs
+		puts "Creating CDFs..."
+		puts "TODO... Devices, Prices, NumOfParameters,popular ad-related hosts,3rdParty Size"
+		@@func.close
 	end
 end
 

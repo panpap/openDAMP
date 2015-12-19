@@ -4,7 +4,6 @@ require 'columnsFormat'
 
 class Core
    	@@isBeacon=false
-	@@filters=Filters.new
 	@@adFilter=nil
 
 	def initialize 
@@ -35,7 +34,7 @@ class Core
             @trace.rows.push(h)
         end
         f.close
-@@adFilter=@@filters.loadExternalFilter
+@@adFilter=Filters.loadExternalFilter
         return @trace.rows
     end
 
@@ -59,7 +58,7 @@ class Core
 		end
 
 		#CHECK IF ITS MOBILE USER
-		mob,dev=@@filters.is_MobileType?(row)   # check the device type of the request
+		mob,dev=Filters.is_MobileType?(row)   # check the device type of the request
 		if mob
 			@trace.mobDev+=1
 		end
@@ -68,7 +67,7 @@ class Core
 		#FILTER ROW
 		isPorI,noOfparam=beaconImprParamCkeck(url,row)
 		iaAdinURL=false
-		type3rd=@@filters.is_Ad?(url[0],host,@@adFilter)
+		type3rd=Filters.is_Ad?(url[0],host,@@adFilter)
 		if type3rd!=nil	#	3rd PARTY CONTENT
 			@trace.users[@@curUser].row3rdparty[type3rd].push(row)
 			@trace.party3rd[type3rd]+=1
@@ -145,7 +144,7 @@ class Core
     def detectPrice(keyVal,domainStr);          	# Detect possible price in parameters and returns URL Parameters in String
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
-		if (@@filters.is_inInria_PriceTagList?(host,keyVal) or @@filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
+		if (Filters.is_inInria_PriceTagList?(host,keyVal) or Filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
           	@fp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
 			if (Utilities.is_numeric?(keyVal[1]))
 				@fnp.puts host+"\t"+keyVal[0]
@@ -158,7 +157,7 @@ class Core
     end
 
     def detectImpressions(url,row);     	#Impression term in path
-        if @@filters.is_Impression?(url[0])
+        if Filters.is_Impression?(url[0])
 			Utilities.printRow(row,@fi)
 			@trace.totalImps+=1
 		    @trace.users[@@curUser].imp.push(row)
@@ -175,14 +174,14 @@ class Core
         fields=url[1].split('&')
         for field in fields do
             keyVal=field.split("=")
-            if(not @@filters.is_GarbageOrEmpty?(keyVal))
-				if(@@filters.is_Beacon_param?(keyVal) and not @@isBeacon)
+            if(not Filters.is_GarbageOrEmpty?(keyVal))
+				if(Filters.is_Beacon_param?(keyVal) and not @@isBeacon)
 					beaconSave(url[0],row)
 				end
 				if(detectPrice(keyVal,row['host']))
 					isAd=true
 				end
-				if(@@filters.is_Ad_param?(keyVal))
+				if(Filters.is_Ad_param?(keyVal))
 					isAd=true
 				end
 			end
@@ -211,7 +210,7 @@ class Core
 	def beaconImprParamCkeck(url,row) 
         @@isBeacon=false
 		isAd=-1
-        if (@@filters.is_Beacon?(url[0],url[1]))  		#findBeacon in URL
+        if (Filters.is_Beacon?(url[0],url[1]))  		#findBeacon in URL
             isAd=0
             beaconSave(url[0],row)
         end
