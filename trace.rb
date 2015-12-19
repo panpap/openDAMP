@@ -20,6 +20,6 @@ class Trace
 		Utilities.countInstances(@@paramsNum)
 		Utilities.countInstances(@@devices)
 		Utilities.countInstances(@@size3rdFile)
-		return Utilities.makeStats(@totalParamNum),utils.makeStats(@sizes)
+		return Utilities.makeStats(@totalParamNum),Utilities.makeStats(@sizes)
 	end
 end
