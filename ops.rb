@@ -4,11 +4,10 @@ require 'core'
 require 'digest/sha1'
 
 class Operations
-	@@func=nil
 	@@loadedRows=nil
 
 	def initialize(filename)
-		@@func=Core.new	
+		@func=Core.new()
 		if filename==nil
 			puts "Warning: Using pre-defined input file..."			
 		else
@@ -22,14 +21,13 @@ class Operations
 
 	def loadFile()
 		puts "> Loading Trace..."
-		@@loadedRows=@@func.loadRows(@@traceFile)
+		@@loadedRows=@func.loadRows(@@traceFile)
 		puts "\t"+@@loadedRows.size.to_s+" requests have been loaded successfully!"
 	end
 
     def separate
-		Dir.mkdir @@dataDir unless File.exists?(@@dataDir)
         for key in @@loadedRows[0].keys() do
-            @@func.separateField(key)
+            @func.separateField(key)
    		end
 	end
 
@@ -43,9 +41,9 @@ class Operations
 		puts "> Stripping parameters, detecting and classifying Third-Party content..."
 		adsTypes=nil
 		for r in @@loadedRows do
-			@@func.parseRequest(r)
+			@func.parseRequest(r)
 		end
-		trace=@@func.getTrace
+		trace=@func.getTrace
 		analysisResults(trace)
 	end
 
@@ -53,7 +51,7 @@ class Operations
 		count=0
 		found=Array.new
 		puts "Locating String..."
-		rows=@@func.getRows
+		rows=@func.getRows
 		for r in rows do
 			for val in r.values do
 				if val.include? str
@@ -80,7 +78,7 @@ class Operations
 		fw=File.new(@@parseResults,'w')
 		puts "> Calculating Statistics about detected ads..."
 		#LATENCY
-	#	lat=@@func.getLatency
+	#	lat=@func.getLatency
 	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.size
 	#	Utilities.makeDistrib_LaPr(@@adsDir)
 		#PRICES
@@ -92,7 +90,7 @@ class Operations
             end
         end
         Utilities.countInstances(@@beaconT)
-		@@func.perUserAnalysis()
+		@func.perUserAnalysis()
 		system("sort "+@@priceTagsFile+" | uniq >"+@@priceTagsFile+".csv")
 		system("rm -f "+@@priceTagsFile)
 		results=Utilities.results_toString(trace,prices,numericPrices)
@@ -102,7 +100,7 @@ class Operations
 		#PLOTING CDFs
 		puts "Creating CDFs..."
 		puts "TODO... Devices, Prices, NumOfParameters,popular ad-related hosts,3rdParty Size"
-		@@func.close
+		@func.close
 	end
 end
 

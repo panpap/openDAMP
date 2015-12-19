@@ -123,6 +123,7 @@ class Core
 	def makeDirsFiles
 		puts "> Creating Directories..."
 		Dir.mkdir @@rootDir unless File.exists?(@@rootDir)
+		Dir.mkdir @@dataDir unless File.exists?(@@dataDir)
         Dir.mkdir @@adsDir unless File.exists?(@@adsDir)
 		Dir.mkdir @@userDir unless File.exists?(@@userDir)
         @fi=File.new(@@impFile,'w')
