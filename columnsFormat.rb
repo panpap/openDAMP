@@ -1,5 +1,5 @@
 module Format
-	Format.columnsFormat(part,dataset)
+	def Format.columnsFormat(part,dataset)
 		h=Hash.new(-1)
 		if dataset==1
 			#IP_Port	UserIP	URL	UserAgent	Host	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss
