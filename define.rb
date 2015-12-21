@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :traceFile, :column_Format, :rootDir, :dataDir, :adsDir, :userDir, :resources, :parseResults, :formatFile, :inria, :impFile, :adfile, :prices, :priceTagsFile, :devices, :bcnFile, :size3rdFile, :paramsNum, :adDevices, :subStrings, :beaconT, :userFile, :filterFile, :publishers, :leftovers, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :traceFile, :dirs, :files, :inria, :subStrings, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1, 
@@ -16,29 +16,30 @@ class Defines
 			abort("Error: Input file <"+filename+"> could not be found!")
 		end
 		#DIRECTORIES
-		@rootDir="results_"+@traceFile+"/"
-		@dataDir=@rootDir+"dataset/"
-		@adsDir=@rootDir+"adRelated/"
-		@userDir=@adsDir+"perUser/"
-		@resources='resources/'
+		@dirs['rootDir']="results_"+@traceFile+"/"
+		@dirs['dataDir']=@dirs['rootDir']+"dataset/"
+		@dirs['adsDir']=@dirs['rootDir']+"adRelated/"
+		@dirs['userDir']=@dirs['rootDir']+"users/"
+		@dirs['resources']='resources/'
+		@dirs['timelines']=@dirs['userDir']+"timelines/"
 
 		#FILENAMES
-		@parseResults=@rootDir+"parseResults.out"
-		@formatFile="format.in"
-		@impFile=@adsDir+"impressions.out"
-		@adfile=@adsDir+"ads.out"
-		@prices=@adsDir+"prices.csv"
-		@priceTagsFile=@adsDir+"priceTags"
-		@devices=@adsDir+"devices.csv"
-		@bcnFile=@adsDir+"beacons.out"
-		@size3rdFile=@adsDir+"sizes3rd.csv"
-		@paramsNum=@adsDir+"paramsNum.csv"
-		@adDevices=@adsDir+"adDevices.csv"
-		@beaconT=@adsDir+"beaconsTypes.csv"
-		@userFile=@userDir+"userAnalysis.csv"
-		@filterFile=@resources+'disconnect_merged.json'
-		@publishers=@dataDir+"publishers.csv"
-		@leftovers="leftovers.out"
+		@files['parseResults']=@dirs['rootDir']+"parseResults.out"
+		@files['impFile']=@dirs['adsDir']+"impressions.out"
+		@files['adfile']=@dirs['adsDir']+"ads.out"
+		@files['prices']=@dirs['adsDir']+"prices.csv"
+		@files['priceTagsFile']=@dirs['adsDir']+"priceTags"
+		@files['devices']=@dirs['adsDir']+"devices.csv"
+		@files['bcnFile']=@dirs['adsDir']+"beacons.out"
+		@files['size3rdFile']=@dirs['adsDir']+"sizes3rd.csv"
+		@files['paramsNum']=@dirs['adsDir']+"paramsNum.csv"
+		@files['adDevices']=@dirs['adsDir']+"adDevices.csv"
+		@files['beaconT']=@dirs['adsDir']+"beaconsTypes.csv"
+		@files['userFile']=@dirs['userDir']+"userAnalysis.csv"
+		@files['filterFile']=@resources+'disconnect_merged.json'
+	#	@files['publishers']=@dirs['dataDir']+"publishers.csv"
+		@files['leftovers']="leftovers.out"
+		@files['formatFile']="format.in"
 
 		#KEYWORDS
 		@beacon_key=["beacon","pxl","pixel","adimppixel","data.gif","px.gif","pxlctl"]
@@ -71,5 +72,9 @@ class Defines
 				"adunit", "adgroup", "creativity","bid_","bidder_"]
 
 		@browsers=['dolphin', 'gecko', 'opera','webkit','mozilla','gecko','browser','chrome','safari']
+	end
+
+	def column_Format()
+		return @column_Format[@traceFile]
 	end
 end

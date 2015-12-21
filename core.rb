@@ -3,6 +3,8 @@ require 'filters'
 require 'columnsFormat'
 
 class Core
+	attr_writer :window	
+
    	@isBeacon=false
 	@defines=nil
 
@@ -11,6 +13,7 @@ class Core
 		@filters=Filters.new(@defines)
 		makeDirsFiles()
 		@trace=Trace.new(@defines)
+		@window=-1
 	end
 	
 	def getTrace
@@ -26,9 +29,11 @@ class Core
         f=File.new(filename,'r')
         line=f.gets     #get rid of headers
         while(line=f.gets)
-            part=line.chop.split("\t")
-			h=Format.columnsFormat(part,@defines.column_Format[filename])
+			h=Format.columnsFormat(line,@defines.column_Format)
             @trace.rows.push(h)
+if h["host"]=='.' or h["host"]=='0' or h["host"].chars[0]=='-'
+	puts line
+end
         end
         f.close
 		@adFilter=@filters.loadExternalFilter()
@@ -108,7 +113,49 @@ class Core
 		end
 	end
 
+	def applyTimeWindow(tmstp,url,fw)
+		diff=tms-@@firstTime
+		wnum=diff/@window
+		fw.puts "WINDOW "+wnum+" "+tmstp+" "+url
+	end
 
+	def readTimelines(tmlnFiles)
+		for tmln in tmlnFiles do
+			if not tmln.include? '.'
+				fr=File.new(@defines.dir['timelines']+tmln,'r')
+				fw=File.new(@defines.dir['timelines']+tmln+"_per"+sec+"sec",'w')
+				events=Hash.new
+				@@firstTime=-1
+				while line==fr.gets
+					parts=line.chop.split(" ")
+					if @@firstTime==-1
+						@@firstTime==parts[0].to_i
+					end
+					applyTimeWindow(parts[0],parts[1],fw)						
+				end
+				fr.close;fw.close
+			end
+		end
+	end
+
+	def createTimelines()
+		fr=File.new(@@defines.dirs['dataDir']+"IPport_uniq",'r')
+		while user=fr.gets.chop
+			fw=@defines.dir['timelines']+row['IPport']+"_per"+sec+"sec",'w')
+			IO.popen('grep '+user+' ./'+@@defines.traceFile) { |io| 
+			@@firstTime=-1
+			while (line = io.gets) do 
+				h=Format.columnsFormat(line,@@defines.column_Format)
+				Utilities.separateTimelineEvents(h,@defines.dir['timelines']+row['IPport']))
+				if @@firstTime==-1
+					@@firstTime==h['tmstp'].to_i
+				end
+				applyTimeWindow(h['tmstp'],h['url'],fw)
+			end }
+			fw.close
+		end
+		fr.close
+	end
 
 #------------------------------------------------------------------------------------------------
 
@@ -117,24 +164,22 @@ class Core
 	private
 
 	def makeDirsFiles
-		puts "> Creating Directories..."
-		Dir.mkdir @defines.rootDir unless File.exists?(@defines.rootDir)
-		Dir.mkdir @defines.dataDir unless File.exists?(@defines.dataDir)
-        Dir.mkdir @defines.adsDir unless File.exists?(@defines.adsDir)
-		Dir.mkdir @defines.userDir unless File.exists?(@defines.userDir)
-        @fi=File.new(@defines.impFile,'w')
-        @fa=File.new(@defines.adfile,'w')
-        @fl=File.new(@defines.leftovers,'w')
-        @fp=File.new(@defines.prices,'w')
+		print "> Creating Directories..."
+		@defines.dir.each{|dir| Dir.mkdir dir unless File.exists?(dir)}
+		puts "and files..."
+        @fi=File.new(@defines.files['impFile'],'w')
+        @fa=File.new(@defines.files['adfile'],'w')
+        @fl=File.new(@defines.files['leftovers,']'w')
+        @fp=File.new(@defines.files['prices'],'w')
 	#	@fpub=File.new(@defines.publishers,'w')
-        @fn=File.new(@defines.paramsNum,'w')
-        @fd1=File.new(@defines.devices,'w')
-        @fb=File.new(@defines.bcnFile,'w')
-        @fz=File.new(@defines.size3rdFile,'w')
-        @fd2=File.new(@defines.adDevices,'w')
-        @fbt=File.new(@defines.beaconT,'w')
-		@fu=File.new(@defines.userFile,'w')
-		@fnp=File.new(@defines.priceTagsFile,'w')
+        @fn=File.new(@defines.files['paramsNum'],'w')
+        @fd1=File.new(@defines.files['devices'],'w')
+        @fb=File.new(@defines.files['bcnFile'],'w')
+        @fz=File.new(@defines.files['size3rdFile'],'w')
+        @fd2=File.new(@defines.files['adDevices'],'w')
+        @fbt=File.new(@defines.files['beaconT'],'w')
+		@fu=File.new(@defines.files['userFile'],'w')
+		@fnp=File.new(@defines.files['priceTagsFile'],'w')
 	end
 
     def detectPrice(keyVal,domainStr);          	# Detect possible price in parameters and returns URL Parameters in String

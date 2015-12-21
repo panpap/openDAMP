@@ -13,6 +13,26 @@ module Utilities
             end
         end
 
+	def Utilities.perUserEventSeparation(defines)
+		fr=File.new(defines.dirs['dataDir']+"IPport_uniq")
+		u=Hash.new()
+		while line=fr.gets
+			user=line.chop
+			IO.popen('grep '+user+' ./'+defines.traceFile) { |io| 
+			while (line = io.gets) do 
+				h=Format.columnsFormat(line,defines.column_Format)
+				separateTimelineEvents(h)
+				u[h['IPport']]=h['url']
+			end }
+		end
+		fr.close
+		return u
+	end	
+
+	def Utilities.separateTimelineEvents(row,writeTo)
+		system('echo '+row['tmstp']+" "+row['url']+"' >> "+writeTo) 
+	end
+
 	def Utilities.tokenizeHost(host)
 		parts=host.split(".")
 		if (host.include? 'co.jp' or host.include? 'co.uk' or host.include? 'co.in')

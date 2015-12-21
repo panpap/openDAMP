@@ -18,15 +18,26 @@ class Operations
 	end
 
     def separate
-        for key in @@loadedRows[0].keys() do
-            @func.separateField(key)
+        for row in @@loadedRows do
+            @func.separateField(row)
    		end
 	end
 
-	def clearAll
-        system('rm -rf '+@defines.dataDir)
-        system('rm -rf '+@defines.dsDir)
-		system('rm -f *.out')
+	def makeTimelines(sec)
+		@func.window=sec
+		if File.exists?  @defines.@dirs['timelines'] and entries=Dir.entries( @defines.@dirs['timelines']).size>0 # DIRECTORY EXISTS AND IS NOT EMPTY
+			puts " > Using existing per user files..."
+			@func.readTimelines(entries)}
+		else
+			puts " > There is not any existing user files. Separating timeline events per user..."
+			# Post Timeline Events Separation (per user)
+			if not File.exists? @defines.dirs['dataDir']
+				separate()
+				@func.readTimelines(entries)}
+			else
+				@func.createTimelines()
+			end
+		end
 	end
 
   	def stripURL      
@@ -63,8 +74,14 @@ class Operations
 		return found
 	end
 
+
+
 #------------------------------------------------------------------------
+
+
+
 	private
+
 
 	def analysisResults(trace)
 		fw=File.new(@defines.parseResults,'w')
