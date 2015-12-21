@@ -2,13 +2,13 @@ require 'rubygems'
 require 'json'
 
 class Filters
-        @latency=Array.new
         def getLatency
                 return @latency
         end
 
 		def initialize(defs)
 			@defines=defs
+			@latency=Array.new
 		end
 
         def loadExternalFilter
