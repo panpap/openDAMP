@@ -113,10 +113,11 @@ end
 	end
 
 	def readTimelines(tmlnFiles)
+		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		for tmln in tmlnFiles do
 			if not tmln.include? '.'
-				fr=File.new(@cwd+@defines.tmln_path+tmln,'r')
-				fw=File.new(@cwd+@defines.tmln_path+tmln+"_per"+sec+"sec",'w')
+				fr=File.new(timeline_path+tmln,'r')
+				fw=File.new(timeline_path+tmln+"_per"+sec+"sec",'w')
 				events=Hash.new
 				@@firstTime=-1
 				while line==fr.gets
@@ -132,14 +133,15 @@ end
 	end
 
 	def createTimelines()
+		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		fr=File.new(@cwd+@defines.dataDir+"IPport_uniq",'r')
 		while user=fr.gets.chop
-			fw=File.new(@cwd+@defines.tmln_path+row['IPport']+"_per"+sec+"sec",'w')
+			fw=File.new(timeline_path+user+"_per"+@window+"sec",'w')
 			IO.popen('grep '+user+' ./'+@@defines.traceFile) { |io| 
 			@@firstTime=-1
 			while (line = io.gets) do 
 				h=Format.columnsFormat(line,@@defines.column_Format)
-				Utilities.separateTimelineEvents(h,@cwd+@defines.tmln_path+row['IPport'])
+				Utilities.separateTimelineEvents(h,timeline_path+row['IPport'])
 				if @@firstTime==-1
 					@@firstTime==h['tmstp'].to_i
 				end

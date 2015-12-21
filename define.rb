@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :traceFile, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :traceFile, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1, 
@@ -20,13 +20,14 @@ class Defines
 		#DIRECTORIES
 		@dirs=Hash.new
 		@dataDir="dataset/"
+		@userDir="users/"
 		@dirs['rootDir']="results_"+@traceFile+"/"
 		@dirs['dataDir']=@dirs['rootDir']+@dataDir
 		@dirs['adsDir']=@dirs['rootDir']+"adRelated/"
-		@dirs['userDir']=@dirs['rootDir']+"users/"
+		@dirs['userDir']=@dirs['rootDir']+@userDir
 		@dirs['resources']='resources/'
 		@dirs['timelines']=@dirs['userDir']+"timelines/"
-		@tmln_path="users/timelines/"		
+		@tmln_path="timelines/"		
 
 		#FILENAMES
 		@files=Hash.new
