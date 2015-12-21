@@ -22,9 +22,9 @@ class Operations
    		end
 	end
 
-	def makeTimelines(sec)
+	def makeTimelines(sec,path)
 		@func.window=sec
-		if File.exists?  @defines.dirs['timelines'] and entries=Dir.entries( @defines.dirs['timelines']).size>0 # DIRECTORY EXISTS AND IS NOT EMPTY
+		if Dir.exists? path+@define.tmln_path and entries=Dir.entries( path+@define.tmln_path).size>0 # DIRECTORY EXISTS AND IS NOT EMPTY
 			puts " > Using existing per user files..."
 			@func.readTimelines(entries)
 		else
