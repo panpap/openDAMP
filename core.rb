@@ -138,12 +138,13 @@ end
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		fr=File.new(@cwd+@defines.dataDir+"IPport_uniq",'r')
 		while user=fr.gets.chop
+			puts user
 			fw=File.new(timeline_path+user+"_per"+@window+"sec",'w')
 			IO.popen('grep '+user+' ./'+@defines.traceFile) { |io| 
 			@@firstTime=-1
 			while (line = io.gets) do 
 				h=Format.columnsFormat(line,@defines.column_Format)
-				Utilities.separateTimelineEvents(h,timeline_path+row['IPport'])
+				Utilities.separateTimelineEvents(h,timeline_path+h['IPport'])
 				if @@firstTime==-1
 					@@firstTime==h['tmstp'].to_i
 				end
@@ -161,9 +162,9 @@ end
 	private
 
 	def applyTimeWindow(tmstp,url,fw)
-		diff=tms-@@firstTime
-		wnum=diff/@window
-		fw.puts "WINDOW "+wnum+" "+tmstp+" "+url
+		diff=tmstp.to_i-@@firstTime
+		wnum=diff/@window.to_i
+		fw.puts "WINDOW "+wnum.to_s+" "+tmstp+" "+url
 	end
 
 	def makeDirsFiles
