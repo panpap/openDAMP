@@ -21,13 +21,13 @@ class Defines
 		@dirs=Hash.new
 		@dataDir="dataset/"
 		@userDir="users/"
+		@tmln_path="timelines/"
 		@dirs['rootDir']="results_"+@traceFile+"/"
 		@dirs['dataDir']=@dirs['rootDir']+@dataDir
 		@dirs['adsDir']=@dirs['rootDir']+"adRelated/"
 		@dirs['userDir']=@dirs['rootDir']+@userDir
 		@dirs['resources']='resources/'
-		@dirs['timelines']=@dirs['userDir']+"timelines/"
-		@tmln_path="timelines/"		
+		@dirs['timelines']=@dirs['userDir']+@tmln_path
 
 		#FILENAMES
 		@files=Hash.new

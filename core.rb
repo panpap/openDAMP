@@ -113,6 +113,7 @@ end
 	end
 
 	def readTimelines(tmlnFiles)
+		puts "> Loading User Timelines..."
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		for tmln in tmlnFiles do
 			if not tmln.include? '.'
@@ -133,6 +134,7 @@ end
 	end
 
 	def createTimelines()
+		puts "> Contructing User Timelines..."
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		fr=File.new(@cwd+@defines.dataDir+"IPport_uniq",'r')
 		while user=fr.gets.chop
