@@ -118,10 +118,10 @@ end
 		for tmln in tmlnFiles do
 			if not tmln.include? '.'
 				fr=File.new(timeline_path+tmln,'r')
-				fw=File.new(timeline_path+tmln+"_per"+sec+"sec",'w')
+				fw=File.new(timeline_path+tmln+"_per"+@window+"sec",'w')
 				events=Hash.new
 				@@firstTime=-1
-				while line==fr.gets
+				while line=fr.gets
 					parts=line.chop.split(" ")
 					if @@firstTime==-1
 						@@firstTime==parts[0].to_i
@@ -139,10 +139,10 @@ end
 		fr=File.new(@cwd+@defines.dataDir+"IPport_uniq",'r')
 		while user=fr.gets.chop
 			fw=File.new(timeline_path+user+"_per"+@window+"sec",'w')
-			IO.popen('grep '+user+' ./'+@@defines.traceFile) { |io| 
+			IO.popen('grep '+user+' ./'+@defines.traceFile) { |io| 
 			@@firstTime=-1
 			while (line = io.gets) do 
-				h=Format.columnsFormat(line,@@defines.column_Format)
+				h=Format.columnsFormat(line,@defines.column_Format)
 				Utilities.separateTimelineEvents(h,timeline_path+row['IPport'])
 				if @@firstTime==-1
 					@@firstTime==h['tmstp'].to_i
