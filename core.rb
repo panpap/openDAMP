@@ -29,7 +29,7 @@ class Core
             part=line.chop.split("\t")
 			h,connect=Format.columnsFormat(part,@defines.column_Format[filename])
 			if connect
-				@fpub.puts h['IPport'].to_s+" "+h['tmstp'].to_s+" "+h['url'].to_s
+				@fpub.puts h['IPport'].to_s+" "+h['tmstp'].to_s+" "+h['verb']+" "+h['url'].to_s
 			end
             @trace.rows.push(h)
         end
