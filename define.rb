@@ -16,6 +16,7 @@ class Defines
 			abort("Error: Input file <"+filename+"> could not be found!")
 		end
 		#DIRECTORIES
+		@dirs=Hash.new
 		@dirs['rootDir']="results_"+@traceFile+"/"
 		@dirs['dataDir']=@dirs['rootDir']+"dataset/"
 		@dirs['adsDir']=@dirs['rootDir']+"adRelated/"
@@ -24,6 +25,7 @@ class Defines
 		@dirs['timelines']=@dirs['userDir']+"timelines/"
 
 		#FILENAMES
+		@files=Hash.new
 		@files['parseResults']=@dirs['rootDir']+"parseResults.out"
 		@files['impFile']=@dirs['adsDir']+"impressions.out"
 		@files['adfile']=@dirs['adsDir']+"ads.out"
@@ -36,7 +38,7 @@ class Defines
 		@files['adDevices']=@dirs['adsDir']+"adDevices.csv"
 		@files['beaconT']=@dirs['adsDir']+"beaconsTypes.csv"
 		@files['userFile']=@dirs['userDir']+"userAnalysis.csv"
-		@files['filterFile']=@resources+'disconnect_merged.json'
+		@files['filterFile']=@dirs['resources']+'disconnect_merged.json'
 	#	@files['publishers']=@dirs['dataDir']+"publishers.csv"
 		@files['leftovers']="leftovers.out"
 		@files['formatFile']="format.in"

@@ -122,8 +122,8 @@ end
 	def readTimelines(tmlnFiles)
 		for tmln in tmlnFiles do
 			if not tmln.include? '.'
-				fr=File.new(@defines.dir['timelines']+tmln,'r')
-				fw=File.new(@defines.dir['timelines']+tmln+"_per"+sec+"sec",'w')
+				fr=File.new(@defines.dirs['timelines']+tmln,'r')
+				fw=File.new(@defines.dirs['timelines']+tmln+"_per"+sec+"sec",'w')
 				events=Hash.new
 				@@firstTime=-1
 				while line==fr.gets
@@ -141,12 +141,12 @@ end
 	def createTimelines()
 		fr=File.new(@@defines.dirs['dataDir']+"IPport_uniq",'r')
 		while user=fr.gets.chop
-			fw=@defines.dir['timelines']+row['IPport']+"_per"+sec+"sec",'w')
+			fw=File.new(@defines.dirs['timelines']+row['IPport']+"_per"+sec+"sec",'w')
 			IO.popen('grep '+user+' ./'+@@defines.traceFile) { |io| 
 			@@firstTime=-1
 			while (line = io.gets) do 
 				h=Format.columnsFormat(line,@@defines.column_Format)
-				Utilities.separateTimelineEvents(h,@defines.dir['timelines']+row['IPport']))
+				Utilities.separateTimelineEvents(h,@defines.dirs['timelines']+row['IPport'])
 				if @@firstTime==-1
 					@@firstTime==h['tmstp'].to_i
 				end
@@ -165,11 +165,11 @@ end
 
 	def makeDirsFiles
 		print "> Creating Directories..."
-		@defines.dir.each{|dir| Dir.mkdir dir unless File.exists?(dir)}
+		@defines.dirs.each{|name, path| puts path; Dir.mkdir path unless File.exists?(path)}
 		puts "and files..."
         @fi=File.new(@defines.files['impFile'],'w')
         @fa=File.new(@defines.files['adfile'],'w')
-        @fl=File.new(@defines.files['leftovers,']'w')
+        @fl=File.new(@defines.files['leftovers,'],'w')
         @fp=File.new(@defines.files['prices'],'w')
 	#	@fpub=File.new(@defines.publishers,'w')
         @fn=File.new(@defines.files['paramsNum'],'w')
