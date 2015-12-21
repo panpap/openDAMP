@@ -1,4 +1,5 @@
 require 'optparse'
+require 'utilities'
 require 'ops'
 
 start = Time.now
@@ -33,8 +34,11 @@ OptionParser.new { |opts|
   end
 
   opts.on('-t', '--timelines STRING', 'Make user Timelines per N seconds') do |sec|
+	path=ARGV[0].split("results_")[1]
+	s=""
+	path.chars.any?{|c| s=path.delete(c) if Utilities.is_numeric?(c)}
 	ops=Operations.new(ARGV[0])
-    ops.makeTimelines(sec)
+	ops.makeTimelines(sec)
   end
 
 }.parse!

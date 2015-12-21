@@ -113,12 +113,6 @@ end
 		end
 	end
 
-	def applyTimeWindow(tmstp,url,fw)
-		diff=tms-@@firstTime
-		wnum=diff/@window
-		fw.puts "WINDOW "+wnum+" "+tmstp+" "+url
-	end
-
 	def readTimelines(tmlnFiles)
 		for tmln in tmlnFiles do
 			if not tmln.include? '.'
@@ -162,6 +156,12 @@ end
 
 
 	private
+
+	def applyTimeWindow(tmstp,url,fw)
+		diff=tms-@@firstTime
+		wnum=diff/@window
+		fw.puts "WINDOW "+wnum+" "+tmstp+" "+url
+	end
 
 	def makeDirsFiles
 		print "> Creating Directories..."

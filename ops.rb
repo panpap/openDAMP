@@ -1,5 +1,4 @@
 require 'define'
-require 'utilities'
 require 'core'
 require 'digest/sha1'
 
