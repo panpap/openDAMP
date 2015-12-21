@@ -4,6 +4,7 @@ require 'columnsFormat'
 
 class Core
    	@isBeacon=false
+	@defines=nil
 
 	def initialize(defs)
 		@defines=defs
@@ -26,7 +27,7 @@ class Core
         line=f.gets     #get rid of headers
         while(line=f.gets)
             part=line.chop.split("\t")
-			h,connect=Format.columnsFormat(part,@defines.columnsFormat[filename])
+			h,connect=Format.columnsFormat(part,@defines.column_Format[filename])
 			if connect
 				@fpub.puts h['IPport'].to_s+" "+h['tmstp'].to_s+" "+h['url'].to_s
 			end

@@ -5,7 +5,7 @@ require 'digest/sha1'
 
 class Operations
 	@@loadedRows=nil
-	
+
 	def initialize(filename)
 		@defines=Defines.new(filename)
 		@func=Core.new(@defines)		
