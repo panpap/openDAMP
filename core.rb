@@ -114,10 +114,11 @@ end
 
 	def readTimelines(tmlnFiles)
 		puts "> Loading User Timelines..."
+		user_path=@cwd+@defines.userDir
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		for tmln in tmlnFiles do
 			if not tmln.include? '.'
-				fr=File.new(timeline_path+tmln,'r')
+				fr=File.new(user_path+tmln,'r')
 				fw=File.new(timeline_path+tmln+"_per"+@window+"sec",'w')
 				events=Hash.new
 				@@firstTime=-1
@@ -135,6 +136,7 @@ end
 
 	def createTimelines()
 		puts "> Contructing User Timelines..."
+		user_path=@cwd+@defines.userDir
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		fr=File.new(@cwd+@defines.dataDir+"IPport_uniq",'r')
 		while user=fr.gets.chop
@@ -143,7 +145,7 @@ end
 			@@firstTime=-1
 			while (line = io.gets) do 
 				h=Format.columnsFormat(line,@defines.column_Format)
-				Utilities.separateTimelineEvents(h,timeline_path+h['IPport'])
+				Utilities.separateTimelineEvents(h,user_path+h['IPport'])
 				if @@firstTime==-1
 					@@firstTime=h['tmstp'].to_i
 				end
