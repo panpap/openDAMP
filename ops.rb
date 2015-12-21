@@ -33,8 +33,7 @@ class Operations
 			puts " > There is not any existing user files. Separating timeline events per user..."
 			# Post Timeline Events Separation (per user)
 			if not File.exists? working_dir+@defines.dataDir
-				separate()
-				@func.readTimelines(entries)
+				puts "No file exists please run again with -s option"
 			else
 				@func.createTimelines(r)
 			end

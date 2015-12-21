@@ -8,8 +8,7 @@ class Core
 
 	def initialize(defs)
 		@defines=defs
-		@filters=Filters.new(@defines)
-		makeDirsFiles()
+		@filters=Filters.new(@defines)		
 		@trace=Trace.new(@defines)
 		@window=-1
 		@cwd=nil
@@ -24,6 +23,7 @@ class Core
 	end
 
     def loadRows(filename)
+	makeDirsFiles()
 	puts "> Name of input file: "+filename
         f=File.new(filename,'r')
         line=f.gets     #get rid of headers
