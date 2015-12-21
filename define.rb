@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :traceFile, :column_Format, :rootDir, :dataDir, :adsDir, :userDir, :resources, :parseResults, :formatFile, :impFile, :adfile, :prices, :priceTagsFile, :devices, :bcnFile, :size3rdFile, :paramsNum, :adDevices, :subStrings, :beaconT, :userFile, :filterFile, :publishers, :leftovers, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :traceFile, :column_Format, :rootDir, :dataDir, :adsDir, :userDir, :resources, :parseResults, :formatFile, :inria, :impFile, :adfile, :prices, :priceTagsFile, :devices, :bcnFile, :size3rdFile, :paramsNum, :adDevices, :subStrings, :beaconT, :userFile, :filterFile, :publishers, :leftovers, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1, 
