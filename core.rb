@@ -27,10 +27,7 @@ class Core
         line=f.gets     #get rid of headers
         while(line=f.gets)
             part=line.chop.split("\t")
-			h,connect=Format.columnsFormat(part,@defines.column_Format[filename])
-			if connect
-				@fpub.puts h['IPport'].to_s+" "+h['tmstp'].to_s+" "+h['verb']+" "+h['url'].to_s
-			end
+			h=Format.columnsFormat(part,@defines.column_Format[filename])
             @trace.rows.push(h)
         end
         f.close
@@ -96,7 +93,7 @@ class Core
 	end
 
 	def close
-		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close;@fu.close;@fnp.close;@fpub.close
+		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close;@fu.close;@fnp.close;#@fpub.close
 	end
 
 	def perUserAnalysis
@@ -129,7 +126,7 @@ class Core
         @fa=File.new(@defines.adfile,'w')
         @fl=File.new(@defines.leftovers,'w')
         @fp=File.new(@defines.prices,'w')
-		@fpub=File.new(@defines.publishers,'w')
+	#	@fpub=File.new(@defines.publishers,'w')
         @fn=File.new(@defines.paramsNum,'w')
         @fd1=File.new(@defines.devices,'w')
         @fb=File.new(@defines.bcnFile,'w')
