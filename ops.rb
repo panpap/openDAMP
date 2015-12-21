@@ -23,7 +23,7 @@ class Operations
 	end
 
 	def makeTimelines(sec,path)
-		@func.window=sec
+		@func.window=sec*1000 #store in msec
 		@func.cwd=path
 		cwd=path
 		path=cwd+@defines.userDir

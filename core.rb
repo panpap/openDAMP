@@ -146,7 +146,7 @@ end
 				h=Format.columnsFormat(line,@defines.column_Format)
 				Utilities.separateTimelineEvents(h,timeline_path+h['IPport'])
 				if @@firstTime==-1
-					@@firstTime==h['tmstp'].to_i
+					@@firstTime=h['tmstp'].to_i
 				end
 				applyTimeWindow(h['tmstp'],h['url'],fw)
 			end }
@@ -163,8 +163,8 @@ end
 
 	def applyTimeWindow(tmstp,url,fw)
 		diff=tmstp.to_i-@@firstTime
-		wnum=diff/@window.to_i
-		fw.puts "WINDOW "+wnum.to_s+" "+tmstp+" "+url
+		wnum=diff.to_f/@window.to_i
+		fw.puts "WINDOW "+(wnum.to_f/1000).to_s+" "+tmstp+" "+url
 	end
 
 	def makeDirsFiles
