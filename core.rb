@@ -139,9 +139,6 @@ class Core
 
     def detectPrice(keyVal,domainStr);          	# Detect possible price in parameters and returns URL Parameters in String
 		domain,tld=Utilities.tokenizeHost(domainStr)
-if domain==nil or tld==nil
-	puts "NIL -----> "+domainStr.to_s+" "+domain.to_s+" "+tld.to_s
-end
 		host=domain+"."+tld
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
           	@fp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
@@ -177,6 +174,9 @@ end
 				if(@filters.is_Beacon_param?(keyVal) and not @isBeacon)
 					beaconSave(url[0],row)
 				end
+if domainStr=="."
+	puts "NIL -----> "+domainStr.to_s
+end
 				if(detectPrice(keyVal,row['host']))
 					isAd=true
 				end
