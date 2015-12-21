@@ -30,7 +30,7 @@ module Utilities
 	end	
 
 	def Utilities.separateTimelineEvents(row,writeTo)
-		system('echo '+row['tmstp']+" "+row['url']+" >> "+writeTo) 
+		system('echo "'+row['tmstp']+'" "'+row['url']+'" >> '+writeTo) 
 	end
 
 	def Utilities.tokenizeHost(host)
