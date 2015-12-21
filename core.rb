@@ -3,10 +3,8 @@ require 'filters'
 require 'columnsFormat'
 
 class Core
-	attr_writer :window	
-
+	attr_writer :window, :cwd
    	@isBeacon=false
-	@defines=nil
 
 	def initialize(defs)
 		@defines=defs
@@ -14,6 +12,7 @@ class Core
 		makeDirsFiles()
 		@trace=Trace.new(@defines)
 		@window=-1
+		@cwd=nil
 	end
 	
 	def getTrace
@@ -116,8 +115,8 @@ end
 	def readTimelines(tmlnFiles)
 		for tmln in tmlnFiles do
 			if not tmln.include? '.'
-				fr=File.new(@defines.dirs['timelines']+tmln,'r')
-				fw=File.new(@defines.dirs['timelines']+tmln+"_per"+sec+"sec",'w')
+				fr=File.new(@cwd+@defines.tmln_path+tmln,'r')
+				fw=File.new(@cwd+@defines.tmln_path+tmln+"_per"+sec+"sec",'w')
 				events=Hash.new
 				@@firstTime=-1
 				while line==fr.gets
@@ -133,14 +132,14 @@ end
 	end
 
 	def createTimelines()
-		fr=File.new(@@defines.dirs['dataDir']+"IPport_uniq",'r')
+		fr=File.new(@cwd+@defines.dataDir+"IPport_uniq",'r')
 		while user=fr.gets.chop
-			fw=File.new(@defines.dirs['timelines']+row['IPport']+"_per"+sec+"sec",'w')
+			fw=File.new(@cwd+@defines.tmln_path+row['IPport']+"_per"+sec+"sec",'w')
 			IO.popen('grep '+user+' ./'+@@defines.traceFile) { |io| 
 			@@firstTime=-1
 			while (line = io.gets) do 
 				h=Format.columnsFormat(line,@@defines.column_Format)
-				Utilities.separateTimelineEvents(h,@defines.dirs['timelines']+row['IPport'])
+				Utilities.separateTimelineEvents(h,@cwd+@defines.tmln_path+row['IPport'])
 				if @@firstTime==-1
 					@@firstTime==h['tmstp'].to_i
 				end

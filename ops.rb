@@ -23,18 +23,20 @@ class Operations
 	end
 
 	def makeTimelines(sec,path)
+		working_dir=path
 		@func.window=sec
+		@func.cwd=working_dir
 		if Dir.exists? path+@define.tmln_path and entries=Dir.entries( path+@define.tmln_path).size>0 # DIRECTORY EXISTS AND IS NOT EMPTY
 			puts " > Using existing per user files..."
 			@func.readTimelines(entries)
 		else
 			puts " > There is not any existing user files. Separating timeline events per user..."
 			# Post Timeline Events Separation (per user)
-			if not File.exists? @defines.dirs['dataDir']
+			if not File.exists? working_dir+@defines.dataDir
 				separate()
 				@func.readTimelines(entries)
 			else
-				@func.createTimelines()
+				@func.createTimelines(r)
 			end
 		end
 	end

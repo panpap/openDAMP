@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :traceFile, :dirs, :files, :inria, :subStrings, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :traceFile, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1, 
@@ -15,14 +15,18 @@ class Defines
 		if not File.exist?(@traceFile)
 			abort("Error: Input file <"+filename+"> could not be found!")
 		end
+
+		
 		#DIRECTORIES
 		@dirs=Hash.new
+		@dataDir="dataset/"
 		@dirs['rootDir']="results_"+@traceFile+"/"
-		@dirs['dataDir']=@dirs['rootDir']+"dataset/"
+		@dirs['dataDir']=@dirs['rootDir']+@dataDir
 		@dirs['adsDir']=@dirs['rootDir']+"adRelated/"
 		@dirs['userDir']=@dirs['rootDir']+"users/"
 		@dirs['resources']='resources/'
 		@dirs['timelines']=@dirs['userDir']+"timelines/"
+		@tmln_path="users/timelines/"		
 
 		#FILENAMES
 		@files=Hash.new
