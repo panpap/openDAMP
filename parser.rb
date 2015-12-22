@@ -38,7 +38,8 @@ OptionParser.new { |opts|
 	s=""
 	lastChar=path[path.size-1]
 	if Utilities.is_numeric?(lastChar)
-	s=path.delete(lastChar)
+		s=path.delete(lastChar)
+	end
 	ops=Operations.new(s)
 	ops.makeTimelines(sec,ARGV[0])
   end
