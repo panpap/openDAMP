@@ -2,7 +2,7 @@ class Defines
 	attr_accessor :traceFile, :filterFile, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
-		@column_Format={'100k_trace'=>1,'10k_trace'=>1 
+		@column_Format={'100k_trace'=>1,'10k_trace'=>1 ,
 			'full_trace'=>1, 	#awazza dataset 6million reqs
 			'souneil_trace'=>2} 	#awazza dataset 1million reqs
 
