@@ -208,6 +208,9 @@ end
     end
 
 	def checkParams(row,url)
+if url[0]=="."
+	puts "NIL -----> "+url[0].to_s
+end
      	if (url[1]==nil)
      		return 0,false
     	end
@@ -219,9 +222,6 @@ end
 				if(@filters.is_Beacon_param?(keyVal) and not @isBeacon)
 					beaconSave(url[0],row)
 				end
-if domainStr=="."
-	puts "NIL -----> "+domainStr.to_s
-end
 				if(detectPrice(keyVal,row['host']))
 					isAd=true
 				end
