@@ -139,7 +139,8 @@ end
 		user_path=@cwd+@defines.userDir
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		fr=File.new(@cwd+@defines.dataDir+"IPport_uniq",'r')
-		while user=fr.gets.chop
+		while l=fr.gets
+			user=l.chop
 			fw=File.new(timeline_path+user+"_per"+@window.to_s+"sec",'w')
 			IO.popen('grep '+user+' ./'+@defines.traceFile) { |io| 
 			@@firstTime=-1
