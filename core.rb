@@ -209,7 +209,7 @@ end
 
 	def checkParams(row,url)
 if row['host']=="."
-	puts "NIL -----> "+row[host].to_s
+	puts "NIL -----> "+row['host'].to_s
 end
      	if (url[1]==nil)
      		return 0,false
