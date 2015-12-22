@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :traceFile, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :traceFile, :filterFile, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1, 
@@ -26,8 +26,8 @@ class Defines
 		@dirs['dataDir']=@dirs['rootDir']+@dataDir
 		@dirs['adsDir']=@dirs['rootDir']+"adRelated/"
 		@dirs['userDir']=@dirs['rootDir']+@userDir
-		@dirs['resources']='resources/'
 		@dirs['timelines']=@dirs['userDir']+@tmln_path
+		@resources='resources/'
 
 		#FILENAMES
 		@files=Hash.new
@@ -43,11 +43,10 @@ class Defines
 		@files['adDevices']=@dirs['adsDir']+"adDevices.csv"
 		@files['beaconT']=@dirs['adsDir']+"beaconsTypes.csv"
 		@files['userFile']=@dirs['userDir']+"userAnalysis.csv"
-		@files['filterFile']=@dirs['resources']+'disconnect_merged.json'
 	#	@files['publishers']=@dirs['dataDir']+"publishers.csv"
 		@files['leftovers']="leftovers.out"
 		@files['formatFile']="format.in"
-
+		@filterFile=@resources+'disconnect_merged.json'
 		#KEYWORDS
 		@beacon_key=["beacon","pxl","pixel","adimppixel","data.gif","px.gif","pxlctl"]
 
