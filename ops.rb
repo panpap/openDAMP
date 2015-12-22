@@ -23,7 +23,7 @@ class Operations
         for row in @@loadedRows do
             atts.each{|att| f[att].puts row[att]}
    		end
-		atts.each{|a| Utilities.countInstances(a); f[a].close}
+		atts.each{|a| Utilities.countInstances(@defines.dirs['dataDir']+a); f[a].close}
 	end
 
 	def makeTimelines(sec,path)
