@@ -34,12 +34,12 @@ OptionParser.new { |opts|
   end
 
   opts.on('-t', '--timelines STRING', 'Make user Timelines per N seconds') do |sec|
-	path=ARGV[0].split("/")[0].split("results_")[1]
+	path=ARGV[0].split("results_")[1]
 	s=""
-	lastChar=path[path.size-1]
+	lastChar=path[path.size-2]
 	puts path+" "+lastChar
 	if Utilities.is_numeric?(lastChar)
-		s=path.delete(lastChar)
+		s=path.gsub(lastChar+"/","")
 	end
 	ops=Operations.new(s)
 	ops.makeTimelines(sec,ARGV[0])
