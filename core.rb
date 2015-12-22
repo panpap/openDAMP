@@ -208,8 +208,8 @@ end
     end
 
 	def checkParams(row,url)
-if url[0]=="."
-	puts "NIL -----> "+url[0].to_s
+if row[host]=="."
+	puts "NIL -----> "+row[host].to_s
 end
      	if (url[1]==nil)
      		return 0,false
