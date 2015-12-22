@@ -22,7 +22,7 @@ class Operations
 		atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w')}
         for row in @@loadedRows do
             atts.each{|att| f[att].puts row[att]}
-			Utilities.separateTimelineEvents(row['tmstp'],row['url'],row['IPport'])
+			Utilities.separateTimelineEvents(row,row['IPport'])
    		end
 		atts.each{|a| Utilities.countInstances(@defines.dirs['dataDir']+a); f[a].close}
 	end
