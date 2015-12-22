@@ -21,7 +21,7 @@ class Operations
 		f=Hash.new
 		atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w')}
         for row in @@loadedRows do
-            atts.each{|att| f[att].puts row[att]}
+            atts.each{|att| f[att].puts row[att] if att!='url'}
 			Utilities.separateTimelineEvents(row,@defines.dirs['userDir']+row['IPport'])
    		end
 		atts.each{|a| Utilities.countInstances(@defines.dirs['dataDir']+a); f[a].close}
