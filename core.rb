@@ -11,7 +11,7 @@ class Core
 		@filters=Filters.new(@defines)		
 		@trace=Trace.new(@defines)
 		@window=-1
-		@cwd=nill
+		@cwd=nil
 	end
 	
 	def getTrace
