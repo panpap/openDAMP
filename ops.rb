@@ -32,9 +32,10 @@ class Operations
 		@func.cwd=path
 		cwd=path
 		path=cwd+@defines.userDir
-		entries=Dir.entries(path+@defines.tmln_path) rescue entries=Array.new
-		if entries.size > 2 # DIRECTORY EXISTS AND IS NOT EMPTY
+		entries=Dir.entries(path) rescue entries=Array.new
+		if entries.size > 3 # DIRECTORY EXISTS AND IS NOT EMPTY
 			puts "> Using existing per user files..."
+			Dir.mkdir path+@defines.tmln_path unless File.exists?(path+@defines.tmln_path)
 			@func.readTimelines(entries)
 		else
 			Dir.mkdir path unless File.exists?(path)
