@@ -1,3 +1,4 @@
+require 'fastimage'
 require 'rubygems'
 require 'json'
 
