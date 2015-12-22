@@ -171,11 +171,12 @@ end
 
 	def makeDirsFiles
 		print "> Creating Directories..."
-		@defines.dirs.each{|name, path| puts path; Dir.mkdir path unless File.exists?(path)}
+		@defines.dirs.each{|name, path| Dir.mkdir path unless File.exists?(path)}
+		
 		puts "and files..."
         @fi=File.new(@defines.files['impFile'],'w')
         @fa=File.new(@defines.files['adfile'],'w')
-        @fl=File.new(@defines.files['leftovers,'],'w')
+        @fl=File.new(@defines.files['leftovers'],'w')
         @fp=File.new(@defines.files['prices'],'w')
 	#	@fpub=File.new(@defines.publishers,'w')
         @fn=File.new(@defines.files['paramsNum'],'w')
