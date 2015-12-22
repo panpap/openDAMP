@@ -17,9 +17,13 @@ class Operations
 	end
 
     def separate
+		atts=@@loadedRows[0].keys
+		f=Hash.new
+		atts.each{|a| f[a]=File.new(@defines.dataDir+a,'w')}
         for row in @@loadedRows do
-            @func.separateField(row)
+            rowColumns.each{|att| fpAtts[att].puts row[att]}
    		end
+		atts.each{|a| Utilities.countInstances(a); f[a].close}
 	end
 
 	def makeTimelines(sec,path)

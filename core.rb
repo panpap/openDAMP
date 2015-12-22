@@ -11,7 +11,7 @@ class Core
 		@filters=Filters.new(@defines)		
 		@trace=Trace.new(@defines)
 		@window=-1
-		@cwd=nil
+		@cwd=nill
 	end
 	
 	def getTrace
@@ -38,17 +38,6 @@ end
         f.close
 		@adFilter=@filters.loadExternalFilter()
         return @trace.rows
-    end
-
-    def separateField(att);
-        puts "> Separate files and calculate instances for "+att
-		path=@defines.dataDir+att
-        fw=File.new(path,'w')
-        for r in @trace.rows do
-            fw.puts r[att]
-        end
-		Utilities.countInstances(path)
-        fw.close
     end
 
 	def parseRequest(row)
