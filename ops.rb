@@ -19,7 +19,7 @@ class Operations
     def separate
 		atts=@@loadedRows[0].keys
 		f=Hash.new
-		atts.each{|a| f[a]=File.new(@defines.dataDir+a,'w')}
+		atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w')}
         for row in @@loadedRows do
             atts.each{|att| fpAtts[att].puts row[att]}
    		end
