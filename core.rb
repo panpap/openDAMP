@@ -30,8 +30,8 @@ class Core
         while(line=f.gets)
 			h=Format.columnsFormat(line,@defines.column_Format)
             @trace.rows.push(h)
-x=h["host"].chars[0]
-if x=='.' or x=='0' or x.chars[0]=='-'
+x=h['host'].chars
+if x[0]=='.' or x[0]=='0' or x[0]=='-'
 	puts line
 end
         end
