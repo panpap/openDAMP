@@ -254,7 +254,7 @@ end
 	def beaconImprParamCkeck(url,row) 
         @isBeacon=false
 		isAd=-1
-        if (@filters.is_Beacon?(url[0],url[1]))  		#findBeacon in URL
+        if (@filters.is_Beacon?(url[0]))  		#findBeacon in URL
             isAd=0
             beaconSave(url[0],row)
         end

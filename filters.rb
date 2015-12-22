@@ -36,8 +36,10 @@ class Filters
                 return (@defines.beacon_key.any? {|word| params[0].downcase.include?(word)})
         end
 
-        def is_Beacon?(url,params)
-                if (url.downcase.include? ".htm" or url.downcase.include? ".xml")
+        def is_Beacon?(url)
+		if is_1pixel_image?(url)
+			return true
+                elsif (url.downcase.include? ".htm" or url.downcase.include? ".xml")
                         return false
                 elsif(@defines.beacon_key.any? { |word| url.include?(word)})
                         return true
@@ -144,4 +146,17 @@ class Filters
                         return (@defines.adInParam.any? {|word| params[0].downcase.include?(word)})
                 end
         end
+
+#-----------------------------------------------------------------------------------
+
+private
+
+	def is_1pixel_image?(url)
+		if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)} #IS IMAGE?
+			if FastImage.size("http://"+url)==[1,1]		# 1x1 pixel
+				return true
+			end
+		end
+		return false
+	end
 end
