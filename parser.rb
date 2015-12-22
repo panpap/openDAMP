@@ -1,6 +1,6 @@
 require 'optparse'
-require 'utilities'
-require 'ops'
+load 'utilities.rb'
+load 'ops.rb'
 
 start = Time.now
 

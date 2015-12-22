@@ -1,6 +1,6 @@
-require 'trace'
-require 'filters'
-require 'columnsFormat'
+load 'trace.rb'
+load 'filters.rb'
+load 'columnsFormat.rb'
 
 class Core
 	attr_writer :window, :cwd

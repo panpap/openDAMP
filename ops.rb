@@ -1,5 +1,5 @@
-require 'define'
-require 'core'
+load 'define.rb'
+load 'core.rb'
 require 'digest/sha1'
 
 class Operations

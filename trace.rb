@@ -1,4 +1,4 @@
-require 'user'
+load 'user.rb'
 
 class Trace
 	attr_accessor :rows, :mobDev, :numOfMobileAds, :totalAdBeacons, :totalImps, :users, :detectedPrices, :party3rd, :sizes, :totalParamNum
