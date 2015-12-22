@@ -29,11 +29,8 @@ class Core
         line=f.gets     #get rid of headers
         while(line=f.gets)
 			h=Format.columnsFormat(line,@defines.column_Format)
+	if h['host'].size>1 and h['host'].count('.')>0
             @trace.rows.push(h)
-x=h['host']
-if x[0]=='.' or x[0]=='0' or x[0]=='-'
-	puts line
-end
         end
         f.close
 		@adFilter=@filters.loadExternalFilter()
@@ -208,9 +205,6 @@ end
     end
 
 	def checkParams(row,url)
-if row['host']=="."
-	puts "NIL -----> "+row['host'].to_s
-end
      	if (url[1]==nil)
      		return 0,false
     	end
