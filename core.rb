@@ -28,9 +28,10 @@ class Core
         f=File.new(filename,'r')
         line=f.gets     #get rid of headers
         while(line=f.gets)
-			h=Format.columnsFormat(line,@defines.column_Format)
-	if h['host'].size>1 and h['host'].count('.')>0
-            @trace.rows.push(h)
+		h=Format.columnsFormat(line,@defines.column_Format)
+		if h['host'].size>1 and h['host'].count('.')>0
+            		@trace.rows.push(h)
+		end
         end
         f.close
 		@adFilter=@filters.loadExternalFilter()
