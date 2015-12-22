@@ -176,7 +176,6 @@ end
 		Dir.mkdir @defines.dirs['dataDir'] unless File.exists?(@defines.dirs['dataDir'])
 		Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
 		Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
-		Dir.mkdir @defines.dirs['resources'] unless File.exists?(@defines.dirs['resources'])
 		Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])
 		puts "and files..."
         @fi=File.new(@defines.files['impFile'],'w')
