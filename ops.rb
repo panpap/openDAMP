@@ -34,15 +34,15 @@ class Operations
 		path=cwd+@defines.userDir
 		entries=Dir.entries(path+@defines.tmln_path) rescue entries=Array.new
 		if entries.size > 2 # DIRECTORY EXISTS AND IS NOT EMPTY
-			puts " > Using existing per user files..."
+			puts "> Using existing per user files..."
 			@func.readTimelines(entries)
 		else
 			Dir.mkdir path unless File.exists?(path)
 			Dir.mkdir path+@defines.tmln_path unless File.exists?(path+@defines.tmln_path)
-			puts " > There is not any existing user files. Separating timeline events per user..."
+			puts "> There is not any existing user files. Separating timeline events per user..."
 			# Post Timeline Events Separation (per user)
 			if not File.exists? cwd+@defines.dataDir
-				puts "No file exists please run again with -s option"
+				puts "Error: No file exists please run again with -s option"
 			else
 				@func.createTimelines()
 			end

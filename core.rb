@@ -131,7 +131,7 @@ end
 		fr=File.new(@cwd+@defines.dataDir+"IPport_uniq",'r')
 		while l=fr.gets
 			user=l.chop
-			fw=File.new(timeline_path+user+"_per"+@window.to_s+"sec",'w')
+			fw=File.new(timeline_path+user+"_per"+(@window/1000).to_s+"sec",'w')
 			IO.popen('grep '+user+' ./'+@defines.traceFile) { |io| 
 			@@firstTime=-1
 			while (line = io.gets) do 
@@ -160,7 +160,7 @@ end
 	end
 
 	def makeDirsFiles
-		print "> Creating Directories..."
+		print "> Creating Directories... "
 		Dir.mkdir @defines.dirs['rootDir'] unless File.exists?(@defines.dirs['rootDir'])
 		Dir.mkdir @defines.dirs['dataDir'] unless File.exists?(@defines.dirs['dataDir'])
 		Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
