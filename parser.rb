@@ -37,7 +37,7 @@ OptionParser.new { |opts|
 	path=ARGV[0].split("/")[0].split("results_")[1]
 	s=""
 	lastChar=path[path.size-1]
-	puts lastChar
+	puts path+" "+lastChar
 	if Utilities.is_numeric?(lastChar)
 		s=path.delete(lastChar)
 	end

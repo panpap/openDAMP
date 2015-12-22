@@ -63,8 +63,7 @@ module Utilities
        	if object==nil
         	return false
         end
-		temp=object
-        true if Float(temp) rescue false
+        true if Float(object) rescue false
     end
 
 	def Utilities.results_toString(trace,prices,numericPrices)
