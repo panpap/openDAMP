@@ -108,7 +108,7 @@ class Operations
                 numericPrices.push(p.to_f)
             end
         end
-        Utilities.countInstances(@defines.beaconT)
+        Utilities.countInstances(@defines.files['beaconT'])
 		@func.perUserAnalysis()
 		system("sort "+@defines.priceTagsFile+" | uniq >"+@defines.priceTagsFile+".csv")
 		system("rm -f "+@defines.priceTagsFile)
