@@ -72,7 +72,7 @@ module Utilities
 		paramsStats,sizeStats=trace.analyzeTotalAds
 		#PRINTING RESULTS
 		s="> Printing Results...\nTRACE STATS\n------------\n"+"Total users in trace: "+trace.users.size.to_s+"\n"+"Traffic from  mobile devices: "+
-		trace.mobDev.to_s+"/"+totalNumofRows.to_s+"\n"+"3rd Party content detected:"+"\n"+"Advertising => "+trace.party3rd['Advertising'].to_s+
+		trace.mobDev.to_s+"/"+totalNumofRows.to_s+"\n"+"Traffic originated from Browser: "+trace.fromBrowser.size.to_s+"\n Browser-prices: "+trace.browserPrices.to_s+"\n"+"3rd Party content detected:"+"\n"+"Advertising => "+trace.party3rd['Advertising'].to_s+
 		" Analytics => "+trace.party3rd['Analytics'].to_s+" Social => "+trace.party3rd['Social'].to_s+" Content => "+trace.party3rd['Content'].to_s+
 		" Beacons => "+trace.party3rd['totalBeacons'].to_s+" Other => "+trace.party3rd['Other'].to_s+"\n"+
 		"\nSize of the unnecessary 3rd Party content (i.e. Adverising+Analytics+Social)\nTotal: "+sizeStats['sum'].to_s+" Bytes - Average: "+
