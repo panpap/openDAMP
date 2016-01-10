@@ -20,9 +20,9 @@ class Trace
 	end
 
 	def analyzeTotalAds    #Analyze global variables
-		Utilities.countInstances(@defines.paramsNum)
-		Utilities.countInstances(@defines.devices)
-		Utilities.countInstances(@defines.size3rdFile)
+		Utilities.countInstances(@defines.files['paramsNum'])
+		Utilities.countInstances(@defines.files['devices'])
+		Utilities.countInstances(@defines.files['size3rdFile'])
 		return Utilities.makeStats(@totalParamNum),Utilities.makeStats(@sizes)
 	end
 end
