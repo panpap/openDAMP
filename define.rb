@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :traceFile, :filterFile, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :traceFile, :filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1,'10k_trace'=>1 ,
@@ -47,6 +47,8 @@ class Defines
 		@files['leftovers']="leftovers.out"
 		@files['formatFile']="format.in"
 		@filterFile=@resources+'disconnect_merged.json'
+		@parseResults=@dirs['rootDir']+"results.out"
+
 		#KEYWORDS
 		@beacon_key=["beacon","pxl","pixel","adimppixel","data.gif","px.gif","pxlctl"]
 
