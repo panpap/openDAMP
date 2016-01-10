@@ -51,9 +51,9 @@ class Filters
 
 		def is_Browser?(row,type)
 			ua=row['ua'].downcase
-			#if (type=="Macintosh" or type=="Windows" or type=="Linux" or type=="BSD") # IS DESKTOP?
-			#	       return true
-			if (@defines.browsers.any? { |word| ua.include?(word)})     # IS BROWSER?
+			if (type=="Macintosh" or type=="Windows" or type=="Linux" or type=="BSD") # IS DESKTOP?
+				       return true
+			elsif (@defines.browsers.any? { |word| ua.include?(word)})     # IS BROWSER?
 				       return true
 			else                                                    # IS APP... DO NOTHING
 				       return false
