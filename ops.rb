@@ -110,8 +110,8 @@ class Operations
         end
         Utilities.countInstances(@defines.files['beaconT'])
 		@func.perUserAnalysis()
-		system("sort "+@defines.priceTagsFile+" | uniq >"+@defines.priceTagsFile+".csv")
-		system("rm -f "+@defines.priceTagsFile)
+		system("sort "+@defines.files['priceTagsFile']+" | uniq >"+@defines.files['priceTagsFile']+".csv")
+		system("rm -f "+@defines.files['priceTagsFile'])
 		results=Utilities.results_toString(trace,prices,numericPrices)
 		fw.puts results
 		puts results
