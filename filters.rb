@@ -49,20 +49,19 @@ class Filters
                 end
         end
 
-#def is_Browser?(row,type)
-#	ua=row['ua'].downcase
-#	if (type=="Macintosh" or type=="Windows" or type=="Linux" or type=="BSD") # IS DESKTOP?
-#               return true
-#	elsif (@defines.browsers.any? { |word| ua.include?(word)})     # IS BROWSER?
-#               return true
-#	else                                                    # IS APP... DO NOTHING
-#               return false
-#	end
-#end
+		def is_Browser?(row,type)
+			ua=row['ua'].downcase
+			if (type=="Macintosh" or type=="Windows" or type=="Linux" or type=="BSD") # IS DESKTOP?
+				       return true
+			elsif (@defines.browsers.any? { |word| ua.include?(word)})     # IS BROWSER?
+				       return true
+			else                                                    # IS APP... DO NOTHING
+				       return false
+			end
+		end
 
         def is_MobileType?(row)
                 ua=row["ua"].downcase
-
                 # Crossed-checked with https://fingerbank.inverse.ca
                 if (ua.include? "android" or ua.include? "dalvik" or ua.include? "play.google" or ua.include? "agoo-sdk" or ua.include? "okhttp")
                         return true, "Android"

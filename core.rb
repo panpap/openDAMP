@@ -45,6 +45,10 @@ class Core
 		if @trace.users[@curUser]==nil		#first seen user
 			@trace.users[@curUser]=User.new	
 		end
+		#CHECK IF ITS ORIGINATED FROM BROWSER
+		if @filters.is_Browser?(row)
+			@trace.fromBrowser.push(row)
+		end
 		#CHECK IF ITS MOBILE USER
 		mob,dev=@filters.is_MobileType?(row)   # check the device type of the request
 		if mob
@@ -218,6 +222,9 @@ class Core
 					beaconSave(url[0],row)
 				end
 				if(detectPrice(keyVal,row['host']))
+					if @trace.fromBrowser.include? row					
+						@trace.browserPrices+=1
+					end
 					isAd=true
 				end
 				if(@filters.is_Ad_param?(keyVal))
