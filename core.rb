@@ -52,7 +52,6 @@ class Core
 		end
 		#CHECK IF ITS ORIGINATED FROM BROWSER
 		if @filters.is_Browser?(row,dev)
-			system("echo '"+row['ua']+"' >> tttt")
 			@trace.fromBrowser.push(row)
 		end
         @fd1.puts dev
