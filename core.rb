@@ -56,7 +56,7 @@ class Core
 	end
 
 	def close
-		@fbt.close;@fp.close;@fb.close;@fi.close; @fa.close; @fl.close;@fn.close;@fu.close;@fnp.close;@fpub.close
+		@fbt.close;@fp.close;@fb.close;@fi.close; @fa.close; @fn.close;@fu.close;@fnp.close;@fpub.close#@fl.close;
 	end
 
 	def perUserAnalysis
@@ -187,7 +187,9 @@ class Core
 				@trace.users[@curUser].row3rdparty["Other"].push(row)
 				@trace.party3rd["Other"]+=1
 				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
-		#		Utilities.printStrippedURL(url,@fl)	# dump leftovers
+
+				@fpub.puts "-> "+url[0]+"\t"+url[1]
+				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
 		end
 	end

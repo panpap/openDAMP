@@ -48,6 +48,7 @@ class Operations
 				@func.createTimelines()
 			end
 		end
+		puts "ANALYSIS..."
 	end
 
   	def stripURL      
