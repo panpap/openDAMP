@@ -1,10 +1,7 @@
 module Format
 	def Format.columnsFormat(line,dataset)
-begin
-		part=line.chop.split("\t") 
-rescue 
-puts line 
-end
+			part=line.chop.split("\t") 
+
 		h=Hash.new(-1)
 		if dataset==1
 			#IP_Port	UserIP	URL	UserAgent	Host	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss
