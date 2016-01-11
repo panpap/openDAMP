@@ -12,8 +12,16 @@ class Core
 		@trace=Trace.new(@defines)
 		@window=-1
 		@cwd=nil
+		@full=false
 	end
 	
+	def fullParse(full)
+		if full==true
+			puts "Full trace parsing has been chosen."
+			@full=true
+		end
+	end
+
 	def getTrace
 		return @trace
 	end
@@ -140,7 +148,7 @@ class Core
 	def filterRow(row)
 		url=row['url'].split("?")
 		host=row['host']
-		isPorI,noOfparam=beaconImprParamCkeck(url,row,full)
+		isPorI,noOfparam=beaconImprParamCkeck(url,row,@full)
 		iaAdinURL=false
 		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
 		if type3rd!=nil	#	3rd PARTY CONTENT
@@ -262,10 +270,10 @@ class Core
 		end
 	end
 
-	def beaconImprParamCkeck(url,row) 
+	def beaconImprParamCkeck(url,row,full) 
         @isBeacon=false
 		isAd=-1
-        if (@filters.is_Beacon?(url[0],false))  		#findBeacon in URL
+        if (@filters.is_Beacon?(url[0],full))  		#findBeacon in URL
             isAd=0
             beaconSave(url[0],row)
         end

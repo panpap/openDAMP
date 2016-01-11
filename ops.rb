@@ -53,6 +53,7 @@ class Operations
   	def stripURL      
 		puts "> Stripping parameters, detecting and classifying Third-Party content..."
 		adsTypes=nil
+		@func.fullParse=false.
 		for r in @@loadedRows do
 			@func.parseRequest(r)
 		end
