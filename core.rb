@@ -53,10 +53,10 @@ class Core
 		end
 
 		#CHECK THE DEVICE TYPE
-		reqOrigin(row)
+		mob,dev=reqOrigin(row)
 
 		#FILTER ROW
-		filterRow(row)
+		filterRow(mob,dev,row)
 	end
 
 	def close
@@ -143,9 +143,10 @@ class Core
 			@trace.fromBrowser.push(row)
 		end
         @trace.devs.push(dev)
+		return mob,dev
 	end		
 
-	def filterRow(row)
+	def filterRow(mob,dev,row)
 		url=row['url'].split("?")
 		host=row['host']
 		isPorI,noOfparam=beaconImprParamCkeck(url,row,@full)
