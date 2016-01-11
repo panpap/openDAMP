@@ -191,6 +191,7 @@ class Core
 				s="-> "+url[0]+"\t"
 				if url[1]!=nil
 					s=s+url[1]
+				end
 				@fpub.puts s
 				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
