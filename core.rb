@@ -188,7 +188,10 @@ class Core
 				@trace.party3rd["Other"]+=1
 				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
 
-				@fpub.puts "-> "+url[0]+"\t"+url[1]
+				s="-> "+url[0]+"\t"
+				if url[1]!=nil
+					s=s+url[1]
+				@fpub.puts s
 				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
 		end
