@@ -225,6 +225,7 @@ class Core
 					if @trace.fromBrowser.include? row					
 						@trace.browserPrices+=1
 					end
+					Utilities.printRow(row,File.new(@defines.dirs['rootDir']+"PriceAds.out",'a'))
 					isAd=true
 				end
 				if(@filters.is_Ad_param?(keyVal))
