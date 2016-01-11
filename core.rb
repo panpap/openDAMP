@@ -48,10 +48,10 @@ class Core
 			pricesOnly(row)
 		else
 			#CHECK THE DEVICE TYPE
-			mob,dev=reqOrigin(row)
+			mob,dev,browser=reqOrigin(row)
 
 			#FILTER ROW
-			filterRow(mob,dev,row)
+			filterRow(mob,dev,browser,row)
 		end
 	end
 
@@ -151,14 +151,15 @@ class Core
 			@trace.mobDev+=1
 		end
 		#CHECK IF ITS ORIGINATED FROM BROWSER
-		if @filters.is_Browser?(row,dev)
+		browser=@filters.is_Browser?(row,dev)
+		if browser
 			@trace.fromBrowser.push(row)
 		end
         @trace.devs.push(dev)
-		return mob,dev
+		return mob,dev,browser
 	end		
 
-	def filterRow(mob,dev,row)
+	def filterRow(mob,dev,browser,row)
 		url=row['url'].split("?")
 		host=row['host']
 		isPorI,noOfparam=beaconImprParamCkeck(url,row)
@@ -188,11 +189,13 @@ class Core
 				@trace.party3rd["Other"]+=1
 				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
 
-				s="-> "+url[0]+"\t"
-				if url[1]!=nil
-					s=s+url[1]
+				if browser
+					s="-> "+url[0]+"\t"
+					if url[1]!=nil
+						s=s+url[1]
+					end
+					@fpub.puts s
 				end
-				@fpub.puts s
 				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
 		end
