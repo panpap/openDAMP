@@ -6,19 +6,17 @@ class Core
 	attr_writer :window, :cwd
    	@isBeacon=false
 
-	def initialize(defs)
+	def initialize(defs,fullParse)
 		@defines=defs
 		@filters=Filters.new(@defines)		
 		@trace=Trace.new(@defines)
 		@window=-1
 		@cwd=nil
-		@full=false
-	end
-	
-	def fullParse(full)
-		if full==true
+		@full=fullParse	
+		if fullParse==true
 			puts "Full trace parsing has been chosen."
-			@full=true
+		else
+			puts "Quick trace parsing has been chosen."
 		end
 	end
 

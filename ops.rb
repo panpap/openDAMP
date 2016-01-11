@@ -7,7 +7,7 @@ class Operations
 
 	def initialize(filename)
 		@defines=Defines.new(filename)
-		@func=Core.new(@defines)		
+		@func=Core.new(@defines,false)
 	end
 
 	def loadFile()
@@ -53,7 +53,6 @@ class Operations
   	def stripURL      
 		puts "> Stripping parameters, detecting and classifying Third-Party content..."
 		adsTypes=nil
-		@func.fullParse(false)
 		for r in @@loadedRows do
 			@func.parseRequest(r)
 		end
