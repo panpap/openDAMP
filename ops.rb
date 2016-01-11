@@ -121,7 +121,7 @@ class Operations
 		fd.close
 		fsz=File.new(@defines.files['size3rdFile'],'w')
 		trace.sizes.each{|sz| fsz.puts sz}
-		fzs.close
+		fsz.close
 		fw.close
 		#PLOTING CDFs
 		puts "Creating CDFs..."
