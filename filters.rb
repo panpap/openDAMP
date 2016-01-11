@@ -151,12 +151,16 @@ class Filters
 
 private
 
-	def is_1pixel_image?(url)
-		if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)} #IS IMAGE?
-			if FastImage.size("http://"+url)==[1,1]		# 1x1 pixel
-				return true
-			end
-		end
-		return false
-	end
+        def is_1pixel_image?(url)
+                if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)} #IS IMAGE?
+                        begin
+                                if FastImage.size("http://"+url)==[1,1]         # 1x1 pixel
+                                        return true
+                               	end
+                        rescue
+                                puts "Error"
+                        end
+                end
+                return false
+        end
 end
