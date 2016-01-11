@@ -43,7 +43,12 @@ class Core
 		if @trace.users[@curUser]==nil		#first seen user
 			@trace.users[@curUser]=User.new	
 		end
-		parseRow(row)
+
+		#CHECK THE DEVICE TYPE
+		reqOrigin(row)
+
+		#FILTER ROW
+		filterRow(row)
 	end
 
 	def close
@@ -119,9 +124,7 @@ class Core
 		fw.puts "WINDOW "+(wnum.to_f/1000).to_s+" "+tmstp+" "+url
 	end
 
-	def parseRow(row)
-		url=row['url'].split("?")
-		host=row['host']
+	def reqOrigin(row)
 		#CHECK IF ITS MOBILE USER
 		mob,dev=@filters.is_MobileType?(row)   # check the device type of the request
 		if mob
@@ -132,8 +135,12 @@ class Core
 			@trace.fromBrowser.push(row)
 		end
         @trace.devs.push(dev)
-		#FILTER ROW
-		isPorI,noOfparam=beaconImprParamCkeck(url,row)
+	end		
+
+	def filterRow(row)
+		url=row['url'].split("?")
+		host=row['host']
+		isPorI,noOfparam=beaconImprParamCkeck(url,row,full)
 		iaAdinURL=false
 		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
 		if type3rd!=nil	#	3rd PARTY CONTENT
@@ -258,7 +265,7 @@ class Core
 	def beaconImprParamCkeck(url,row) 
         @isBeacon=false
 		isAd=-1
-        if (@filters.is_Beacon?(url[0]))  		#findBeacon in URL
+        if (@filters.is_Beacon?(url[0],false))  		#findBeacon in URL
             isAd=0
             beaconSave(url[0],row)
         end
