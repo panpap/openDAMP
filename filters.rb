@@ -37,8 +37,8 @@ class Filters
                 return (@defines.beacon_key.any? {|word| params[0].downcase.include?(word)})
         end
 
-        def is_Beacon?(url,full)
-			if full and is_1pixel_image?(url)
+        def is_Beacon?(url)
+			if is_1pixel_image?(url)
 				return true
             elsif (url.downcase.include? ".htm" or url.downcase.include? ".xml")
                     return false

@@ -33,6 +33,12 @@ OptionParser.new { |opts|
     ops.stripURL
   end
 
+  opts.on('-q', '--quick', 'Quick parse trace') do
+	ops=Operations.new(ARGV[0])
+    ops.loadFile()
+    ops.quickParse
+  end
+
   opts.on('-t', '--timelines STRING', 'Make user Timelines per N seconds') do |sec|
 	path=ARGV[0].split("results_")[1]
 	s=path.split("/")[0]

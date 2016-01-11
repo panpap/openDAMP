@@ -12,12 +12,6 @@ class Core
 		@trace=Trace.new(@defines)
 		@window=-1
 		@cwd=nil
-		@full=fullParse	
-		if fullParse==true
-			puts "Full trace parsing has been chosen."
-		else
-			puts "Quick trace parsing has been chosen."
-		end
 	end
 
 	def getTrace
@@ -44,17 +38,21 @@ class Core
         return @trace.rows
     end
 
-	def parseRequest(row)
+	def parseRequest(row,quick)
 		@curUser=row['IPport']
 		if @trace.users[@curUser]==nil		#first seen user
 			@trace.users[@curUser]=User.new	
 		end
 
-		#CHECK THE DEVICE TYPE
-		mob,dev=reqOrigin(row)
+		if quick==true
+			pricesOnly(row)
+		else
+			#CHECK THE DEVICE TYPE
+			mob,dev=reqOrigin(row)
 
-		#FILTER ROW
-		filterRow(mob,dev,row)
+			#FILTER ROW
+			filterRow(mob,dev,row)
+		end
 	end
 
 	def close
@@ -118,8 +116,8 @@ class Core
 		fr.close
 	end
 
-#------------------------------------------------------------------------------------------------
 
+#------------------------------------------------------------------------------------------------
 
 
 	private
@@ -129,6 +127,22 @@ class Core
 		wnum=diff.to_f/@window.to_i
 		fw.puts "WINDOW "+(wnum.to_f/1000).to_s+" "+tmstp+" "+url
 	end
+
+	def pricesOnly(row)
+		url=row['url'].split("?")
+		if (url[1]==nil)
+     		return 0,false
+    	end
+        fields=url[1].split('&')
+        for field in fields do
+            keyVal=field.split("=")
+            if(not @filters.is_GarbageOrEmpty?(keyVal))
+				if(detectPrice(keyVal,row['host']))
+					Utilities.printRow(row,File.new(@defines.dirs['rootDir']+"PriceAds.out",'a'))
+				end
+			end
+		end
+	end	
 
 	def reqOrigin(row)
 		#CHECK IF ITS MOBILE USER
@@ -147,7 +161,7 @@ class Core
 	def filterRow(mob,dev,row)
 		url=row['url'].split("?")
 		host=row['host']
-		isPorI,noOfparam=beaconImprParamCkeck(url,row,@full)
+		isPorI,noOfparam=beaconImprParamCkeck(url,row)
 		iaAdinURL=false
 		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
 		if type3rd!=nil	#	3rd PARTY CONTENT
@@ -269,10 +283,10 @@ class Core
 		end
 	end
 
-	def beaconImprParamCkeck(url,row,full) 
+	def beaconImprParamCkeck(url,row) 
         @isBeacon=false
 		isAd=-1
-        if (@filters.is_Beacon?(url[0],full))  		#findBeacon in URL
+        if (@filters.is_Beacon?(url[0]))  		#findBeacon in URL
             isAd=0
             beaconSave(url[0],row)
         end
