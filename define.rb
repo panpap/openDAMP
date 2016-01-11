@@ -31,7 +31,7 @@ class Defines
 
 		#FILENAMES
 		@files=Hash.new
-		@files['parseResults']=@dirs['rootDir']+"parseResults.out"
+		@files['parseResults']=@dirs['rootDir']+"results.out"
 		@files['impFile']=@dirs['adsDir']+"impressions.out"
 		@files['adfile']=@dirs['adsDir']+"ads.out"
 		@files['prices']=@dirs['adsDir']+"prices.csv"
@@ -43,11 +43,10 @@ class Defines
 		@files['adDevices']=@dirs['adsDir']+"adDevices.csv"
 		@files['beaconT']=@dirs['adsDir']+"beaconsTypes.csv"
 		@files['userFile']=@dirs['userDir']+"userAnalysis.csv"
-	#	@files['publishers']=@dirs['dataDir']+"publishers.csv"
+		@files['publishers']=@dirs['adsDir']+"publishers.csv"
 		@files['leftovers']="leftovers.out"
 		@files['formatFile']="format.in"
 		@filterFile=@resources+'disconnect_merged.json'
-		@parseResults=@dirs['rootDir']+"results.out"
 
 		#KEYWORDS
 		@beacon_key=["beacon","pxl","pixel","adimppixel","data.gif","px.gif","pxlctl"]

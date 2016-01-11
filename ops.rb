@@ -94,7 +94,7 @@ class Operations
 
 
 	def analysisResults(trace)
-		fw=File.new(@defines.parseResults,'w')
+		fw=File.new(@defines.files['parseResults'],'w')
 		puts "> Calculating Statistics about detected ads..."
 		#LATENCY
 	#	lat=@func.getLatency
@@ -115,6 +115,12 @@ class Operations
 		results=Utilities.results_toString(trace,prices,numericPrices)
 		fw.puts results
 		puts results
+		fd=File.new(@defines.files['devices'],'w')
+		trace.devs.each{|dev| fd.puts dev}
+		fd.close
+		fsz=File.new(@defines.files['size3rdFile'],'w')
+		trace.sizes.each{|sz| fsz.puts sz}
+		fzs.close
 		fw.close
 		#PLOTING CDFs
 		puts "Creating CDFs..."

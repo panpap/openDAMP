@@ -39,57 +39,15 @@ class Core
     end
 
 	def parseRequest(row)
-		url=row['url'].split("?")
-		host=row['host']
 		@curUser=row['IPport']
 		if @trace.users[@curUser]==nil		#first seen user
 			@trace.users[@curUser]=User.new	
 		end
-		#CHECK IF ITS MOBILE USER
-		mob,dev=@filters.is_MobileType?(row)   # check the device type of the request
-		if mob
-			@trace.mobDev+=1
-		end
-		#CHECK IF ITS ORIGINATED FROM BROWSER
-		if @filters.is_Browser?(row,dev)
-			@trace.fromBrowser.push(row)
-		end
-        @fd1.puts dev
-		#FILTER ROW
-		isPorI,noOfparam=beaconImprParamCkeck(url,row)
-		iaAdinURL=false
-		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
-		if type3rd!=nil	#	3rd PARTY CONTENT
-			@trace.users[@curUser].row3rdparty[type3rd].push(row)
-			@trace.party3rd[type3rd]+=1
-			if not type3rd.eql? "Content"
-				if	type3rd.eql? "Advertising"
-					ad_detected(row,noOfparam,mob,dev,url)
-				end
-				#CALCULATE SIZE
-				sz=row['length']
-				@fz.puts sz
-				@trace.users[@curUser].sizes3rd.push(sz.to_i)
-				@trace.sizes.push(sz.to_i)
-			end
-		else		
-			if @isBeacon 	#Beacon NOT ad-related
-				@trace.users[@curUser].row3rdparty["Beacons"].push(row)
-			elsif isPorI>0	# Impression or ad in param
-				@trace.users[@curUser].row3rdparty["AdExtra"].push(row)
-				ad_detected(row,noOfparam,mob,dev,url)
-				@trace.party3rd["Advertising"]+=1
-			elsif isPorI<1	# Rest
-				@trace.users[@curUser].row3rdparty["Other"].push(row)
-				@trace.party3rd["Other"]+=1
-				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
-				Utilities.printStrippedURL(url,@fl)	# dump leftovers
-			end
-		end
+		parseRow(row)
 	end
 
 	def close
-		@fbt.close;@fp.close;@fb.close;@fz.close;@fi.close; @fa.close; @fl.close;@fn.close;@fd1.close;@fd2.close;@fu.close;@fnp.close;#@fpub.close
+		@fbt.close;@fp.close;@fb.close;@fi.close; @fa.close; @fl.close;@fn.close;@fu.close;@fnp.close;@fpub.close
 	end
 
 	def perUserAnalysis
@@ -161,6 +119,51 @@ class Core
 		fw.puts "WINDOW "+(wnum.to_f/1000).to_s+" "+tmstp+" "+url
 	end
 
+	def parseRow(row)
+		url=row['url'].split("?")
+		host=row['host']
+		#CHECK IF ITS MOBILE USER
+		mob,dev=@filters.is_MobileType?(row)   # check the device type of the request
+		if mob
+			@trace.mobDev+=1
+		end
+		#CHECK IF ITS ORIGINATED FROM BROWSER
+		if @filters.is_Browser?(row,dev)
+			@trace.fromBrowser.push(row)
+		end
+        @trace.devs.push(dev)
+		#FILTER ROW
+		isPorI,noOfparam=beaconImprParamCkeck(url,row)
+		iaAdinURL=false
+		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
+		if type3rd!=nil	#	3rd PARTY CONTENT
+			@trace.users[@curUser].row3rdparty[type3rd].push(row)
+			@trace.party3rd[type3rd]+=1
+			if not type3rd.eql? "Content"
+				if	type3rd.eql? "Advertising"
+					ad_detected(row,noOfparam,mob,dev,url)
+				end
+				#CALCULATE SIZE
+				sz=row['length']
+				@trace.users[@curUser].sizes3rd.push(sz.to_i)
+				@trace.sizes.push(sz.to_i)
+			end
+		else		
+			if @isBeacon 	#Beacon NOT ad-related
+				@trace.users[@curUser].row3rdparty["Beacons"].push(row)
+			elsif isPorI>0	# Impression or ad in param
+				@trace.users[@curUser].row3rdparty["AdExtra"].push(row)
+				ad_detected(row,noOfparam,mob,dev,url)
+				@trace.party3rd["Advertising"]+=1
+			elsif isPorI<1	# Rest
+				@trace.users[@curUser].row3rdparty["Other"].push(row)
+				@trace.party3rd["Other"]+=1
+				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
+		#		Utilities.printStrippedURL(url,@fl)	# dump leftovers
+			end
+		end
+	end
+
 	def makeDirsFiles
 		print "> Creating Directories... "
 		Dir.mkdir @defines.dirs['rootDir'] unless File.exists?(@defines.dirs['rootDir'])
@@ -173,11 +176,9 @@ class Core
         @fa=File.new(@defines.files['adfile'],'w')
         @fl=File.new(@defines.files['leftovers'],'w')
         @fp=File.new(@defines.files['prices'],'w')
-	#	@fpub=File.new(@defines.publishers,'w')
+		@fpub=File.new(@defines.files['publishers'],'w')
         @fn=File.new(@defines.files['paramsNum'],'w')
-        @fd1=File.new(@defines.files['devices'],'w')
         @fb=File.new(@defines.files['bcnFile'],'w')
-        @fz=File.new(@defines.files['size3rdFile'],'w')
         @fd2=File.new(@defines.files['adDevices'],'w')
         @fbt=File.new(@defines.files['beaconT'],'w')
 		@fu=File.new(@defines.files['userFile'],'w')
@@ -281,7 +282,7 @@ class Core
 		if(mob)
 			@trace.numOfMobileAds+=1
 		end
-		@fd2.puts(dev)	#adRelated Devices
+	#	@fd2.puts(dev)	#adRelated Devices
         Utilities.printStrippedURL(url,@fa)
 	end
 end
