@@ -27,11 +27,11 @@ class Operations
 		atts.each{|a| Utilities.countInstances(@defines.dirs['dataDir']+a); f[a].close}
 	end
 
-	def makeTimelines(sec,path)
-		@func.window=sec.to_i #store in msec
+	def makeTimelines(msec,path)
+		@func.window=msec.to_i #store in msec
 		@func.cwd=path
 		cwd=path
-		puts "> Start creating user timelines using window: "+@func.window.to_s+" msec"
+		puts "> Start creating user timelines using window: "+msec+" msec"
 		path=cwd+@defines.userDir
 		entries=Dir.entries(path) rescue entries=Array.new
 		if entries.size > 3 # DIRECTORY EXISTS AND IS NOT EMPTY
