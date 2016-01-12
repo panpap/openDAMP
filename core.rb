@@ -88,6 +88,7 @@ class Core
 					applyTimeWindow(firstTime,parts[0],parts[1],fw)
 				end
 				fr.close;fw.close
+			break
 			end
 		end
 	end
