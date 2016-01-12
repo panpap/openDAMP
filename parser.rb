@@ -39,7 +39,7 @@ OptionParser.new { |opts|
     ops.quickParse
   end
 
-  opts.on('-t', '--timelines STRING', 'Make user Timelines per N seconds') do |sec|
+  opts.on('-t', '--timelines SECONDS', 'Make user Timelines per N seconds') do |sec|
 	path=ARGV[0].split("results_")[1]
 	s=path.split("/")[0]
 	lastChar=path[path.size-2]
