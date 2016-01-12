@@ -89,6 +89,7 @@ class Core
 				c=0
 				while line=fr.gets
 					parts=line.chop.split(" ")
+puts line.split("\t")
 					r=Format.columnsFormat(line,@defines.column_Format)
 					mob,dev,browser=reqOrigin(r)
 					if browser

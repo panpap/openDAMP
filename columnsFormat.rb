@@ -20,8 +20,6 @@ module Format
 		    h['dur']=part[9]
 		elsif dataset==2
 			#id	NodeIP	UserIP	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss	PortNumber	HTTP_Verb	ToCrawl	Path	HTTPReferer	UserAgent	Host	Cookie	OrigReq	ToCrawl_v2	ContentType
-			part.each{|p| puts p}
-
 			h['uIP']=part[2]
             h['tmstp']=part[3]
             h['status']=part[4]
