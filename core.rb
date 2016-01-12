@@ -86,7 +86,7 @@ class Core
 					parts=line.chop.split(" ")
 					r=Format.columnsFormat(line,@defines.column_Format)				
 					if firstTime==-1
-						firstTime=parts[0].to_i
+						firstTime=r['tmstp'].to_i
 					end
 					rows.push(r)
 					nbucket=applyTimeWindow(firstTime,r['tmstp'],r['url'],fw)
