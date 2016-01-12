@@ -43,7 +43,7 @@ module Utilities
 				row['dataSz']+"\t"+
 				row['dur'])
 		elsif dataset==2
-			fp.puts("\t-\t-\t"+
+			fp.puts("\t-\t"+
 			row['uIP']+"\t"+
             row['tmstp']+"\t"+
             row['status']+"\t"+
