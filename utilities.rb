@@ -135,14 +135,16 @@ module Utilities
     end
 
 	def Utilities.printRow(row,fw)
-		for key in row.keys
-        	fw.puts key+" => "+row[key]
-			if key=="url"
-				Utilities.printStrippedURL(row[key].split('?'),fw)
-			end
-     	end
-        fw.puts "------------------------------------------------"
-    end
+		if fw!=nil
+			for key in row.keys
+	        	fw.puts key+" => "+row[key]
+				if key=="url"
+					Utilities.printStrippedURL(row[key].split('?'),fw)
+				end
+	     	end
+	        fw.puts "------------------------------------------------"
+	    end
+	end
 
 	def Utilities.countInstances(file)
 		if File.exists?(file)
