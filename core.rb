@@ -247,8 +247,10 @@ puts ">> "+firstTime.to_s+" "+tmstp.to_i.to_s+" "+diff.to_s+" "+wnum.to_i.to_s
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
-          	@fp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
-			if (Utilities.is_numeric?(keyVal[1]))
+			if @fp!=nil
+	          	@fp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
+			end
+			if (Utilities.is_numeric?(keyVal[1]) and @fnp!=nil)
 				@fnp.puts host+"\t"+keyVal[0].downcase
 			end
 			@trace.users[@curUser].dPrices.push(keyVal[1])
