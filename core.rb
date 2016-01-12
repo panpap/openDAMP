@@ -101,7 +101,7 @@ if tmln=="185.37.226.107:10834"
 						startBucket=r['tmstp']
 					end
 					fw.puts "BUCKET "+bucket.to_s+"\t"+r['tmstp']+"\t"+r['url']
-puts ">> "+firstTime.to_s+" "+row['tmstp'].to_i.to_s+" "+diff.to_s+" "+wnum.to_i.to_s
+puts ">> "+firstTime.to_s+" "+r['tmstp'].to_i.to_s+" "+diff.to_s+" "+wnum.to_i.to_s
 					endBucket=r['tmstp'].to_i
 					@trace.rows.push(r)
 					parseRequest(r,false)
