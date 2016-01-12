@@ -75,7 +75,7 @@ module Utilities
         true if Float(object) rescue false
     end
 
-	def Utilities.results_toString(trace)
+	def Utilities.results_toString(trace,printVertical)
 		numericPrices=Array.new
 		prices=trace.detectedPrices
         for p in prices do
@@ -87,21 +87,41 @@ module Utilities
 		pricesStats=Utilities.makeStats(numericPrices)
 		paramsStats,sizeStats=trace.analyzeTotalAds
 		#PRINTING RESULTS
-		s="> Printing Results...\nTRACE STATS\n------------\n"+"Total users in trace: "+trace.users.size.to_s+"\n"+"Traffic from  mobile devices: "+
-		trace.mobDev.to_s+"/"+totalNumofRows.to_s+"\n"+"Traffic originated from Browser: "+trace.fromBrowser.size.to_s+"\n Browser-prices: "+trace.browserPrices.to_s+"\n"+"3rd Party content detected:"+"\n"+"Advertising => "+trace.party3rd['Advertising'].to_s+
-		" Analytics => "+trace.party3rd['Analytics'].to_s+" Social => "+trace.party3rd['Social'].to_s+" Content => "+trace.party3rd['Content'].to_s+
-		" Beacons => "+trace.party3rd['totalBeacons'].to_s+" Other => "+trace.party3rd['Other'].to_s+"\n"+
-		"\nSize of the unnecessary 3rd Party content (i.e. Adverising+Analytics+Social)\nTotal: "+sizeStats['sum'].to_s+" Bytes - Average: "+
-		sizeStats['avg'].to_s+" Bytes"+"\n"+"Total Number of rows = "+(trace.party3rd['Advertising']+trace.party3rd['Analytics']+trace.party3rd['Social']+
-		trace.party3rd['totalBeacons']+trace.party3rd['Content']+trace.party3rd['Other']-trace.totalAdBeacons).to_s+"\n"+"Total Ads-related requests found: "+
-		trace.party3rd['Advertising'].to_s+"/"+totalNumofRows.to_s+"\n"+"Ad-related traffic using mobile devices: "+trace.numOfMobileAds.to_s+"/"+
-		trace.party3rd['Advertising'].to_s+"\n"+"Number of parameters:\nmax => "+paramsStats['max'].to_s+" min=>"+paramsStats['min'].to_s+" avg=>"+
-		paramsStats['avg'].to_s+"\n"+"Price tags found: "+prices.length.to_s+"\n"+numericPrices.size.to_s+"/"+prices.size.to_s+
-		" are actually numeric values"+"\n"+"Average price "+pricesStats['avg'].to_s+"\n"+"Beacons found: "+trace.party3rd['totalBeacons'].to_s+
-		"\nAds-related beacons: "+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+"\n"+"Impressions detected "+trace.totalImps.to_s+"\n"+
-#        puts "Average latency "+avgL.to_s
-		"PER USER STATS"+"\n"+"TODO"
-		return s
+		if printVertical
+			s="> Printing Results...\nTRACE STATS\n------------\n"+"Total users in trace: "+trace.users.size.to_s+"\n"+"Traffic from  mobile devices: "+
+			trace.mobDev.to_s+"/"+totalNumofRows.to_s+"\n"+"Traffic originated from Browser: "+trace.fromBrowser.size.to_s+"\n Browser-prices: "+trace.browserPrices.to_s+"\n"+"3rd Party content detected:"+"\n"+"Advertising => "+trace.party3rd['Advertising'].to_s+
+			" Analytics => "+trace.party3rd['Analytics'].to_s+" Social => "+trace.party3rd['Social'].to_s+" Content => "+trace.party3rd['Content'].to_s+
+			" Beacons => "+trace.party3rd['totalBeacons'].to_s+" Other => "+trace.party3rd['Other'].to_s+"\n"+
+			"\nSize of the unnecessary 3rd Party content (i.e. Adverising+Analytics+Social)\nTotal: "+sizeStats['sum'].to_s+" Bytes - Average: "+
+			sizeStats['avg'].to_s+" Bytes"+"\n"+"Total Number of rows = "+(trace.party3rd['Advertising']+trace.party3rd['Analytics']+trace.party3rd['Social']+
+			trace.party3rd['totalBeacons']+trace.party3rd['Content']+trace.party3rd['Other']-trace.totalAdBeacons).to_s+"\n"+"Total Ads-related requests found: "+
+			trace.party3rd['Advertising'].to_s+"/"+totalNumofRows.to_s+"\n"+"Ad-related traffic using mobile devices: "+trace.numOfMobileAds.to_s+"/"+
+			trace.party3rd['Advertising'].to_s+"\n"+"Number of parameters:\nmax => "+paramsStats['max'].to_s+" min=>"+paramsStats['min'].to_s+" avg=>"+
+			paramsStats['avg'].to_s+"\n"+"Price tags found: "+prices.length.to_s+"\n"+numericPrices.size.to_s+"/"+prices.size.to_s+
+			" are actually numeric values"+"\n"+"Average price "+pricesStats['avg'].to_s+"\n"+"Beacons found: "+trace.party3rd['totalBeacons'].to_s+
+			"\nAds-related beacons: "+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+"\n"+"Impressions detected "+trace.totalImps.to_s+"\n"+
+	#        puts "Average latency "+avgL.to_s
+			"PER USER STATS"+"\n"+"TODO"
+			return s
+		else
+			headers="Total users in trace;Traffic from mobile devices;Traffic originated from Browser;Browser-prices;"+
+			"3rd Party content detected: [Advertising,Analytics,Social,Content,Beacons,Other];"+
+			"3rd Party content size: [Total,Average];Total Number of rows;Total Ads-related requests found;Ad-related traffic using mobile devices;"+
+			"Number of parameters:[max,min,avg];Price tags found;numeric values;Average price;Beacons found;Ads-related beacons;Impressions detected\n"
+
+			s=trace.users.size.to_s+";"+
+			trace.mobDev.to_s+"/"+totalNumofRows.to_s+";"+trace.fromBrowser.size.to_s+";"+trace.browserPrices.to_s+";["+trace.party3rd['Advertising'].to_s+
+			","+trace.party3rd['Analytics'].to_s+","+trace.party3rd['Social'].to_s+","+trace.party3rd['Content'].to_s+
+			","+trace.party3rd['totalBeacons'].to_s+","+trace.party3rd['Other'].to_s+"];["+sizeStats['sum'].to_s+","+
+			sizeStats['avg'].to_s+"];"+(trace.party3rd['Advertising']+trace.party3rd['Analytics']+trace.party3rd['Social']+
+			trace.party3rd['totalBeacons']+trace.party3rd['Content']+trace.party3rd['Other']-trace.totalAdBeacons).to_s+";"+
+			trace.party3rd['Advertising'].to_s+"/"+totalNumofRows.to_s+";"+trace.numOfMobileAds.to_s+"/"+
+			trace.party3rd['Advertising'].to_s+";["+paramsStats['max'].to_s+","+paramsStats['min'].to_s+","+
+			paramsStats['avg'].to_s+"];"+prices.length.to_s+";"+numericPrices.size.to_s+"/"+prices.size.to_s+
+			";"+pricesStats['avg'].to_s+";"+trace.party3rd['totalBeacons'].to_s+
+			";"+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+";"+trace.totalImps.to_s+"\n"
+			return s,headers
+		end
 	end
 
    	def Utilities.stripper(str)

@@ -117,7 +117,7 @@ class Operations
 		system("sort "+@defines.files['priceTagsFile']+" | uniq >"+@defines.files['priceTagsFile']+".csv")
 		system("rm -f "+@defines.files['priceTagsFile'])
 		@func.perUserAnalysis()
-		results=Utilities.results_toString(trace)
+		results=Utilities.results_toString(trace,true)
 		fw.puts results
 		puts results
 		fd=File.new(@defines.files['devices'],'w')

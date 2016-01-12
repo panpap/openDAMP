@@ -83,19 +83,23 @@ if tmln=="185.37.226.107:10834"
 				fw=File.new(timeline_path+tmln+"_per"+@window.to_s+"msec",'w')
 				firstTime=-1
 				bucket=0
+				startBucket=-1
 				while line=fr.gets
 					parts=line.chop.split(" ")
 					r=Format.columnsFormat(line,@defines.column_Format)				
 					if firstTime==-1
 						firstTime=r['tmstp'].to_i
+						startBucket=firstTime
 					end
 					nbucket=applyTimeWindow(firstTime,r['tmstp'],r['url'],fw)
 					if bucket!=nbucket						
 						bucket=nbucket
-						puts "NEW BUCKET "+bucket.to_s
-						bucketResults(@trace,fw)
+						fw.puts Utilities.results_toString(trace,false)
+						fw.print startBucket.to_s+" : "+endBucket.to_s+"-> NEW BUCKET "+bucket.to_s
 						@trace=Trace.new(@defines)
+						startBucket=r['tmstp']
 					end
+					endBucket=r['tmstp'].to_i
 					@trace.rows.push(r)
 					parseRequest(r,false)
 				end
@@ -103,7 +107,7 @@ if tmln=="185.37.226.107:10834"
 	end
 			end
 		end
-		bucketResults(@trace,fw)
+		fw.puts Utilities.results_toString(trace,false)
 		@trace=Trace.new(@defines)
 	end
 
@@ -135,11 +139,6 @@ if tmln=="185.37.226.107:10834"
 
 
 	private
-
-	def bucketResults(trace,fw)
-		results=Utilities.results_toString(trace)
-		puts results
-	end
 
 	def applyTimeWindow(firstTime,tmstp,url,fw)
 		diff=tmstp.to_i-firstTime
