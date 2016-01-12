@@ -91,7 +91,7 @@ if tmln=="185.37.226.107:10834"
 				while line=fr.gets
 					parts=line.chop.split(" ")
 					r=Format.columnsFormat(line,@defines.column_Format)
-					@curUser=row['IPport']
+					@curUser=r['IPport']
 					if @trace.users[@curUser]==nil		#first seen user
 						@trace.users[@curUser]=User.new	
 					end
