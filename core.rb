@@ -79,17 +79,17 @@ class Core
 			if not tmln.include? '.' and not File.directory?(user_path+tmln)
 				fr=File.new(user_path+tmln,'r')
 				fw=File.new(timeline_path+tmln+"_per"+(@window/1000).to_s+"sec",'w')
-				events=Hash.new
 				@@firstTime=-1
 				while line=fr.gets
 					parts=line.chop.split(" ")
 					if @@firstTime==-1
 						@@firstTime==parts[0].to_i
 					end
-					applyTimeWindow(parts[0],parts[1],fw)						
+					applyTimeWindow(parts[0],parts[1],fw)
 				end
 				fr.close;fw.close
 			end
+break
 		end
 	end
 
@@ -123,6 +123,7 @@ class Core
 	private
 
 	def applyTimeWindow(tmstp,url,fw)
+		puts tmstp.to_s+" "+@@firstTime.to_s
 		diff=tmstp.to_i-@@firstTime
 		wnum=diff.to_f/@window.to_i
 		fw.puts "WINDOW "+(wnum.to_f/1000).to_s+" "+tmstp+" "+url
