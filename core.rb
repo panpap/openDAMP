@@ -76,7 +76,7 @@ class Core
 		user_path=@cwd+@defines.userDir
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		for tmln in tmlnFiles do
-puts user_path+tmln+" "+File.directory?(user_path+tmln)
+puts user_path+tmln+" "+File.directory?(user_path+tmln).to_s
 			if not tmln.include? '.' and not File.directory?(user_path+tmln)
 				fr=File.new(user_path+tmln,'r')
 				fw=File.new(timeline_path+tmln+"_per"+(@window/1000).to_s+"sec",'w')
