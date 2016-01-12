@@ -79,13 +79,13 @@ class Core
 			if not tmln.eql? '.' and not tmln.eql? ".." and not File.directory?(user_path+tmln)
 				fr=File.new(user_path+tmln,'r')
 				fw=File.new(timeline_path+tmln+"_per"+(@window/1000).to_s+"sec",'w')
-				@@firstTime=-1
+				firstTime=-1
 				while line=fr.gets
 					parts=line.chop.split(" ")
-					#if @@firstTime==-1
-						@@firstTime==parts[0].to_i
-					#end
-					applyTimeWindow(parts[0],parts[1],fw)
+					if firstTime==-1
+						firstTime==parts[0].to_i
+					end
+					applyTimeWindow(firstTime,parts[0],parts[1],fw)
 				end
 				fr.close;fw.close
 			end
@@ -101,14 +101,14 @@ class Core
 			user=l.chop
 			fw=File.new(timeline_path+user+"_per"+(@window/1000).to_s+"sec",'w')
 			IO.popen('grep '+user+' ./'+@defines.traceFile) { |io| 
-			@@firstTime=-1
+			firstTime=-1
 			while (line = io.gets) do 
 				h=Format.columnsFormat(line,@defines.column_Format)
 				Utilities.separateTimelineEvents(h,user_path+h['IPport'])
-				if @@firstTime==-1
-					@@firstTime=h['tmstp'].to_i
+				if firstTime==-1
+					firstTime=h['tmstp'].to_i
 				end
-				applyTimeWindow(h['tmstp'],h['url'],fw)
+				applyTimeWindow(firstTime,h['tmstp'],h['url'],fw)
 			end }
 			fw.close
 		end
@@ -121,9 +121,9 @@ class Core
 
 	private
 
-	def applyTimeWindow(tmstp,url,fw)
-		puts tmstp.to_s+" "+@@firstTime.to_s
-		diff=tmstp.to_i-@@firstTime
+	def applyTimeWindow(firstTime,tmstp,url,fw)
+		puts tmstp.to_s+" "+firstTime.to_s
+		diff=tmstp.to_i-firstTime
 		wnum=diff.to_f/@window.to_i
 		fw.puts "WINDOW "+(wnum.to_f/1000).to_s+" "+tmstp+" "+url
 	end
