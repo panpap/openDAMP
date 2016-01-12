@@ -104,7 +104,7 @@ module Utilities
 			"PER USER STATS"+"\n"+"TODO"
 			return s
 		else
-			header="\nTotal users in trace;Traffic from mobile devices;Traffic originated from Browser;Browser-prices;"+
+			header="Total users in trace;Traffic from mobile devices;Traffic originated from Browser;Browser-prices;"+
 			"3rd Party content detected: [Advertising,Analytics,Social,Content,Beacons,Other];"+
 			"3rd Party content size: [Total,Average];Total Number of rows;Total Ads-related requests found;Ad-related traffic using mobile devices;"+
 			"Number of parameters:[max,min,avg];Price tags found;numeric values;Average price;Beacons found;Ads-related beacons;Impressions detected\n"

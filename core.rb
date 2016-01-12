@@ -94,7 +94,7 @@ if tmln=="185.37.226.107:10834"
 					end
 					nbucket=applyTimeWindow(firstTime,r['tmstp'],r['url'],fw)
 					if bucket!=nbucket						
-						fw.puts startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
+						fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
 						fw.puts Utilities.results_toString(@trace,false)
 						bucket=nbucket
 						@trace=Trace.new(@defines)
@@ -104,7 +104,7 @@ if tmln=="185.37.226.107:10834"
 					@trace.rows.push(r)
 					parseRequest(r,false)
 				end
-				fw.puts startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
+				fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
 				fw.puts Utilities.results_toString(@trace,false)
 				@trace=Trace.new(@defines)
 				fr.close;fw.close
