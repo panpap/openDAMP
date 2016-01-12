@@ -43,16 +43,16 @@ module Utilities
 				row['dataSz']+"\t"+
 				row['dur'])
 		elsif dataset==2
-			fp.puts("\t\t\t"+
+			fp.puts("\t-\t-\t"+
 			row['uIP']+"\t"+
             row['tmstp']+"\t"+
             row['status']+"\t"+
             row['length']+"\t"+
             row['dataSz']+"\t"+
-            row['dur']+"\t\t"+
+            row['dur']+"\t-\t"+
 			row['IPport']+"\t"+
-			row['verb']+"\t\t"+
-			row['url']+"\t\t"+
+			row['verb']+"\t-\t"+
+			row['url']+"\t-\t"+
             row['ua']+"\t"+
 			row['host'])
 		else
