@@ -95,6 +95,7 @@ class Core
 						bucketResults(@trace,fw)
 						@trace=Trace.new(@defines)
 					end
+					@trace.rows.push(r)
 					parseRequest(r,false)
 				end
 				fr.close;fw.close
