@@ -104,7 +104,7 @@ module Utilities
 			"PER USER STATS"+"\n"+"TODO"
 			return s
 		else
-			s=";"trace.users.size.to_s+";"+
+			s=";"+trace.users.size.to_s+";"+
 			trace.mobDev.to_s+"/"+totalNumofRows.to_s+";"+trace.fromBrowser.size.to_s+";"+trace.browserPrices.to_s+";["+trace.party3rd['Advertising'].to_s+
 			","+trace.party3rd['Analytics'].to_s+","+trace.party3rd['Social'].to_s+","+trace.party3rd['Content'].to_s+
 			","+trace.party3rd['totalBeacons'].to_s+","+trace.party3rd['Other'].to_s+"];["+sizeStats['sum'].to_s+","+
