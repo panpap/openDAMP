@@ -1,7 +1,7 @@
 load 'user.rb'
 
 class Trace
-	attr_accessor :rows, :fromBrowser, :devs, :browserPrices, :mobDev, :numOfMobileAds, :totalAdBeacons, :totalImps, :users, :detectedPrices, :party3rd, :sizes, :totalParamNum
+	attr_accessor :rows, :fromBrowser, :devs, :publishers, :browserPrices, :mobDev, :numOfMobileAds, :totalAdBeacons, :totalImps, :users, :detectedPrices, :party3rd, :sizes, :totalParamNum
 
 	def initialize(defs)
 		@defines=defs
