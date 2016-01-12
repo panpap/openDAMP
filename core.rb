@@ -123,7 +123,7 @@ class Core
 	private
 
 	def applyTimeWindow(firstTime,tmstp,url,fw)
-		puts tmstp.to_s+" "+firstTime.to_s
+		puts firstTime.to_s+" "+tmstp.to_s+" "+diff.to_s+" "+wnum.to_s
 		diff=tmstp.to_i-firstTime
 		wnum=diff.to_f/@window.to_i
 		fw.puts "WINDOW "+(wnum.to_f/1000).to_s+" "+tmstp+" "+url
