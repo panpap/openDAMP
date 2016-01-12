@@ -92,7 +92,7 @@ if tmln=="185.37.226.107:10834"
 						firstTime=r['tmstp'].to_i
 						startBucket=firstTime
 					end
-					nbucket=applyTimeWindow(firstTime,r['tmstp'],r['url'],fw)
+					nbucket=applyTimeWindow(firstTime,r,fw)
 					if bucket!=nbucket						
 						fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
 						fw.puts Utilities.results_toString(@trace,false)
@@ -129,7 +129,7 @@ if tmln=="185.37.226.107:10834"
 				if firstTime==-1
 					firstTime=h['tmstp'].to_i
 				end
-				applyTimeWindow(firstTime,h['tmstp'],h['url'],fw)
+				applyTimeWindow(firstTime,row,fw)
 			end }
 			fw.close
 		end
@@ -142,11 +142,11 @@ if tmln=="185.37.226.107:10834"
 
 	private
 
-	def applyTimeWindow(firstTime,tmstp,url,fw)
-		diff=tmstp.to_i-firstTime
+	def applyTimeWindow(firstTime,row,fw)
+		diff=row['tmstp'].to_i-firstTime
 		wnum=diff.to_f/@window.to_i
-		fw.puts "WINDOW "+wnum.to_i.to_s+" "+tmstp+" "+url
-puts ">> "+firstTime.to_s+" "+tmstp.to_i.to_s+" "+diff.to_s+" "+wnum.to_i.to_s
+		fw.puts "WINDOW "+wnum.to_i.to_s+" "+row['tmstp']+" "+row['host']+" "+row['url']
+puts ">> "+firstTime.to_s+" "+row['tmstp'].to_i.to_s+" "+diff.to_s+" "+wnum.to_i.to_s
 		return wnum.to_i
 	end
 
