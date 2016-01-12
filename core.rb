@@ -76,17 +76,15 @@ class Core
 		user_path=@cwd+@defines.userDir
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		for tmln in tmlnFiles do
-puts user_path+tmln+" "+File.directory?(user_path+tmln).to_s
 			if not tmln.eql? '.' and not tmln.eql? ".." and not File.directory?(user_path+tmln)
-puts "MESA"
 				fr=File.new(user_path+tmln,'r')
 				fw=File.new(timeline_path+tmln+"_per"+(@window/1000).to_s+"sec",'w')
 				@@firstTime=-1
 				while line=fr.gets
 					parts=line.chop.split(" ")
-					if @@firstTime==-1
+					#if @@firstTime==-1
 						@@firstTime==parts[0].to_i
-					end
+					#end
 					applyTimeWindow(parts[0],parts[1],fw)
 				end
 				fr.close;fw.close
