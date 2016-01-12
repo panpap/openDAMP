@@ -92,7 +92,7 @@ class Core
 					nbucket=applyTimeWindow(firstTime,r['tmstp'],r['url'],fw)
 					if bucket!=nbucket
 						bucket=nbucket
-						parseRequest(r,false)
+						rows.each{|r| parseRequest(r,false)}
 						rows=Array.new
 						bucketResults(@trace,fw)
 						@trace=Trace.new(@defines)

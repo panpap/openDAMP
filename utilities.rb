@@ -145,7 +145,9 @@ module Utilities
     end
 
 	def Utilities.countInstances(file)
-        system('sort -n '+file+' | uniq > '+file+"_uniq")
-        system('sort -n '+file+' | uniq -c | sort -n  |tac > '+file+"_cnt") #calculate distribution
-	end	
+		if File.exists?(file)
+        	system('sort -n '+file+' | uniq > '+file+"_uniq")
+        	system('sort -n '+file+' | uniq -c | sort -n  |tac > '+file+"_cnt") #calculate distribution
+		end	
+	end
 end
