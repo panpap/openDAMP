@@ -28,10 +28,10 @@ class Core
         f=File.new(filename,'r')
         line=f.gets     #get rid of headers
         while(line=f.gets)
-		h=Format.columnsFormat(line,@defines.column_Format)
-		if h['host'].size>1 and h['host'].count('.')>0
-            		@trace.rows.push(h)
-		end
+			h=Format.columnsFormat(line,@defines.column_Format)
+			if h['host'].size>1 and h['host'].count('.')>0
+		        		@trace.rows.push(h)
+			end
         end
         f.close
 		@adFilter=@filters.loadExternalFilter()
@@ -78,14 +78,25 @@ class Core
 		for tmln in tmlnFiles do
 			if not tmln.eql? '.' and not tmln.eql? ".." and not File.directory?(user_path+tmln)
 				fr=File.new(user_path+tmln,'r')
-				fw=File.new(timeline_path+tmln+"_per"+(@window/1000).to_s+"sec",'w')
+				fw=File.new(timeline_path+tmln+"_per"+@window.to_s+"msec",'w')
 				firstTime=-1
+				bucket=0
+				rows=Array.new
 				while line=fr.gets
 					parts=line.chop.split(" ")
+					r=Format.columnsFormat(line,@defines.column_Format)				
 					if firstTime==-1
 						firstTime=parts[0].to_i
 					end
-					applyTimeWindow(firstTime,parts[0],parts[1],fw)
+					rows.push(r)
+					nbucket=applyTimeWindow(firstTime,parts[0],parts[1],fw)
+					if bucket!=nbucket
+						bucket=nbucket
+						parseRequest(r,false)
+						rows=Array.new
+						bucketResults(@trace,fw)
+						@trace=Trace.new(@defines)
+					end
 				end
 				fr.close;fw.close
 			break
@@ -122,11 +133,15 @@ class Core
 
 	private
 
+	def bucketResults(trace,fw)
+		puts "TODO"
+	end
+
 	def applyTimeWindow(firstTime,tmstp,url,fw)
 		diff=tmstp.to_i-firstTime
 		wnum=diff.to_f/@window.to_i
-		fw.puts "WINDOW "+(wnum.to_f/1000).to_s+" "+tmstp+" "+url
-puts firstTime.to_s+" "+tmstp.to_s+" "+diff.to_s+" "+wnum.to_s+" "+wnum.to_i.to_s
+		fw.puts "WINDOW "+wnum.to_i.to_s+" "+tmstp+" "+url
+		return wnum.to_i
 	end
 
 	def pricesOnly(row)

@@ -31,7 +31,16 @@ module Utilities
 
 	def Utilities.separateTimelineEvents(row,writeTo)
 		fp=File.new(writeTo,'a')
-		fp.puts(row['tmstp']+" "+row['url'])
+		fp.puts(row['IPport']+"\t"+
+		    row['uIP']+"\t"+
+		    row['url']+"\t"+
+		    row['ua']+"\t"+
+		    row['host']+"\t"+
+		    row['tmstp']+"\t"+
+		    row['status']+"\t"+
+		    row['length']+"\t"+
+		    row['dataSz']+"\t"+
+		    row['dur'])
 		fp.close
 	end
 
