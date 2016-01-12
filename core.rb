@@ -50,11 +50,12 @@ class Core
 			#CHECK THE DEVICE TYPE
 			mob,dev,browser=reqOrigin(row)
 			if browserOnly and not browser
-				return 
+				return -1
 			end
 			#FILTER ROW
 			filterRow(mob,dev,browser,row)
 		end
+		return 1
 	end
 
 	def close
@@ -105,7 +106,9 @@ if tmln=="185.37.226.107:10834"
 					fw.puts "BUCKET "+bucket.to_s+"\t"+r['tmstp']+"\t"+r['url']
 					endBucket=r['tmstp'].to_i
 					@trace.rows.push(r)
-					parseRow(r,true)
+					if (parseRequest(r,false,true)!=-1)
+						@trace.rows.push(r)
+					end
 				end
 				fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
 				fw.puts Utilities.results_toString(@trace,false)+"\n"
@@ -144,21 +147,6 @@ if tmln=="185.37.226.107:10834"
 
 
 	private
-
-	def parseRow()
-		@curUser=row['IPport']
-		if @trace.users[@curUser]==nil		#first seen user
-			@trace.users[@curUser]=User.new	
-		end
-		#CHECK THE DEVICE TYPE
-		mob,dev,browser=reqOrigin(row)
-		if browserOnly and not browser
-			return 
-		end
-		#FILTER ROW
-		@trace.rows.push(r)
-		filterRow(mob,dev,browser,row)
-	end
 
 	def applyTimeWindow(firstTime,row,fw)
 		diff=row['tmstp'].to_i-firstTime
