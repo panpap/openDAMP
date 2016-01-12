@@ -98,16 +98,17 @@ if tmln=="185.37.226.107:10834"
 					end
 					nbucket=applyTimeWindow(firstTime,r['tmstp'],r['url'],fw)
 					if bucket!=nbucket						
-						bucket=nbucket
 						fw.puts Utilities.results_toString(@trace,false)
-						fw.puts startBucket.to_s+" : "+endBucket.to_s+"-> NEW BUCKET "+bucket.to_s
+						fw.puts startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
+						bucket=nbucket
 						@trace=Trace.new(@defines)
 						startBucket=r['tmstp']
 					end
 					endBucket=r['tmstp'].to_i
 					@trace.rows.push(r)
 					parseRequest(r,false)
-				end	
+				end
+				fw.puts startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
 				fw.puts Utilities.results_toString(@trace,false)
 				@trace=Trace.new(@defines)
 				fr.close;fw.close
@@ -148,7 +149,7 @@ if tmln=="185.37.226.107:10834"
 	def applyTimeWindow(firstTime,tmstp,url,fw)
 		diff=tmstp.to_i-firstTime
 		wnum=diff.to_f/@window.to_i
-		fw.puts "WINDOW "+wnum.to_i.to_s+" "+tmstp+" "+url
+		#fw.puts "WINDOW "+wnum.to_i.to_s+" "+tmstp+" "+url
 puts ">> "+firstTime.to_s+" "+tmstp.to_i.to_s+" "+diff.to_s+" "+wnum.to_i.to_s
 		return wnum.to_i
 	end
