@@ -142,7 +142,7 @@ class Core
 		diff=tmstp.to_i-firstTime
 		wnum=diff.to_f/@window.to_i
 		fw.puts "WINDOW "+wnum.to_i.to_s+" "+tmstp+" "+url
-puts firstTime.to_s+" "+tmstp.to_i.to_s+" "+diff.to_s+" "+wnum.to_i
+puts firstTime.to_s+" "+tmstp.to_i.to_s+" "+diff.to_s+" "+wnum.to_i.to_s
 		return wnum.to_i
 	end
 
