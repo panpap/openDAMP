@@ -29,6 +29,18 @@ module Format
 			h['IPport']=part[9]
 			h['verb']=part[10]
 			h['host']=part[15]
+
+
+puts 'uIP '+h['uIP']+'tmstp '+
+            h['tmstp']+"status "+
+            h['status']+"length "+
+            h['length']+'dataSz '+
+            h['dataSz']+'dur '+
+            h['dur']+'IPport '+
+			h['IPport']+"verb "+
+			h['verb']+"host "+
+			h['host']
+
 			if (["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})
 				h['url']=h['host']+part[12]	#host+path
 			elsif h['verb'].downcase=="connect" 
