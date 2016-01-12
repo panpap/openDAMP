@@ -91,10 +91,6 @@ if tmln=="185.37.226.107:10834"
 				while line=fr.gets
 					parts=line.chop.split(" ")
 					r=Format.columnsFormat(line,@defines.column_Format)
-					@curUser=r['IPport']
-			#		if @trace.users[@curUser]==nil		#first seen user
-						@trace.users[@curUser]=User.new	
-				#	end
 					mob,dev,browser=reqOrigin(r)
 					if browser
 						if firstTime==-1
@@ -108,6 +104,10 @@ if tmln=="185.37.226.107:10834"
 							bucket=nbucket
 							@trace=Trace.new(@defines)
 							startBucket=r['tmstp']
+						end
+						@curUser=r['IPport']
+						if @trace.users[@curUser]==nil		#first seen user
+							@trace.users[@curUser]=User.new	
 						end
 						filterRow(mob,dev,browser,r)
 						@trace.rows.push(r)
