@@ -29,18 +29,35 @@ module Utilities
 		return u
 	end	
 
-	def Utilities.separateTimelineEvents(row,writeTo)
+	def Utilities.separateTimelineEvents(row,writeTo,dataset)
 		fp=File.new(writeTo,'a')
-		fp.puts(row['IPport']+"\t"+
-		    row['uIP'].to_s+"\t"+
-		    row['url']+"\t"+
-		    row['ua']+"\t"+
-		    row['host']+"\t"+
-		    row['tmstp']+"\t"+
-		    row['status']+"\t"+
-		    row['length']+"\t"+
-		    row['dataSz']+"\t"+
-		    row['dur'])
+		if dataset==1
+			fp.puts(row['IPport']+"\t"+
+				row['uIP'].to_s+"\t"+
+				row['url']+"\t"+
+				row['ua']+"\t"+
+				row['host']+"\t"+
+				row['tmstp']+"\t"+
+				row['status']+"\t"+
+				row['length']+"\t"+
+				row['dataSz']+"\t"+
+				row['dur'])
+		elsif dataset==2
+			fp.puts("\t\t\t"+
+			row['uIP']+"\t"+
+            row['tmstp']+"\t"+
+            row['status']+"\t"+
+            row['length']+"\t"+
+            row['dataSz']+"\t"+
+            row['dur']+"\t\t"+
+			row['IPport']+"\t"+
+			row['verb']+"\t\t"+
+			row['url']+"\t\t"+
+            row['ua']+"\t"+
+			row['host'])
+		else
+			abort("Error: Wrong column format... Check input!")
+		end
 		fp.close
 	end
 

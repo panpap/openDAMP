@@ -141,7 +141,7 @@ class Core
 			firstTime=-1
 			while (line = io.gets) do 
 				h=Format.columnsFormat(line,@defines.column_Format)
-				Utilities.separateTimelineEvents(h,user_path+h['IPport'])
+				Utilities.separateTimelineEvents(h,user_path+h['IPport'],@defines.column_Format)
 				if firstTime==-1
 					firstTime=h['tmstp'].to_i
 				end

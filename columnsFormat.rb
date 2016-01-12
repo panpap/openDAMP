@@ -20,9 +20,14 @@ module Format
 		    h['dur']=part[9]
 		elsif dataset==2
 			#id	NodeIP	UserIP	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss	PortNumber	HTTP_Verb	ToCrawl	Path	HTTPReferer	UserAgent	Host	Cookie	OrigReq	ToCrawl_v2	ContentType
-			h['IPport']=part[9]
+
 			h['uIP']=part[2]
-			h['host']=part[15]
+            h['tmstp']=part[3]
+            h['status']=part[4]
+            h['length']=part[5]
+            h['dataSz']=part[6]
+            h['dur']=part[7]
+			h['IPport']=part[9]
 			h['verb']=part[10]
 			if (["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})
 				h['url']=h['host']+part[12]	#host+path
@@ -32,11 +37,7 @@ module Format
 				puts "--------> UKNOWN HTTP VERB: "+h['verb']
 			end
             h['ua']=part[14]
-            h['tmstp']=part[3]
-            h['status']=part[4]
-            h['length']=part[5]
-            h['dataSz']=part[6]
-            h['dur']=part[7]
+			h['host']=part[15]
 		else
 			abort("Error: Wrong column format... File cannot be read!")
 		end
