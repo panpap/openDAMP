@@ -90,24 +90,25 @@ if tmln=="185.37.226.107:10834"
 				endBucket=-1
 				while line=fr.gets
 					parts=line.chop.split(" ")
-					r=Format.columnsFormat(line,@defines.column_Format)				
-					if firstTime==-1
-						firstTime=r['tmstp'].to_i
-						startBucket=firstTime
-					end
-					nbucket=applyTimeWindow(firstTime,r,fw)
-					if bucket!=nbucket						
-						fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
-						fw.puts Utilities.results_toString(@trace,false)+"\n"
-						bucket=nbucket
-						@trace=Trace.new(@defines)
-						startBucket=r['tmstp']
-					end
-					fw.puts "BUCKET "+bucket.to_s+"\t"+r['tmstp']+"\t"+r['url']+"\t"+r['ua']
-					endBucket=r['tmstp'].to_i
-					@trace.rows.push(r)
-					if (parseRequest(r,false,true)!=-1)
+					r=Format.columnsFormat(line,@defines.column_Format)
+					mob,dev,browser=reqOrigin(row)
+					if browser
+						if firstTime==-1
+							firstTime=r['tmstp'].to_i
+							startBucket=firstTime
+						end
+						nbucket=applyTimeWindow(firstTime,r,fw)
+						if bucket!=nbucket						
+							fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
+							fw.puts Utilities.results_toString(@trace,false)+"\n"
+							bucket=nbucket
+							@trace=Trace.new(@defines)
+							startBucket=r['tmstp']
+						end
+						filterRow(mob,dev,browser,r)
 						@trace.rows.push(r)
+						fw.puts "BUCKET "+bucket.to_s+"\t"+r['tmstp']+"\t"+r['url']+"\t"+r['ua']
+						endBucket=r['tmstp'].to_i
 					end
 				end
 				fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
