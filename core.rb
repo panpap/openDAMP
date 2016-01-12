@@ -81,10 +81,6 @@ if tmln=="185.37.226.107:10834"
 				puts "USER "+tmln
 				fr=File.new(user_path+tmln,'r')
 				fw=File.new(timeline_path+tmln+"_per"+@window.to_s+"msec",'w')
-				fw.puts "Total users in trace;Traffic from mobile devices;Traffic originated from Browser;Browser-prices;"+
-			"3rd Party content detected: [Advertising,Analytics,Social,Content,Beacons,Other];"+
-			"3rd Party content size: [Total,Average];Total Number of rows;Total Ads-related requests found;Ad-related traffic using mobile devices;"+
-			"Number of parameters:[max,min,avg];Price tags found;numeric values;Average price;Beacons found;Ads-related beacons;Impressions detected\n"
 				firstTime=-1
 				bucket=0
 				startBucket=-1
@@ -98,8 +94,8 @@ if tmln=="185.37.226.107:10834"
 					end
 					nbucket=applyTimeWindow(firstTime,r['tmstp'],r['url'],fw)
 					if bucket!=nbucket						
-						fw.puts Utilities.results_toString(@trace,false)
 						fw.puts startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
+						fw.puts Utilities.results_toString(@trace,false)
 						bucket=nbucket
 						@trace=Trace.new(@defines)
 						startBucket=r['tmstp']
