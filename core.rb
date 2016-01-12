@@ -90,7 +90,6 @@ puts user_path+tmln+" "+File.directory?(user_path+tmln).to_s
 				end
 				fr.close;fw.close
 			end
-break
 		end
 	end
 
