@@ -96,6 +96,7 @@ class Core
 						rows=Array.new
 						bucketResults(@trace,fw)
 						@trace=Trace.new(@defines)
+						puts bucket
 					end
 				end
 				fr.close;fw.close
