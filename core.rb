@@ -103,13 +103,13 @@ if tmln=="185.37.226.107:10834"
 					endBucket=r['tmstp'].to_i
 					@trace.rows.push(r)
 					parseRequest(r,false)
-				end
+				end	
+				fw.puts Utilities.results_toString(@trace,false)
+				@trace=Trace.new(@defines)
 				fr.close;fw.close
 	end
 			end
 		end
-		fw.puts Utilities.results_toString(@trace,false)
-		@trace=Trace.new(@defines)
 	end
 
 	def createTimelines()
