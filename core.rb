@@ -100,6 +100,8 @@ if tmln=="185.37.226.107:10834"
 						@trace=Trace.new(@defines)
 						startBucket=r['tmstp']
 					end
+					fw.puts "WINDOW "+wnum.to_i.to_s+"\t"+row['tmstp']+"\t"+row['url']
+puts ">> "+firstTime.to_s+" "+row['tmstp'].to_i.to_s+" "+diff.to_s+" "+wnum.to_i.to_s
 					endBucket=r['tmstp'].to_i
 					@trace.rows.push(r)
 					parseRequest(r,false)
@@ -145,8 +147,6 @@ if tmln=="185.37.226.107:10834"
 	def applyTimeWindow(firstTime,row,fw)
 		diff=row['tmstp'].to_i-firstTime
 		wnum=diff.to_f/@window.to_i
-		fw.puts "WINDOW "+wnum.to_i.to_s+"\t"+row['tmstp']+"\t"+row['url']
-puts ">> "+firstTime.to_s+" "+row['tmstp'].to_i.to_s+" "+diff.to_s+" "+wnum.to_i.to_s
 		return wnum.to_i
 	end
 
