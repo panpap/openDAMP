@@ -83,7 +83,7 @@ class Core
 				while line=fr.gets
 					parts=line.chop.split(" ")
 					if firstTime==-1
-						firstTime==parts[0].to_i
+						firstTime=parts[0].to_i
 					end
 					applyTimeWindow(firstTime,parts[0],parts[1],fw)
 				end
