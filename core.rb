@@ -103,7 +103,7 @@ if tmln=="185.37.226.107:10834"
 						@trace=Trace.new(@defines)
 						startBucket=r['tmstp']
 					end
-					fw.puts "BUCKET "+bucket.to_s+"\t"+r['tmstp']+"\t"+r['url']
+					fw.puts "BUCKET "+bucket.to_s+"\t"+r['tmstp']+"\t"+r['url']+"\t"+r['ua']
 					endBucket=r['tmstp'].to_i
 					@trace.rows.push(r)
 					if (parseRequest(r,false,true)!=-1)
