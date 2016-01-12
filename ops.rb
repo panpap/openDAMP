@@ -113,18 +113,11 @@ class Operations
 	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.size
 	#	Utilities.makeDistrib_LaPr(@@adsDir)
 		#PRICES
-        numericPrices=Array.new
-		prices=trace.detectedPrices
-        for p in prices do
-            if Utilities.is_float?(p)
-                numericPrices.push(p.to_f)
-            end
-        end
         Utilities.countInstances(@defines.files['beaconT'])
-		@func.perUserAnalysis()
 		system("sort "+@defines.files['priceTagsFile']+" | uniq >"+@defines.files['priceTagsFile']+".csv")
 		system("rm -f "+@defines.files['priceTagsFile'])
-		results=Utilities.results_toString(trace,prices,numericPrices)
+		@func.perUserAnalysis()
+		results=Utilities.results_toString(trace)
 		fw.puts results
 		puts results
 		fd=File.new(@defines.files['devices'],'w')

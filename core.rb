@@ -135,7 +135,8 @@ class Core
 	private
 
 	def bucketResults(trace,fw)
-		puts "TODO"
+		results=Utilities.results_toString(trace)
+		puts results
 	end
 
 	def applyTimeWindow(firstTime,tmstp,url,fw)

@@ -75,7 +75,14 @@ module Utilities
         true if Float(object) rescue false
     end
 
-	def Utilities.results_toString(trace,prices,numericPrices)
+	def Utilities.results_toString(trace)
+		numericPrices=Array.new
+		prices=trace.detectedPrices
+        for p in prices do
+            if Utilities.is_float?(p)
+                numericPrices.push(p.to_f)
+            end
+        end
 		totalNumofRows=trace.rows.size
 		pricesStats=Utilities.makeStats(numericPrices)
 		paramsStats,sizeStats=trace.analyzeTotalAds
