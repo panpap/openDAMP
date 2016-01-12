@@ -12,6 +12,7 @@ class Core
 		@trace=Trace.new(@defines)
 		@window=-1
 		@cwd=nil
+		@adFilter=@filters.loadExternalFilter()
 	end
 
 	def getTrace
@@ -34,7 +35,6 @@ class Core
 			end
         end
         f.close
-		@adFilter=@filters.loadExternalFilter()
         return @trace.rows
     end
 
@@ -89,7 +89,7 @@ class Core
 						firstTime=parts[0].to_i
 					end
 					rows.push(r)
-					nbucket=applyTimeWindow(firstTime,parts[0],parts[1],fw)
+					nbucket=applyTimeWindow(firstTime,r['tmstp'],r['url'],fw)
 					if bucket!=nbucket
 						bucket=nbucket
 						parseRequest(r,false)
@@ -326,7 +326,9 @@ class Core
         @trace.users[@curUser].ads.push(row)
         @trace.users[@curUser].adNumOfParams.push(noOfparam.to_i)
 		@trace.totalParamNum.push(noOfparam)
-		@fn.puts noOfparam
+		if @fn!=nil
+			@fn.puts noOfparam
+		end
 		if (@isBeacon)			#is it ad-related Beacon?
 			@trace.users[@curUser].adBeacon+=1
 			@trace.totalAdBeacons+=1
