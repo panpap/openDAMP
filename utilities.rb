@@ -110,13 +110,15 @@ module Utilities
    	end
 
    	def Utilities.printStrippedURL(url,fw)
-		params=Utilities.stripper(url[1])
-        fw.puts "\n"+url[0]+" "
-        if params!=""
-                fw.puts params
-        else
-            	fw.puts "----"
-       	end
+		if fw!=nil
+			params=Utilities.stripper(url[1])
+	        fw.puts "\n"+url[0]+" "
+	        if params!=""
+	                fw.puts params
+	        else
+	            	fw.puts "----"
+	       	end
+		end
     end
 
     def Utilities.makeDistrib_LaPr(adsDir)            # Calculate Latency and Price distribution
