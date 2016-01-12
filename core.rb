@@ -305,11 +305,13 @@ puts ">> "+firstTime.to_s+" "+tmstp.to_i.to_s+" "+diff.to_s+" "+wnum.to_i.to_s
 		slashes=urlStr.count("/")
 		last=temp[temp.size-1]
         temp=last.split(".")
-		if (temp.size==1 or words==slashes)
-			@fbt.puts "other"
-        else
-			last=temp[temp.size-1]
-        	@fbt.puts last
+		if @fbt!=nil
+			if (temp.size==1 or words==slashes)
+				@fbt.puts "other"
+	        else
+				last=temp[temp.size-1]
+	        	@fbt.puts last
+			end
 		end
 	end
 
