@@ -107,7 +107,7 @@ module Utilities
 			header="Total users in trace;Traffic from mobile devices;Traffic originated from Browser;Browser-prices;"+
 			"3rd Party content detected: [Advertising,Analytics,Social,Content,Beacons,Other];"+
 			"3rd Party content size: [Total,Average];Total Number of rows;Total Ads-related requests found;Ad-related traffic using mobile devices;"+
-			"Number of parameters:[max,min,avg];Price tags found;numeric values;Average price;Beacons found;Ads-related beacons;Impressions detected\n"
+			"Number of parameters:[max,min,avg];Price tags found;numeric values;Average price;Beacons found;Ads-related beacons;Impressions detected;Publishers;\n"
 			s=trace.users.size.to_s+";"+
 			trace.mobDev.to_s+"/"+totalNumofRows.to_s+";"+trace.fromBrowser.size.to_s+";"+trace.browserPrices.to_s+";["+trace.party3rd['Advertising'].to_s+
 			","+trace.party3rd['Analytics'].to_s+","+trace.party3rd['Social'].to_s+","+trace.party3rd['Content'].to_s+
@@ -118,8 +118,10 @@ module Utilities
 			trace.party3rd['Advertising'].to_s+";["+paramsStats['max'].to_s+","+paramsStats['min'].to_s+","+
 			paramsStats['avg'].to_s+"];"+prices.length.to_s+";"+numericPrices.size.to_s+"/"+prices.size.to_s+
 			";"+pricesStats['avg'].to_s+";"+trace.party3rd['totalBeacons'].to_s+
-			";"+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+";"+trace.totalImps.to_s+"\n"
-			return header+s
+			";"+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+";"+trace.totalImps.to_s
+			str="["
+			trace.publishers.each{|pubs| str=str+" , "+pubs}
+			return header+s+str+"]\n"
 		end
 	end
 

@@ -80,7 +80,6 @@ class Core
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		for tmln in tmlnFiles do
 			if not tmln.eql? '.' and not tmln.eql? ".." and not File.directory?(user_path+tmln)
-				puts "USER "+tmln
 				fr=File.new(user_path+tmln,'r')
 				fw=File.new(timeline_path+tmln+"_per"+@window.to_s+"msec",'w')
 				firstTime=-1
@@ -219,14 +218,7 @@ class Core
 				@trace.users[@curUser].row3rdparty["Other"].push(row)
 				@trace.party3rd["Other"]+=1
 				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
-
-				if browser
-					s="-> "+url[0]+"\t"
-					if url[1]!=nil
-						s=s+url[1]
-					end
-					@fpub.puts s
-				end
+				@trace.publishers.push(url)
 				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
 		end

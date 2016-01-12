@@ -13,6 +13,7 @@ class Trace
 		@sizes=Array.new
 		@totalImps=0
 		@devs=Array.new
+		@publishers=Array.new
 		@fromBrowser=Array.new
 		@browserPrices=0
 		@totalAdBeacons=0
