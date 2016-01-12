@@ -29,6 +29,7 @@ module Format
             h['dur']=part[7]
 			h['IPport']=part[9]
 			h['verb']=part[10]
+			h['host']=part[15]
 			if (["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})
 				h['url']=h['host']+part[12]	#host+path
 			elsif h['verb'].downcase=="connect" 
@@ -36,8 +37,7 @@ module Format
 			else
 				puts "--------> UKNOWN HTTP VERB: "+h['verb']
 			end
-            h['ua']=part[14]
-			h['host']=part[15]
+            h['ua']=part[14]			
 		else
 			abort("Error: Wrong column format... File cannot be read!")
 		end
