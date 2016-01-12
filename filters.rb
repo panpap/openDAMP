@@ -158,7 +158,7 @@ private
                                         return true
                                	end
                         rescue
-                                puts "Error"
+                                puts "Connection Error"
                         end
                 end
                 return false

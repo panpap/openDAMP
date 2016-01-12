@@ -53,7 +53,6 @@ class Operations
 				end
 			end
 		end
-		puts "ANALYSIS..."
 	end
 
   	def stripURL      

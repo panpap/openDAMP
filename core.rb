@@ -115,8 +115,10 @@ class Core
 						c+=1
 					end
 				end
-				fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
-				fw.puts Utilities.results_toString(@trace,false)+"\n"
+				if startBucket!=-1 && endBucket!=-1
+					fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
+					fw.puts Utilities.results_toString(@trace,false)+"\n"
+				end
 				@trace=Trace.new(@defines)
 				fr.close;fw.close
 			end
