@@ -92,9 +92,9 @@ if tmln=="185.37.226.107:10834"
 					parts=line.chop.split(" ")
 					r=Format.columnsFormat(line,@defines.column_Format)
 					@curUser=r['IPport']
-					if @trace.users[@curUser]==nil		#first seen user
+			#		if @trace.users[@curUser]==nil		#first seen user
 						@trace.users[@curUser]=User.new	
-					end
+				#	end
 					mob,dev,browser=reqOrigin(r)
 					if browser
 						if firstTime==-1
