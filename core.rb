@@ -88,6 +88,7 @@ if tmln=="185.37.226.107:10834"
 				bucket=0
 				startBucket=-1
 				endBucket=-1
+				c=0
 				while line=fr.gets
 					parts=line.chop.split(" ")
 					r=Format.columnsFormat(line,@defines.column_Format)
@@ -111,8 +112,9 @@ if tmln=="185.37.226.107:10834"
 						end
 						filterRow(mob,dev,browser,r)
 						@trace.rows.push(r)
-						fw.puts "BUCKET "+bucket.to_s+"\t"+r['tmstp']+"\t"+r['url']+"\t"+r['ua']
+						fw.puts c.to_s+") BUCKET "+bucket.to_s+"\t"+r['tmstp']+"\t"+r['url']+"\t"+r['ua']
 						endBucket=r['tmstp'].to_i
+						c+=1
 					end
 				end
 				fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
