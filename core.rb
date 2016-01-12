@@ -81,7 +81,7 @@ class Core
 		for tmln in tmlnFiles do
 			if not tmln.eql? '.' and not tmln.eql? ".." and not File.directory?(user_path+tmln)
 				fr=File.new(user_path+tmln,'r')
-				fw=File.new(timeline_path+tmln+"_per"+@window.to_s+"msec",'w')
+				fw=nil
 				firstTime=-1
 				bucket=0
 				startBucket=-1
@@ -93,6 +93,7 @@ class Core
 					mob,dev,browser=reqOrigin(r)
 					if browser
 						if firstTime==-1
+							fw=File.new(timeline_path+tmln+"_per"+@window.to_s+"msec",'w')
 							firstTime=r['tmstp'].to_i
 							startBucket=firstTime
 						end
@@ -120,7 +121,10 @@ class Core
 					fw.puts Utilities.results_toString(@trace,false)+"\n"
 				end
 				@trace=Trace.new(@defines)
-				fr.close;fw.close
+				fr.close;
+				if fw!=nil
+					fw.close
+				end
 			end
 		end
 	end
