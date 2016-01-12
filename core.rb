@@ -94,7 +94,7 @@ if tmln=="185.37.226.107:10834"
 					nbucket=applyTimeWindow(firstTime,r['tmstp'],r['url'],fw)
 					if bucket!=nbucket						
 						bucket=nbucket
-						fw.puts Utilities.results_toString(trace,false)
+						fw.puts Utilities.results_toString(@trace,false)
 						fw.print startBucket.to_s+" : "+endBucket.to_s+"-> NEW BUCKET "+bucket.to_s
 						@trace=Trace.new(@defines)
 						startBucket=r['tmstp']
@@ -107,7 +107,7 @@ if tmln=="185.37.226.107:10834"
 	end
 			end
 		end
-		fw.puts Utilities.results_toString(trace,false)
+		fw.puts Utilities.results_toString(@trace,false)
 		@trace=Trace.new(@defines)
 	end
 
