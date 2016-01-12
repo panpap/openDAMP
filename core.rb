@@ -71,8 +71,8 @@ class Core
 		end
 	end
 
-	def readTimelines(tmlnFiles)
-		puts "> Loading User Timelines..."
+	def readUserAcrivity(tmlnFiles)
+		puts "> Loading "+tmlnFiles.tize.to_s+" User Activity files..."
 		user_path=@cwd+@defines.userDir
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		for tmln in tmlnFiles do
