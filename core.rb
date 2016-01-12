@@ -77,6 +77,7 @@ class Core
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		for tmln in tmlnFiles do
 			if not tmln.eql? '.' and not tmln.eql? ".." and not File.directory?(user_path+tmln)
+if tmln=="185.37.226.107:10834"
 				puts "USER "+tmln
 				fr=File.new(user_path+tmln,'r')
 				fw=File.new(timeline_path+tmln+"_per"+@window.to_s+"msec",'w')
@@ -99,7 +100,7 @@ class Core
 					parseRequest(r,false)
 				end
 				fr.close;fw.close
-	break
+	end
 			end
 		end
 		bucketResults(@trace,fw)
