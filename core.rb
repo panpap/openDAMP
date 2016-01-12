@@ -82,6 +82,7 @@ class Core
 				@@firstTime=-1
 				while line=fr.gets
 					parts=line.chop.split(" ")
+			puts parts[0]
 					if @@firstTime==-1
 						@@firstTime==parts[0].to_i
 					end
