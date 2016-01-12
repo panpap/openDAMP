@@ -119,9 +119,13 @@ module Utilities
 			paramsStats['avg'].to_s+"];"+prices.length.to_s+";"+numericPrices.size.to_s+"/"+prices.size.to_s+
 			";"+pricesStats['avg'].to_s+";"+trace.party3rd['totalBeacons'].to_s+
 			";"+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+";"+trace.totalImps.to_s
-			str="["
-			trace.publishers.each{|pubs| str=str+" , "+pubs}
-			return header+s+str+"]\n"
+			if trace.publishers.size!=0 
+				str="["
+				trace.publishers.each{|pubs| str=str+" , "+pubs}
+				return header+s+str+"]\n"
+			else
+				return header+s+"\n"
+			end
 		end
 	end
 
