@@ -84,6 +84,7 @@ if tmln=="185.37.226.107:10834"
 				firstTime=-1
 				bucket=0
 				startBucket=-1
+				endBucket=-1
 				while line=fr.gets
 					parts=line.chop.split(" ")
 					r=Format.columnsFormat(line,@defines.column_Format)				
