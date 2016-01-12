@@ -218,7 +218,7 @@ class Core
 				@trace.users[@curUser].row3rdparty["Other"].push(row)
 				@trace.party3rd["Other"]+=1
 				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
-				@trace.publishers.push(url)
+				@trace.publishers.push(row['url'])
 				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
 		end
