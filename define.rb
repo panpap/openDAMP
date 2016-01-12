@@ -4,7 +4,7 @@ class Defines
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1,'10k_trace'=>1 ,
 			'full_trace'=>1, 	#awazza dataset 6million reqs
-			'souneil_trace'=>2} 	#awazza dataset 1million reqs
+			'souneil_trace'=>2,"soun10_trace"=>2} 	#awazza dataset 1million reqs
 
 		if filename==nil
 			puts "Warning: Using pre-defined input file..."
