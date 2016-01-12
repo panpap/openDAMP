@@ -36,7 +36,7 @@ class Operations
 		if entries.size > 3 # DIRECTORY EXISTS AND IS NOT EMPTY
 			puts "> Using existing per user files..."
 			Dir.mkdir path+@defines.tmln_path unless File.exists?(path+@defines.tmln_path)
-			@func.readTimelines(entries)
+			@func.readUserAcrivity(entries)
 		else
 			if not File.exists?(cwd)
 				puts "Dir not found"
