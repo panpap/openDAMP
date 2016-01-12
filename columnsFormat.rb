@@ -21,6 +21,7 @@ module Format
 		elsif dataset==2
 			#id	NodeIP	UserIP	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss	PortNumber	HTTP_Verb	ToCrawl	Path	HTTPReferer	UserAgent	Host	Cookie	OrigReq	ToCrawl_v2	ContentType
 			h['IPport']=part[9]
+			h['uIP']=part[2]
 			h['host']=part[15]
 			h['verb']=part[10]
 			if (["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})

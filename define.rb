@@ -59,7 +59,8 @@ class Defines
 
 		@inria={ "rfihub.net" => "ep","invitemedia.com" => "cost","scorecardresearch.com" => "uid", 
 				"ru4.com" => "_pp","tubemogul.com" => "x_price", "invitemedia.com" => "cost", 
-			"tubemogul.com" => "price", "bluekai.com" => "phint", "adsrvr.org" => "wp",  
+			"tubemogul.com" => "price", #"bluekai.com" => "phint", 
+			"adsrvr.org" => "wp",  
 			"pardot.com" => "title","tubemogul.com" => "price","mathtag.com" => "price",
 			"adsvana.com" => "_p", "doubleclick.net" => "pr", "ib.adnxs.com" => "add_code", 
 			"turn.com" => "acp", "ams1.adnxs.com" => "pp",  "mathtag.com" => "price",

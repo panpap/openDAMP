@@ -32,7 +32,7 @@ module Utilities
 	def Utilities.separateTimelineEvents(row,writeTo)
 		fp=File.new(writeTo,'a')
 		fp.puts(row['IPport']+"\t"+
-		    row['uIP']+"\t"+
+		    row['uIP'].to_s+"\t"+
 		    row['url']+"\t"+
 		    row['ua']+"\t"+
 		    row['host']+"\t"+
@@ -121,7 +121,7 @@ module Utilities
 			";"+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+";"+trace.totalImps.to_s
 			if trace.publishers.size>0 
 				str="["
-				trace.publishers.each{ |pubs| str=str+" , "+pubs}
+				trace.publishers.each{ |pubs| str=str+" | "+pubs}
 				return header+s+str+"]\n"
 			else
 				return header+s+"\n"
