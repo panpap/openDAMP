@@ -81,28 +81,27 @@ class Core
 				fw=File.new(timeline_path+tmln+"_per"+@window.to_s+"msec",'w')
 				firstTime=-1
 				bucket=0
-				rows=Array.new
 				while line=fr.gets
 					parts=line.chop.split(" ")
 					r=Format.columnsFormat(line,@defines.column_Format)				
 					if firstTime==-1
 						firstTime=r['tmstp'].to_i
 					end
-					rows.push(r)
 					nbucket=applyTimeWindow(firstTime,r['tmstp'],r['url'],fw)
-					if bucket!=nbucket
+					if bucket!=nbucket						
 						bucket=nbucket
-						rows.each{|r| parseRequest(r,false)}
-						rows=Array.new
+						puts "NEW BUCKET "+bucket.to_s
 						bucketResults(@trace,fw)
 						@trace=Trace.new(@defines)
-						puts bucket
 					end
+					parseRequest(r,false)
 				end
 				fr.close;fw.close
 			break
 			end
 		end
+		bucketResults(@trace,fw)
+		@trace=Trace.new(@defines)
 	end
 
 	def createTimelines()
