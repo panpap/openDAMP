@@ -59,7 +59,7 @@ class Operations
   	def stripURL      
 		puts "> Stripping parameters, detecting and classifying Third-Party content..."
 		for r in @@loadedRows do
-			@func.parseRequest(r,false)
+			@func.parseRequest(r,false,false)
 		end
 		trace=@func.getTrace
 		analysisResults(trace)
@@ -93,7 +93,7 @@ class Operations
 		puts "> Quick trace parsing..."
 		adsTypes=nil
 		for r in @@loadedRows do
-			@func.parseRequest(r,true)
+			@func.parseRequest(r,true,true)
 		end
 		trace=@func.getTrace
 	end
