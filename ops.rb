@@ -28,13 +28,14 @@ class Operations
 	end
 
 	def makeTimelines(sec,path)
-		@func.window=sec.to_i*1000 #store in msec
+		@func.window=sec.to_i #store in msec
 		@func.cwd=path
 		cwd=path
+		puts "> Start creating user timelines using window: "+@func.window.to_s+" msec"
 		path=cwd+@defines.userDir
 		entries=Dir.entries(path) rescue entries=Array.new
 		if entries.size > 3 # DIRECTORY EXISTS AND IS NOT EMPTY
-			puts "> Using existing per user files..."
+			puts "> Found existing per user files..."
 			Dir.mkdir path+@defines.tmln_path unless File.exists?(path+@defines.tmln_path)
 			@func.readUserAcrivity(entries)
 		else
