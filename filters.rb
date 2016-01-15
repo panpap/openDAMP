@@ -13,7 +13,7 @@ class Filters
 		@defines=defs
 		@latency=Array.new
 		begin
-			@db = SQLite3::Database.open "results.db"
+			@db = SQLite3::Database.open "BeaconURLs.db"
 			@db.execute "CREATE TABLE IF NOT EXISTS BeaconURLs(url VARCHAR PRIMARY KEY, 
 				singlePixel BOOLEAN)"
 		rescue SQLite3::Exception => e 
