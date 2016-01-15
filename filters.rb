@@ -14,7 +14,7 @@ class Filters
 		@latency=Array.new
 		begin
 			@db = SQLite3::Database.open "results.db"
-			@db.execute "CREATE TABLE IF NOT EXISTS BeaconURLs(url TEXT PRIMARY KEY, 
+			@db.execute "CREATE TABLE IF NOT EXISTS BeaconURLs(url VARCHAR PRIMARY KEY, 
 				singlePixel BOOLEAN)"
 		rescue SQLite3::Exception => e 
 			puts "Exception occurred"
@@ -167,18 +167,17 @@ private
 
     def is_1pixel_image?(url)
         if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)} #IS IMAGE?
-			if # I've already seen that url 
-				row = @db.get_first_row "SELECT singlePixel FROM BeaconURLs WHERE url="+url       
-    			puts row
-				return str == 'TRUE'
+			isthere=db.get_first_row "SELECT singlePixel FROM BeaconURLs WHERE url='#{url}'"
+			if isthere!=nil		# I've already seen that url 
+				return isthere == 'TRUE'
 			else	# no... wget it
 				begin
 					pixels=FastImage.size("http://"+url)
 				    if pixels==[1,1]         # 1x1 pixel
-						@db.execute "INSERT INTO BeaconURLs VALUES("+url+",TRUE)"
+						@db.execute "INSERT INTO BeaconURLs VALUES('#{url}','TRUE')"
 				        return true
 					else
-						@db.execute "INSERT INTO BeaconURLs VALUES("+url+",FALSE)"
+						@db.execute "INSERT INTO BeaconURLs VALUES('#{url}','FALSE')"
 				        return false
 				   	end
 					rescue
