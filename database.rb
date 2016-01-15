@@ -1,4 +1,5 @@
 require 'sqlite3'
+require 'uri'
 
 class Database
 
@@ -7,8 +8,8 @@ class Database
 	end
 
 	def insert(table, params)
-		puts params
-		return execute("INSERT INTO '#{table}' VALUES ",params)
+		sanitized=sanitizeStr(params)
+		return execute("INSERT INTO '#{table}' VALUES ",sanitized)
 	end
 
 	def create(table,params)
@@ -16,10 +17,16 @@ class Database
 	end
 
 	def get(table,what,param,value)
-		if what==nil
-			return @db.get_first_row "SELECT * FROM '#{table}' WHERE "+param+"='#{value}'"	
-		else
-			return @db.get_first_row "SELECT '#{what}' FROM '#{table}' WHERE "+param+"='#{value}'"	
+		sanitized=sanitizeStr(value)
+		begin
+			if what==nil
+				return @db.get_first_row "SELECT * FROM '#{table}' WHERE "+param+"='#{sanitized}'"	
+			else
+				return @db.get_first_row "SELECT '#{what}' FROM '#{table}' WHERE "+param+"='#{sanitized}'"	
+			end
+		rescue SQLite3::Exception => e 
+			puts "SQLite Exception during GET! "+e.to_s+"\n"+table+" "+param+" "+value
+			abort
 		end
 	end
 
@@ -31,6 +38,12 @@ class Database
 
 private
 
+	def sanitizeStr(str) 
+		s=URI.encode(str,"'")
+		puts s
+		return s
+	end
+
 	def execute(command,params)
 		begin
 			@db.execute command+"("+params+")"
@@ -39,7 +52,7 @@ private
 			if e.to_s.include? "no such table" 
 				# DO NOTHING
 			else
-				puts "SQLite Exception! "+e.to_s+"\n"+row['url']
+				puts "SQLite Exception "+command.split(" ")[0]+"! "+e.to_s+"\n"+params
 			end
 			return false
 		end
