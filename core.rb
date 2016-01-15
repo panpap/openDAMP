@@ -266,7 +266,7 @@ class Core
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
 			priceTag=keyVal[0]
 			priceVal=keyVal[1]
-			@database.insert(@define.priceTable, "'#{host}','#{priceTag}','#{priceVal}'")
+			@database.insert(@defines.priceTable, "'#{host}','#{priceTag}','#{priceVal}'")
 			if (Utilities.is_numeric?(keyVal[1]) and @fnp!=nil)
 				@fnp.puts host+"\t"+keyVal[0].downcase
 			end
