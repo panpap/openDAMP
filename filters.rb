@@ -1,7 +1,6 @@
 require 'fastimage'
 require 'rubygems'
 require 'json'
-require 'sqlite3'
 
 class Filters
 
@@ -12,18 +11,12 @@ class Filters
 	def initialize(defs)
 		@defines=defs
 		@latency=Array.new
-		begin
-			@db = SQLite3::Database.open "BeaconURLs.db"
-			@db.execute "CREATE TABLE IF NOT EXISTS BeaconURLs(url VARCHAR PRIMARY KEY, 
-				singlePixel BOOLEAN)"
-		rescue SQLite3::Exception => e 
-			puts "Exception occurred"
-			puts e
-		end
+		@db = Database.new("BeaconURLs.db")
+		@db.create("BeaconURLs",'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
 	end
 
 	def close
-		puts "CLOSING DB..."
+		puts "CLOSING BEACON DB..."
 		@db.close if db
 	end
 
@@ -168,23 +161,22 @@ private
 
     def is_1pixel_image?(url)
         if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)} #IS IMAGE?
-			isthere=db.get_first_row "SELECT singlePixel FROM BeaconURLs WHERE url='#{url}'"
+			isthere=@db.get("BeaconURLs","singlePixel","url",url)
 			if isthere!=nil		# I've already seen that url 
-				return isthere == 'TRUE'
+				return isthere == 1
 			else	# no... wget it
 				begin
 					pixels=FastImage.size("http://"+url)
 				    if pixels==[1,1]         # 1x1 pixel
-						@db.execute "INSERT INTO BeaconURLs VALUES('#{url}','TRUE')"
+						@db.insert("BeaconURLs","'#{url}',1")
 				        return true
 					else
-						@db.execute "INSERT INTO BeaconURLs VALUES('#{url}','FALSE')"
+						@db.insert("BeaconURLs","'#{url}',0")
 				        return false
 				   	end
-					rescue
-						puts "Connection Error"
-					end	
-				end
+				rescue
+					puts "Connection Error"
+				end	
 			end
         end
         return false

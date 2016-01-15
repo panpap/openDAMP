@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :traceFile, :filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :traceFile, :impTable, :bcnTable,:adsTable,:userTable,:priceTable,:filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1,'10k_trace'=>1 ,
@@ -18,9 +18,9 @@ class Defines
 
 		@impTable="impressions"		
 		@bcnTable="beacons"
-		@advTable="advertisements"
+		@adsTable="advertisements"
 		@userTable="userResults"
-		@userTable="prices"
+		@priceTable="prices"
 
 		#DIRECTORIES
 		@dirs=Hash.new
