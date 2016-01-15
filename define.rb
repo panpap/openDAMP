@@ -16,7 +16,12 @@ class Defines
 			abort("Error: Input file <"+filename+"> could not be found!")
 		end
 
-		
+		@impTable="impressions"		
+		@bcnTable="beacons"
+		@advTable="advertisements"
+		@userTable="userResults"
+		@userTable="prices"
+
 		#DIRECTORIES
 		@dirs=Hash.new
 		@dataDir="dataset/"

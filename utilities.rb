@@ -92,6 +92,31 @@ module Utilities
         true if Float(object) rescue false
     end
 
+	def Utilities.printRowToDB(row,db,table,extra)
+		url=row['url']
+		begin
+			isthere=db.get_first_row "SELECT timestamp FROM '#{table}' WHERE url='#{url}'"		
+			if isthere==nil
+				ua=row['ua']
+				uip=row['uIP']
+				tmstp=row['tmstp']
+				status=row['status']
+				length=row['length']
+				dataSz=row['dataSz']
+				dur=row['dur']
+				ipport=row['IPport']
+				host=row['host']
+				if extra==nil
+					db.execute "INSERT INTO '#{table}' VALUES('#{tmstp}','#{ipport}','#{uip}','#{url}','#{host}','#{ua}','#{status}','#{length}','#{dataSz}','#{dur}')"
+				else
+					db.execute "INSERT INTO '#{table}' VALUES('#{tmstp}','#{ipport}','#{uip}','#{url}','#{host}','#{ua}','#{status}','#{length}','#{dataSz}','#{dur}','#{extra}')"
+				end
+			end
+		rescue SQLite::Exceptions::NotFoundException => e 
+			;# DO NOTHING
+		end
+	end
+
 	def Utilities.results_toString(trace,printVertical)
 		numericPrices=Array.new
 		prices=trace.detectedPrices

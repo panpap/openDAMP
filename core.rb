@@ -59,7 +59,7 @@ class Core
 	end
 
 	def close
-		@fbt.close;@fp.close;@fb.close;@fi.close; @fa.close; @fn.close;@fu.close;@fnp.close;@fpub.close#@fl.close;
+		@fn.close;@fu.close;@fnp.close;@fpub.close#@fl.close;@fbt.close;@fp.close;@fb.close;@fi.close; @fa.close; 
 	end
 
 	def perUserAnalysis
@@ -71,6 +71,7 @@ class Core
 			adParamsStats=Utilities.makeStats(user.adNumOfParams)
 			sizeStats=Utilities.makeStats(user.sizes3rd)
 			@fu.puts id+";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['Beacons'].size.to_s+";"+user.row3rdparty['Other'].size.to_s+";"+sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+adParamsStats['min'].to_s+";"+adParamsStats['max'].to_s+";"+adParamsStats['avg'].to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
+			@db.execute "INSERT INTO '#{@define.userTable}' VALUES(id,user.row3rdparty['Advertising'].size,user.row3rdparty['AdExtra'].size,user.row3rdparty['Analytics'].size,user.row3rdparty['Social'].size,user.row3rdparty['Content'].size,user.row3rdparty['Beacons'].size,user.row3rdparty['Other'].size,sizeStats['avg'],sizeStats['sum'],user.ads.length,user.dPrices.length,adParamsStats['min'],adParamsStats['max'],adParamsStats['avg'],paramsStats['min'],paramsStats['max'],paramsStats['avg'],user.adBeacon,user.imp.length)"
 		end
 	end
 
@@ -230,6 +231,14 @@ class Core
 	end
 
 	def makeDirsFiles
+		@db = SQLite3::Database.open @defines.rootDir+@defines.traceFile+".db"
+		@db.execute "CREATE TABLE IF NOT EXISTS '#{@define.impTable}' (timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR PRIMARY KEY, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER)"
+		@db.execute "CREATE TABLE IF NOT EXISTS '#{@define.advTable}' (timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR PRIMARY KEY, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER)"
+		@db.execute "CREATE TABLE IF NOT EXISTS '#{@define.bcnTable}' (timestamp BIGINT, ip_port VARCHAR, userIP VARCHAR ,url VARCHAR PRIMARY KEY, host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER, beaconType VARCHAR)"
+		@db.execute "CREATE TABLE IF NOT EXISTS '#{@define.priceTable}' (host VARCHAR, priceTag VARCHAR, priceValue VARCHAR)"
+		@db.execute "CREATE TABLE IF NOT EXISTS '#{@define.userTable}' (ID VARCHAR PRIMARY KEY, Advertising INTEGER, AdExtra INTEGER, Analytics INTEGER, Social INTEGER, Content INTEGER, noAdBeacons INTEGER, Other INTEGER, 3rdPartySize(avgPerReq) FLOAT, 3rdPartySize INTEGER, Ad-content INTEGER, NumOfPrices INTEGER, AdNumOfParams(min) INTEGER, AdNumOfParams(max) INTEGER, AdNumOfParams(avg) FLOAT, RestNumOfParams(min) INTEGER, RestNumOfParams(max) INTEGER, RestNumOfParams(avg) FLOAT, adBeacons INTEGER, Impressions INTEGER)"
+
+
 		print "> Creating Directories... "
 		Dir.mkdir @defines.dirs['rootDir'] unless File.exists?(@defines.dirs['rootDir'])
 		Dir.mkdir @defines.dirs['dataDir'] unless File.exists?(@defines.dirs['dataDir'])
@@ -237,16 +246,16 @@ class Core
 		Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
 		Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])
 		puts "and files..."
-        @fi=File.new(@defines.files['impFile'],'w')
-        @fa=File.new(@defines.files['adfile'],'w')
+        #@fi=File.new(@defines.files['impFile'],'w')
+        #@fa=File.new(@defines.files['adfile'],'w')
         @fl=File.new(@defines.files['leftovers'],'w')
-        @fp=File.new(@defines.files['prices'],'w')
+        #@fp=File.new(@defines.files['prices'],'w')
 		@fpub=File.new(@defines.files['publishers'],'w')
         @fn=File.new(@defines.files['paramsNum'],'w')
-        @fb=File.new(@defines.files['bcnFile'],'w')
+        #@fb=File.new(@defines.files['bcnFile'],'w')
         @fd2=File.new(@defines.files['adDevices'],'w')
-        @fbt=File.new(@defines.files['beaconT'],'w')
-		@fu=File.new(@defines.files['userFile'],'w')
+        #@fbt=File.new(@defines.files['beaconT'],'w')
+		#@fu=File.new(@defines.files['userFile'],'w')
 		@fnp=File.new(@defines.files['priceTagsFile'],'w')
 	end
 
@@ -254,8 +263,12 @@ class Core
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
-			if @fp!=nil
-	          	@fp.puts keyVal[0]+"\t"+keyVal[1]+"\t"+host
+			begin
+				priceTag=keyVal[0]
+				priceVal=keyVal[1]
+				db.execute "INSERT INTO prices VALUES('#{host}','#{priceTag}','#{priceVal}')"
+			rescue SQLite::Exceptions::NotFoundException => e 
+				;# DO NOTHING
 			end
 			if (Utilities.is_numeric?(keyVal[1]) and @fnp!=nil)
 				@fnp.puts host+"\t"+keyVal[0].downcase
@@ -269,7 +282,7 @@ class Core
 
     def detectImpressions(url,row);     	#Impression term in path
         if @filters.is_Impression?(url[0])
-			Utilities.printRow(row,@fi)
+			Utilities.printRowToDB(row,db,@define.impTable)
 			@trace.totalImps+=1
 		    @trace.users[@curUser].imp.push(row)
 			return true
@@ -306,7 +319,6 @@ class Core
 			
 	def beaconSave(url,row)         #findBeacons
 		@isBeacon=true
-		Utilities.printRow(row,@fb)
 		urlStr=url.split("%")[0].split(";")[0]
 		@trace.party3rd["totalBeacons"]+=1
 		temp=urlStr.split("/")	   #beacon type
@@ -314,14 +326,13 @@ class Core
 		slashes=urlStr.count("/")
 		last=temp[temp.size-1]
         temp=last.split(".")
-		if @fbt!=nil
-			if (temp.size==1 or words==slashes)
-				@fbt.puts "other"
-	        else
-				last=temp[temp.size-1]
-	        	@fbt.puts last
-			end
+		if (temp.size==1 or words==slashes)
+			type="other"
+        else
+			last=temp[temp.size-1]
+        	type=last
 		end
+		Utilities.printRowToDB(row,db,@define.bcnTable,type)
 	end
 
 	def beaconImprParamCkeck(url,row) 
@@ -354,6 +365,6 @@ class Core
 			@trace.numOfMobileAds+=1
 		end
 	#	@fd2.puts(dev)	#adRelated Devices
-        Utilities.printStrippedURL(url,@fa)
+        Utilities.printRowToDB(row,db,@define.adsTable)
 	end
 end
