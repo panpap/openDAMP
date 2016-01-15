@@ -23,6 +23,7 @@ class Filters
 	end
 
 	def close
+		puts "CLOSING DB..."
 		@db.close if db
 	end
 
