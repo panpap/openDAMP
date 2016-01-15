@@ -168,7 +168,7 @@ private
     def is_1pixel_image?(url)
         if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)} #IS IMAGE?
 			if # I've already seen that url 
-				row = db.get_first_row "SELECT singlePixel FROM BeaconURLs WHERE url="+url       
+				row = @db.get_first_row "SELECT singlePixel FROM BeaconURLs WHERE url="+url       
     			puts row
 				return str == 'TRUE'
 			else	# no... wget it
