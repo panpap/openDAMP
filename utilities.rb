@@ -210,7 +210,7 @@ module Utilities
 	end
 
 	def Utilities.countInstances(file)
-		if File.exists?(file)
+		if file!=nil and File.exists?(file)
         	system('sort -n '+file+' | uniq > '+file+"_uniq")
         	system('sort -n '+file+' | uniq -c | sort -n  |tac > '+file+"_cnt") #calculate distribution
 		end	

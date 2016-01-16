@@ -113,7 +113,7 @@ class Operations
 	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.size
 	#	Utilities.makeDistrib_LaPr(@@adsDir)
 		#PRICES
-        Utilities.countInstances(@defines.files['beaconT'])
+        #Utilities.countInstances(@defines.files['beaconT'])
 		system("sort "+@defines.files['priceTagsFile']+" | uniq >"+@defines.files['priceTagsFile']+".csv")
 		system("rm -f "+@defines.files['priceTagsFile'])
 		@func.perUserAnalysis()
