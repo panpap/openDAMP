@@ -161,7 +161,7 @@ private
 
     def is_1pixel_image?(url)
         if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)} #IS IMAGE?
-			isthere=@db.get("BeaconURLs","singlePixel","url",url)
+			isthere=@db.get(@define.beaconDB,"singlePixel","url",url)
 			if isthere!=nil		# I've already seen that url 
 				return isthere == 1
 			else	# no... wget it
