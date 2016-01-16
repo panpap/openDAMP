@@ -174,8 +174,8 @@ private
 						@db.insert(@defines.beaconDBTable,url,0)
 				        return false
 				   	end
-				rescue
-					puts "Connection Error"
+				rescue Exception => e  
+					puts e.message  
 				end	
 			end
         end
