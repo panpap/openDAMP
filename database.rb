@@ -20,9 +20,9 @@ class Database
 		sanitized=sanitizeStr(value)
 		begin
 			if what==nil
-				return @db.get_first_row "SELECT * FROM '#{table}' WHERE "+param+"='#{sanitized}'"	
+				return @db.get_first_row "SELECT * FROM '#{table}' WHERE "+param+"="+sanitized	
 			else
-				return @db.get_first_row "SELECT '#{what}' FROM '#{table}' WHERE "+param+"='#{sanitized}'"	
+				return @db.get_first_row "SELECT '#{what}' FROM '#{table}' WHERE "+param+"="+sanitized
 			end
 		rescue SQLite3::Exception => e 
 			puts "SQLite Exception during GET! "+e.to_s+"\n"+table+" "+param+" "+value
@@ -38,10 +38,21 @@ class Database
 
 private
 
-	def sanitizeStr(str) 
-		s=URI.encode(str,"'")
-		puts s
-		return s
+	def sanitizeStr(str)
+		parts=str.split(",")
+		res=""
+		parts.each{|s| 
+			str=s
+			if s.include? "'"
+				str="\""+URI.encode(s,"'")+"\""
+			end
+			if res!=""
+				res=res+","+str
+			else
+				res=str
+			end}
+		puts "> "+res
+		return res
 	end
 
 	def execute(command,params)

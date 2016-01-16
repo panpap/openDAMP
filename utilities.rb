@@ -105,9 +105,9 @@ module Utilities
 			dur=row['dur']
 			ipport=row['IPport']
 			host=row['host']
-			params="'#{tmstp}','#{ipport}','#{uip}','#{url}','#{host}','#{ua}','#{status}','#{length}','#{dataSz}','#{dur}'"
+			params=tmstp+","+ipport+","+uip+","+url+","+host+","+ua+","+status+","+length+","+dataSz+","+dur
 			if extra!=nil
-				params=params+",'#{extra}'"
+				params=params+","+extra
 			end
 			db.insert(table,params)
 		end
