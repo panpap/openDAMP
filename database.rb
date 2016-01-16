@@ -42,9 +42,9 @@ private
 		parts=str.split(",")
 		res=""
 		parts.each{|s| 
-			str=s
+			str="'"+s+"'"
 			if s.include? "'"
-				str="\""+URI.encode(s,"'")+"\""
+				str="'"+URI.encode(s,"'")+"'"
 			end
 			if res!=""
 				res=res+","+str
