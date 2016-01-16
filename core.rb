@@ -232,6 +232,13 @@ class Core
 	end
 
 	def makeDirsFiles		
+		print "> Creating Directories..., "
+		Dir.mkdir @defines.dirs['rootDir'] unless File.exists?(@defines.dirs['rootDir'])
+		Dir.mkdir @defines.dirs['dataDir'] unless File.exists?(@defines.dirs['dataDir'])
+		Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
+		Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
+		Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
+		print "database tabes..."
 		@database=Database.new(@defines.dirs['rootDir']+@defines.traceFile+".db")
 		@database.create(@defines.impTable, 'timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR PRIMARY KEY, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
 		@database.create(@defines.adsTable, 'timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR PRIMARY KEY, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
@@ -240,12 +247,7 @@ class Core
 		@database.create(@defines.userTable, 'id VARCHAR PRIMARY KEY, advertising INTEGER, adExtra INTEGER, analytics INTEGER, social INTEGER, content INTEGER, noAdBeacons INTEGER, other INTEGER, thirdPartySize_avgPerReq FLOAT, thirdPartySize INTEGER, adcontent INTEGER, numOfPrices INTEGER, adNumOfParams_min INTEGER, adNumOfParams_max INTEGER, adNumOfParams_avg FLOAT, restNumOfParams_min INTEGER, restNumOfParams_max INTEGER, restNumOfParams_avg FLOAT, adBeacons INTEGER, impressions INTEGER')
 
 
-		print "> Creating Directories... "
-		Dir.mkdir @defines.dirs['rootDir'] unless File.exists?(@defines.dirs['rootDir'])
-		Dir.mkdir @defines.dirs['dataDir'] unless File.exists?(@defines.dirs['dataDir'])
-		Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
-		Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
-		Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])
+
 		puts "and files..."
         #@fi=File.new(@defines.files['impFile'],'w')
         #@fa=File.new(@defines.files['adfile'],'w')
