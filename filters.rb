@@ -168,14 +168,15 @@ private
 				begin
 					pixels=FastImage.size("http://"+url)
 				    if pixels==[1,1]         # 1x1 pixel
-						@db.insert(@defines.beaconDBTable,url,1)
+						@db.insert(@defines.beaconDBTable,[url,1])
 				        return true
 					else
-						@db.insert(@defines.beaconDBTable,url,0)
+						@db.insert(@defines.beaconDBTable,[url,0])
 				        return false
 				   	end
 				rescue Exception => e  
-					puts e.message  
+					puts "is_1pixel_image: "+e.message 
+					puts e.backtrace.inspect   
 				end	
 			end
         end
