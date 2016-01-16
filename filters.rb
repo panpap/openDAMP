@@ -168,10 +168,10 @@ private
 				begin
 					pixels=FastImage.size("http://"+url)
 				    if pixels==[1,1]         # 1x1 pixel
-						@db.insert("BeaconURLs",url+",1")
+						@db.insert("BeaconURLs",url,1)
 				        return true
 					else
-						@db.insert("BeaconURLs",url+",0")
+						@db.insert("BeaconURLs",url,0)
 				        return false
 				   	end
 				rescue

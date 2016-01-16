@@ -72,7 +72,7 @@ class Core
 			adParamsStats=Utilities.makeStats(user.adNumOfParams)
 			sizeStats=Utilities.makeStats(user.sizes3rd)
 			@fu.puts id+";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['Beacons'].size.to_s+";"+user.row3rdparty['Other'].size.to_s+";"+sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+adParamsStats['min'].to_s+";"+adParamsStats['max'].to_s+";"+adParamsStats['avg'].to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
-			@database.insert(@define.userTable,id+","+user.row3rdparty['Advertising'].size+","+user.row3rdparty['AdExtra'].size+","+user.row3rdparty['Analytics'].size+","+user.row3rdparty['Social'].size+","+user.row3rdparty['Content'].size+","+user.row3rdparty['Beacons'].size+","+user.row3rdparty['Other'].size+","+sizeStats['avg'],sizeStats['sum']+","+user.ads.length+","+user.dPrices.length+","+adParamsStats['min']+","+adParamsStats['max']+","+adParamsStats['avg']+","+paramsStats['min']+","+paramsStats['max']+","+paramsStats['avg']+","+user.adBeacon+","+user.imp.length)
+			@database.insert(@define.userTable,[id,user.row3rdparty['Advertising'].size,user.row3rdparty['AdExtra'].size,user.row3rdparty['Analytics'].size,user.row3rdparty['Social'].size,user.row3rdparty['Content'].size,user.row3rdparty['Beacons'].size,user.row3rdparty['Other'].size,sizeStats['avg'],sizeStats['sum'],user.ads.length,user.dPrices.length,adParamsStats['min'],adParamsStats['max'],adParamsStats['avg'],paramsStats['min'],paramsStats['max'],paramsStats['avg'],user.adBeacon,user.imp.length])
 		end
 	end
 
@@ -266,7 +266,7 @@ class Core
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
 			priceTag=keyVal[0]
 			priceVal=keyVal[1]
-			@database.insert(@defines.priceTable, host+","+priceTag+","+priceVal)
+			@database.insert(@defines.priceTable, [host,priceTag,priceVal])
 			if (Utilities.is_numeric?(keyVal[1]) and @fnp!=nil)
 				@fnp.puts host+"\t"+keyVal[0].downcase
 			end
