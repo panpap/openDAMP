@@ -256,7 +256,7 @@ class Core
         #@fb=File.new(@defines.files['bcnFile'],'w')
         @fd2=File.new(@defines.files['adDevices'],'w')
         #@fbt=File.new(@defines.files['beaconT'],'w')
-		#@fu=File.new(@defines.files['userFile'],'w')
+		@fu=File.new(@defines.files['userFile'],'w')
 		@fnp=File.new(@defines.files['priceTagsFile'],'w')
 	end
 
