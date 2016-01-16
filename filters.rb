@@ -12,7 +12,7 @@ class Filters
 		@defines=defs
 		@latency=Array.new
 		@db = Database.new(@defines.beaconDB)
-		@db.create("BeaconURLs",'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
+		@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
 	end
 
 	def close
@@ -161,17 +161,17 @@ private
 
     def is_1pixel_image?(url)
         if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)} #IS IMAGE?
-			isthere=@db.get(@defines.beaconDB,"singlePixel","url",url)
+			isthere=@db.get(@defines.beaconDBTable,"singlePixel","url",url)
 			if isthere!=nil		# I've already seen that url 
 				return isthere == 1
 			else	# no... wget it
 				begin
 					pixels=FastImage.size("http://"+url)
 				    if pixels==[1,1]         # 1x1 pixel
-						@db.insert("BeaconURLs",url,1)
+						@db.insert(@defines.beaconDBTable,url,1)
 				        return true
 					else
-						@db.insert("BeaconURLs",url,0)
+						@db.insert(@defines.beaconDBTable,url,0)
 				        return false
 				   	end
 				rescue

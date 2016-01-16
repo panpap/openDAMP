@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :traceFile, :beaconDB, :impTable, :bcnTable,:adsTable,:userTable,:priceTable,:filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :traceFile, :beaconDBTable, :beaconDB, :impTable, :bcnTable,:adsTable,:userTable,:priceTable,:filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1,'10k_trace'=>1 ,
@@ -16,6 +16,7 @@ class Defines
 			abort("Error: Input file <"+filename+"> could not be found!")
 		end
 
+		@beaconDBTable="beaconURLs"
 		@impTable="impressions"		
 		@bcnTable="beacons"
 		@adsTable="advertisements"
@@ -38,16 +39,16 @@ class Defines
 		#FILENAMES
 		@files=Hash.new
 		@files['parseResults']=@dirs['rootDir']+"results.out"
-		@files['impFile']=@dirs['adsDir']+"impressions.out"
-		@files['adfile']=@dirs['adsDir']+"ads.out"
-		@files['prices']=@dirs['adsDir']+"prices.csv"
+		#@files['impFile']=@dirs['adsDir']+"impressions.out"
+		#@files['adfile']=@dirs['adsDir']+"ads.out"
+		#@files['prices']=@dirs['adsDir']+"prices.csv"
 		@files['priceTagsFile']=@dirs['adsDir']+"priceTags"
 		@files['devices']=@dirs['adsDir']+"devices.csv"
-		@files['bcnFile']=@dirs['adsDir']+"beacons.out"
+		#@files['bcnFile']=@dirs['adsDir']+"beacons.out"
 		@files['size3rdFile']=@dirs['adsDir']+"sizes3rd.csv"
 		@files['paramsNum']=@dirs['adsDir']+"paramsNum.csv"
 		@files['adDevices']=@dirs['adsDir']+"adDevices.csv"
-		@files['beaconT']=@dirs['adsDir']+"beaconsTypes.csv"
+		#@files['beaconT']=@dirs['adsDir']+"beaconsTypes.csv"
 		@files['userFile']=@dirs['userDir']+"userAnalysis.csv"
 		@files['publishers']=@dirs['adsDir']+"publishers.csv"
 		@files['leftovers']="leftovers.out"
