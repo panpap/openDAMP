@@ -101,7 +101,7 @@ class Operations
 				param=fl.split("_")[0]
 				IO.popen('wc -l '+folder+param) { |io| total=io.gets.split(" ")[0] }
 				system("cat "+folder+fl+" | awk '{print ($1/"+total+")\" \"$2}' | awk '{gsub(\",\",\".\"); print}' > temp.data")
-				system("gnuplot -e \"xTitle=\'"+param+"\'\" plot.gn > "+fl.split(".")[0]+"CDF.eps")
+				system("gnuplot -e \"xTitle=\'"+param+"\'\" plot.gn > "+folder+fl.split(".")[0]+"CDF.eps")
 			end
 		end
 		system("rm -f temp.data")
