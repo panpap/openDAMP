@@ -98,7 +98,7 @@ class Operations
 			if not fl.eql? '.' and not fl.eql? ".." and fl.include? "_cnt" and not File.directory?(fl)
 				puts fl
 				total="1"
-				IO.popen('wc -l '+fl.split("_")[0]) { |io| total=io.gets.split(" ")[0] }
+				IO.popen('wc -l '+folder+fl.split("_")[0]) { |io| total=io.gets.split(" ")[0] }
 				system("cat "+fl+" | awk -P '{print ($1/"+total+")\" \"$2}' | awk '{gsub(\",\",\".\"); print}' > temp.data")
 				system("gnuplot plot.gn > "+fl.split(".")[0]+"CDF.eps")
 			end
