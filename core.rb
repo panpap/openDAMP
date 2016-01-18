@@ -70,6 +70,9 @@ class Core
 puts "AAAAAAAAAAAAA "+@trace.users.size.to_s
 		for id,user in @trace.users do
 			type3rd=user.filterType
+			if user.adNumOfParams==nil
+				puts "NULL"
+			end
 			paramsStats=Utilities.makeStats(user.restNumOfParams)
 			adParamsStats=Utilities.makeStats(user.adNumOfParams)
 			sizeStats=Utilities.makeStats(user.sizes3rd)
@@ -318,7 +321,6 @@ puts "AAAAAAAAAAAAA "+@trace.users.size.to_s
 				end
 			end
 		end
-		puts "HOLA! |"+fields.length.to_s+"|"
 		return fields.length,isAd
 	end
 			
