@@ -205,9 +205,6 @@ puts "AAAAAAAAAAAAA "+@trace.users.size.to_s
 		url=row['url'].split("?")
 		host=row['host']
 		isPorI,noOfparam=beaconImprParamCkeck(url,row)
-		if noOfparam==0
-			puts "SKATATAAAAAA\n"
-		end
 		iaAdinURL=false
 		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
 		if type3rd!=nil	#	3rd PARTY CONTENT
