@@ -318,6 +318,7 @@ puts "AAAAAAAAAAAAA "+@trace.users.size.to_s
 				end
 			end
 		end
+		puts fields.length
 		return fields.length,isAd
 	end
 			
