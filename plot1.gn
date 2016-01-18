@@ -9,6 +9,6 @@ set ylabel "CDF"
 set xlabel xTitle
 set nokey
 set style data lines
-set log y
-set format y "10^{%L}"
+#set log y
+#set format y "10^{%L}"
 plot 'temp.data' u 2:1 lt 1 lc rgb 'red'
