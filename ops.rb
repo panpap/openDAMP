@@ -90,7 +90,7 @@ class Operations
 	end
 
 	def plot(path)
-		puts "> Plotting existing output..."
+		puts "> Plotting existing output from <"+path+"> of "+@defines.traceFile+"..."
 		#f=File.new(@defines.files['userFile'],'r')
 		folder=path+@defines.adsDir
 		files=Dir.entries(folder) rescue entries=Array.new
