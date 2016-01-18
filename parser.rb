@@ -35,8 +35,12 @@ OptionParser.new { |opts|
 
   opts.on('-l', '--plot', 'Plot CDFs using Gnuplot') do
 	path=ARGV[0].split("results_")[1]
-	s=path.split("/")[0]
-	lastChar=path[path.size-2]
+	if path.include? "/"
+		s=path.split("/")[0]
+		lastChar=path[path.size-2]
+	else
+		lastChar=path[path.size-1]
+	end
 	if Utilities.is_numeric?(lastChar)
 		s=path.gsub(lastChar+"/","")
 	end
