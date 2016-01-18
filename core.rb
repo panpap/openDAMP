@@ -65,13 +65,13 @@ class Core
 
 	def perUserAnalysis
 		puts "> Per user analysis..."
-		@fu.puts "ID;Advertising;AdExtra;Analytics;Social;Content;noAdBeacons;Other;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;AdNumOfParams(min);AdNumOfParams(max);AdNumOfParams(avg);RestNumOfParams(min);RestNumOfParams(max);RestNumOfParams(avg);adBeacons;Impressions"
+		@fu.puts "ID\tAdvertising\tAdExtra\tAnalytics\tSocial\tContent\tnoAdBeacons\tOther\t3rdSize(avgPerReq)\t3rdSize(sum)\tAd-content\tNumOfPrices\tAdNumOfParams(min)\tAdNumOfParams(max)\tAdNumOfParams(avg)\tRestNumOfParams(min)\tRestNumOfParams(max)\tRestNumOfParams(avg)\tadBeacons\tImpressions"
 		for id,user in @trace.users do
 			type3rd=user.filterType
 			paramsStats=Utilities.makeStats(user.restNumOfParams)
 			adParamsStats=Utilities.makeStats(user.adNumOfParams)
 			sizeStats=Utilities.makeStats(user.sizes3rd)
-			@fu.puts id+";"+user.row3rdparty['Advertising'].size.to_s+";"+user.row3rdparty['AdExtra'].size.to_s+";"+user.row3rdparty['Analytics'].size.to_s+";"+user.row3rdparty['Social'].size.to_s+";"+user.row3rdparty['Content'].size.to_s+";"+user.row3rdparty['Beacons'].size.to_s+";"+user.row3rdparty['Other'].size.to_s+";"+sizeStats['avg'].to_s+";"+sizeStats['sum'].to_s+";"+user.ads.length.to_s+";"+user.dPrices.length.to_s+";"+adParamsStats['min'].to_s+";"+adParamsStats['max'].to_s+";"+adParamsStats['avg'].to_s+";"+paramsStats['min'].to_s+";"+paramsStats['max'].to_s+";"+paramsStats['avg'].to_s+";"+user.adBeacon.to_s+";"+user.imp.length.to_s
+			@fu.puts id+"\t"+user.row3rdparty['Advertising'].size.to_s+"\t"+user.row3rdparty['AdExtra'].size.to_s+"\t"+user.row3rdparty['Analytics'].size.to_s+"\t"+user.row3rdparty['Social'].size.to_s+"\t"+user.row3rdparty['Content'].size.to_s+"\t"+user.row3rdparty['Beacons'].size.to_s+"\t"+user.row3rdparty['Other'].size.to_s+"\t"+sizeStats['avg'].to_s+"\t"+sizeStats['sum'].to_s+"\t"+user.ads.length.to_s+"\t"+user.dPrices.length.to_s+"\t"+adParamsStats['min'].to_s+"\t"+adParamsStats['max'].to_s+"\t"+adParamsStats['avg'].to_s+"\t"+paramsStats['min'].to_s+"\t"+paramsStats['max'].to_s+"\t"+paramsStats['avg'].to_s+"\t"+user.adBeacon.to_s+"\t"+user.imp.length.to_s
 			@database.insert(@defines.userTable,[id,user.row3rdparty['Advertising'].size,user.row3rdparty['AdExtra'].size,user.row3rdparty['Analytics'].size,user.row3rdparty['Social'].size,user.row3rdparty['Content'].size,user.row3rdparty['Beacons'].size,user.row3rdparty['Other'].size,sizeStats['avg'],sizeStats['sum'],user.ads.length,user.dPrices.length,adParamsStats['min'],adParamsStats['max'],adParamsStats['avg'],paramsStats['min'],paramsStats['max'],paramsStats['avg'],user.adBeacon,user.imp.length])
 		end
 	end
@@ -122,7 +122,7 @@ class Core
 					fw.puts Utilities.results_toString(@trace,false)+"\n"
 				end
 				@trace=Trace.new(@defines)
-				fr.close;
+				fr.close
 				if fw!=nil
 					fw.close
 				end
@@ -263,7 +263,7 @@ class Core
 		@fnp=File.new(@defines.files['priceTagsFile'],'w')
 	end
 
-    def detectPrice(keyVal,domainStr);          	# Detect possible price in parameters and returns URL Parameters in String
+    def detectPrice(keyVal,domainStr)          	# Detect possible price in parameters and returns URL Parameters in String
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
@@ -280,7 +280,7 @@ class Core
 		return false
     end
 
-    def detectImpressions(url,row);     	#Impression term in path
+    def detectImpressions(url,row)     	#Impression term in path
         if @filters.is_Impression?(url[0])
 			Utilities.printRowToDB(row,@database,@defines.impTable,nil)
 			@trace.totalImps+=1
