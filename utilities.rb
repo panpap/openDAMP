@@ -139,7 +139,6 @@ module Utilities
 			" are actually numeric values"+"\n"+"Average price "+pricesStats['avg'].to_s+"\n"+"Beacons found: "+trace.party3rd['totalBeacons'].to_s+
 			"\nAds-related beacons: "+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+"\n"+"Impressions detected "+trace.totalImps.to_s+"\n"+
 	#        puts "Average latency "+avgL.to_s
-			"PER USER STATS"+"\n"+"TODO"
 			return s
 		else
 			header="Total users in trace;Traffic from mobile devices;Traffic originated from Browser;Browser-prices;"+

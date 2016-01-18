@@ -46,7 +46,7 @@ class Defines
 		@files['devices']=@dirs['adsDir']+"devices.csv"
 		#@files['bcnFile']=@dirs['adsDir']+"beacons.out"
 		@files['size3rdFile']=@dirs['adsDir']+"sizes3rd.csv"
-		@files['paramsNum']=@dirs['adsDir']+"paramsNum.csv"
+		@files['paramsNum']=@dirs['adsDir']+"adParamsNum.csv"
 		@files['adDevices']=@dirs['adsDir']+"adDevices.csv"
 		#@files['beaconT']=@dirs['adsDir']+"beaconsTypes.csv"
 		@files['userFile']=@dirs['userDir']+"userAnalysis.csv"

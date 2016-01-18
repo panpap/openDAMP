@@ -66,8 +66,6 @@ class Core
 	def perUserAnalysis
 		puts "> Per user analysis..."
 		@fu.puts "ID;Advertising;AdExtra;Analytics;Social;Content;noAdBeacons;Other;3rdSize(avgPerReq);3rdSize(sum);Ad-content;NumOfPrices;AdNumOfParams(min);AdNumOfParams(max);AdNumOfParams(avg);RestNumOfParams(min);RestNumOfParams(max);RestNumOfParams(avg);adBeacons;Impressions"
-
-puts "AAAAAAAAAAAAA "+@trace.users.size.to_s
 		for id,user in @trace.users do
 			type3rd=user.filterType
 			paramsStats=Utilities.makeStats(user.restNumOfParams)
@@ -202,6 +200,7 @@ puts "AAAAAAAAAAAAA "+@trace.users.size.to_s
 		url=row['url'].split("?")
 		host=row['host']
 		isPorI,noOfparam=beaconImprParamCkeck(url,row)
+		@trace.totalParamNum.push(noOfparam)
 		iaAdinURL=false
 		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
 		if type3rd!=nil	#	3rd PARTY CONTENT
@@ -353,7 +352,6 @@ puts "AAAAAAAAAAAAA "+@trace.users.size.to_s
 	def ad_detected (row,noOfparam,mob,dev,url)
         @trace.users[@curUser].ads.push(row)
         @trace.users[@curUser].adNumOfParams.push(noOfparam.to_i)
-		@trace.totalParamNum.push(noOfparam)
 		if @fn!=nil
 			@fn.puts noOfparam
 		end
