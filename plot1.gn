@@ -11,5 +11,4 @@ set nokey
 set style data lines
 set log y
 set format y "10^{%L}"
-set xtics 0.5
-plot 'temp.data' u 1:2 lt 1 lc rgb 'red'
+plot 'temp.data' u 2:1 lt 1 lc rgb 'red'
