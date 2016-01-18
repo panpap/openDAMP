@@ -89,10 +89,10 @@ class Operations
 		return found
 	end
 
-	def plot
+	def plot(path)
 		puts "> Plotting existing output..."
 		#f=File.new(@defines.files['userFile'],'r')
-		folder=@defines.dir['adsDir']
+		folder=path+@defines.adsDir
 		files=Dir.entries(folder) rescue entries=Array.new
 		for fl in files do
 			if not fl.eql? '.' and not fl.eql? ".." and fl.include? "_cnt" and not File.directory?(fl)

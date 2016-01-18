@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :traceFile, :beaconDBTable, :beaconDB, :impTable, :bcnTable,:adsTable,:userTable,:priceTable,:filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :traceFile, :adsDir, :beaconDBTable, :beaconDB, :impTable, :bcnTable,:adsTable,:userTable,:priceTable,:filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1,'10k_trace'=>1 ,
@@ -27,11 +27,12 @@ class Defines
 		#DIRECTORIES
 		@dirs=Hash.new
 		@dataDir="dataset/"
+		@adsDir="adRelated/"
 		@userDir="users/"
 		@tmln_path="timelines/"
 		@dirs['rootDir']="results_"+@traceFile+"/"
 		@dirs['dataDir']=@dirs['rootDir']+@dataDir
-		@dirs['adsDir']=@dirs['rootDir']+"adRelated/"
+		@dirs['adsDir']=@dirs['rootDir']+@adsDir
 		@dirs['userDir']=@dirs['rootDir']+@userDir
 		@dirs['timelines']=@dirs['userDir']+@tmln_path
 		@resources='resources/'

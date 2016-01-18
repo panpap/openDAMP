@@ -35,17 +35,21 @@ OptionParser.new { |opts|
 
   opts.on('-l', '--plot', 'Plot CDFs using Gnuplot') do
 	path=ARGV[0].split("results_")[1]
+	lastChar="";trace="",folder=""
 	if path.include? "/"
-		s=path.split("/")[0]
+		trace=path.split("/")[0]
 		lastChar=path[path.size-2]
+		folder=ARGV[0]
 	else
+		trace=path
 		lastChar=path[path.size-1]
+		folder=ARGV[0]+"/"
 	end
 	if Utilities.is_numeric?(lastChar)
-		s=path.gsub(lastChar+"/","")
+		s=trace.gsub(lastChar,"")
 	end
 	ops=Operations.new(s)
-    ops.plot()
+    ops.plot(folder)
   end
 
   opts.on('-t', '--timelines MILLISECONDS', 'Make user Timelines per N milliseconds') do |sec|
