@@ -102,7 +102,7 @@ class Operations
 				IO.popen('wc -l '+folder+param) { |io| total=io.gets.split(" ")[0] }
 				system("cat "+folder+fl+" | awk '{print ($1/"+total+")\" \"$2}' | awk '{gsub(\",\",\".\"); print}' > temp.data")
 				if Utilities.is_numeric?((File.open(folder+fl, &:readline)).split(" ")[1])
-					plotscript="plot.gn"
+					plotscript="plot1.gn"
 				else
 					plotscript="plot2.gn"
 				end
