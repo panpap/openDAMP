@@ -6,7 +6,7 @@ set terminal postscript enhanced eps  defaultplex \
 
 set grid y lt 0 lw 1 lc rgb "#B8B8B8"
 set ylabel "CDF"
-set xlabel "Number of Parameters"
+set xlabel xTitle
 set nokey
 set style data lines
 set log y
