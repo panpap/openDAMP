@@ -95,16 +95,21 @@ class Operations
 		folder=path+@defines.adsDir
 		files=Dir.entries(folder) rescue entries=Array.new
 		for fl in files do
-			if not fl.eql? '.' and not fl.eql? ".." and fl.include? "_cnt" and not File.directory?(fl)
+			if not fl.eql? '.' and not fl.eql? ".." and not fl.include? ".eps" and fl.include? "_cnt" and not File.directory?(fl)
 				puts fl
 				total="1"
 				param=fl.split("_")[0]
 				IO.popen('wc -l '+folder+param) { |io| total=io.gets.split(" ")[0] }
 				system("cat "+folder+fl+" | awk '{print ($1/"+total+")\" \"$2}' | awk '{gsub(\",\",\".\"); print}' > temp.data")
-				system("gnuplot -e \"xTitle=\'"+param+"\'\" plot.gn > "+folder+fl.split(".")[0]+"CDF.eps")
+				if Utilities.is_numeric?((File.open(folder+fl, &:readline)).split(" ")[1])
+					plotscript="plot.gn"
+				else
+					plotscript="histogram.gn"
+				end
+				system("gnuplot -e \"xTitle=\'"+param.split(".")[0]+"\'\" "+plotscript+" > "+folder+fl.split(".")[0]+"CDF.eps")
 			end
 		end
-		system("rm -f temp.data")
+		#system("rm -f temp.data")
 	end
 
 #------------------------------------------------------------------------
