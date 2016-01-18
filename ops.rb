@@ -104,7 +104,7 @@ class Operations
 				if Utilities.is_numeric?((File.open(folder+fl, &:readline)).split(" ")[1])
 					plotscript="plot.gn"
 				else
-					plotscript="histogram.gn"
+					plotscript="plot2.gn"
 				end
 				system("gnuplot -e \"xTitle=\'"+param.split(".")[0]+"\'\" "+plotscript+" > "+folder+fl.split(".")[0]+"CDF.eps")
 			end
