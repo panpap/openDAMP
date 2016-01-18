@@ -99,7 +99,7 @@ class Operations
 				puts fl
 				total="1"
 				IO.popen('wc -l '+folder+fl.split("_")[0]) { |io| total=io.gets.split(" ")[0] }
-				system("cat "+folder+fl+" | awk -P '{print ($1/"+total+")\" \"$2}' | awk '{gsub(\",\",\".\"); print}' > temp.data")
+				system("cat "+folder+fl+" | awk '{print ($1/"+total+")\" \"$2}' | awk '{gsub(\",\",\".\"); print}' > temp.data")
 				system("gnuplot plot.gn > "+fl.split(".")[0]+"CDF.eps")
 			end
 		end
