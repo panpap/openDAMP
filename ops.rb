@@ -102,7 +102,7 @@ class Operations
 				system("gnuplot plot.gn > "+fl.split(".")[0]+"CDF.eps")
 			end
 		end
-		system("rm -f temp.data)
+		system("rm -f temp.data")
 	end
 
 #------------------------------------------------------------------------
