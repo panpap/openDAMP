@@ -2,7 +2,7 @@ set terminal postscript enhanced eps  defaultplex \
    leveldefault  blacktext \
    dashed dashlength 2.0 linewidth 3.0 butt \
    palfuncparam 2000,0.003 \
-   "Helvetica" 22
+   "Helvetica" 24
 
 #set boxwidth 0.8 absolute
 #set style fill solid 1.00 border -1
@@ -17,7 +17,7 @@ set grid y lt 0 lw 1 lc rgb "#B8B8B8"
 set log y
 set format y "10^{%L}"
 set nokey
-set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 pi -1 ps 1.5
+set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 pi -1 ps 1.2
 set pointintervalbox 2
 set xtic rotate by -40 scale 0
 N = system("awk 'NR==1{print NF}' temp.data")

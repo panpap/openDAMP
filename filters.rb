@@ -182,6 +182,7 @@ private
 				end	
 			end
         end
+		@db.insert(@defines.beaconDBTable,[url,0])
         return false
     end
 end
