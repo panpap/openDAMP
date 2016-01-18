@@ -318,7 +318,7 @@ puts "AAAAAAAAAAAAA "+@trace.users.size.to_s
 				end
 			end
 		end
-		puts "HOLA! |"+fields.length+"|"
+		puts "HOLA! |"+fields.length.to_s+"|"
 		return fields.length,isAd
 	end
 			
