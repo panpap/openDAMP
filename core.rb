@@ -70,9 +70,6 @@ class Core
 puts "AAAAAAAAAAAAA "+@trace.users.size.to_s
 		for id,user in @trace.users do
 			type3rd=user.filterType
-			if user.adNumOfParams.length==0
-				puts "NULL"
-			end
 			paramsStats=Utilities.makeStats(user.restNumOfParams)
 			adParamsStats=Utilities.makeStats(user.adNumOfParams)
 			sizeStats=Utilities.makeStats(user.sizes3rd)

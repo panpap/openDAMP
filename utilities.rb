@@ -74,8 +74,8 @@ module Utilities
 	end
 
 	def Utilities.makeStats(arr)
-		result={'sum'=>-1,'avg'=>-1,'median'=>-1,'max'=>-1,'min'=>-1}
-		if arr!=nil or arr.length>0
+		result={'sum'=>0,'avg'=>0,'median'=>0,'max'=>0,'min'=>0}
+		if arr!=nil and arr.length>0
 			result['sum']=arr.inject{ |s, el| s + el}.to_f
 			result['avg']=result['sum']/arr.size
 		#	result['median']=median(arr)
