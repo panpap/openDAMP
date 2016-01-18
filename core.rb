@@ -315,7 +315,7 @@ puts "AAAAAAAAAAAAA "+@trace.users.size.to_s
 				end
 			end
 		end
-		if fields.length<1
+		if fields.length==0
 			puts "SKATATAAAAAA"
 		end
 		return fields.length,isAd
