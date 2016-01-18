@@ -1,0 +1,14 @@
+set terminal postscript enhanced eps  defaultplex \
+   leveldefault  blacktext \
+   dashed dashlength 2.0 linewidth 3.0 butt \
+   palfuncparam 2000,0.003 \
+   "Helvetica" 24 
+
+set grid y lt 0 lw 1 lc rgb "#B8B8B8"
+set ylabel "CDF"
+set xlabel "Number of Parameters"
+set nokey
+set style data lines
+set log y
+set format y "10^{%L}"
+plot 'temp.data' u 0:1 lt 1 lc rgb 'red'

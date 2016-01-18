@@ -89,13 +89,20 @@ class Operations
 		return found
 	end
 
-	def quickParse
-		puts "> Quick trace parsing..."
-		adsTypes=nil
-		for r in @@loadedRows do
-			@func.parseRequest(r,true,true)
+	def plot
+		puts "> Plotting existing output..."
+		#f=File.new(@defines.files['userFile'],'r')
+		folder=@defines.dir['adsDir']
+		files=Dir.entries(folder) rescue entries=Array.new
+		for fl in files do
+			if not fl.eql? '.' and not fl.eql? ".." and fl.include? "_cnt" not File.directory?(fl)
+				total="1"
+				IO.popen('wc -l '+fl.split("_")[0]) { |io| total=io.gets.split(" ")[0] }
+				system("cat "+fl+" | awk -P '{print ($1/"+total+")\" \"$2}' | awk '{gsub(\",\",\".\"); print}' > temp.data")
+				system("gnuplot plot.gn > "+fl.split(".")[0]+"CDF.eps")
+			end
 		end
-		trace=@func.getTrace
+		system("rm -f temp.data)
 	end
 
 #------------------------------------------------------------------------

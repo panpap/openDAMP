@@ -33,10 +33,15 @@ OptionParser.new { |opts|
     ops.stripURL
   end
 
-  opts.on('-q', '--quick', 'Quick parse trace') do
-	ops=Operations.new(ARGV[0])
-    ops.loadFile()
-    ops.quickParse
+  opts.on('-l', '--plot', 'Plot CDFs using Gnuplot') do
+	path=ARGV[0].split("results_")[1]
+	s=path.split("/")[0]
+	lastChar=path[path.size-2]
+	if Utilities.is_numeric?(lastChar)
+		s=path.gsub(lastChar+"/","")
+	end
+	ops=Operations.new(s)
+    ops.plot()
   end
 
   opts.on('-t', '--timelines MILLISECONDS', 'Make user Timelines per N milliseconds') do |sec|
