@@ -9,11 +9,11 @@ class Database
 	end
 
 	def insert(table, params)
+		par=prepareStr(params)
 		if not table==@defines.tables['userTable'] and not table==@defines.tables['priceTable']
 			id=Digest::SHA256.hexdigest (params[0]+"|"+params[3])	#timestamp|url
-			params=id+params
-		end
-		par=prepareStr(params)
+			par=id+par
+		end	
 		return execute("INSERT INTO '#{table}' VALUES ",par)
 	end
 
