@@ -176,7 +176,7 @@ private
 				   	end
 				rescue Exception => e  
 					if not e.message.include? "Network is unreachable"
-						puts "is_1pixel_image: "+e.message+" "+url
+						puts "is_1pixel_image: "+e.message
 						puts e.backtrace.inspect   
 					end
 				end	

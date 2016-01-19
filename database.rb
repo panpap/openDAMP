@@ -66,7 +66,7 @@ private
 			if e.to_s.include? "no such table" 
 				# DO NOTHING
 			else
-				puts "SQLite Exception "+command.split(" ")[0]+"! "+e.to_s+"\n"+params
+				puts "SQLite Exception "+command+"! "+e.to_s+"\n"+params
 			end
 			return false
 		end
