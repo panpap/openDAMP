@@ -11,6 +11,7 @@ class Database
 	def insert(table, params)
 		par=prepareStr(params)
 		if @defines!=nil and not table==@defines.tables['userTable'] and not table==@defines.tables['priceTable']
+			puts params[0]+"|"+params[3]
 			id=Digest::SHA256.hexdigest (params[0]+"|"+params[3])	#timestamp|url
 			par="\""+id+"\","+par
 		end	
