@@ -109,7 +109,7 @@ module Utilities
 			if extra!=nil
 				params.push(extra)
 			end
-			db.insert(table,params)
+			db.insertRow(table,params)
 		end
 	end
 

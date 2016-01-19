@@ -8,14 +8,15 @@ class Database
 		@defines=defs
 	end
 
+	def insertRow()
+		par=prepareStr(params)
+		id=Digest::SHA256.hexdigest (params[0]+"|"+params[3])	#timestamp|url
+		par="\""+id+"\","+par
+		return execute("INSERT INTO '#{table}' VALUES ",par)
+	end
+
 	def insert(table, params)
 		par=prepareStr(params)
-		if @defines!=nil and not table==@defines.tables['userTable'] and not table==@defines.tables['priceTable']
-			puts params[0]
-puts params[3]
-			id=Digest::SHA256.hexdigest (params[0]+"|"+params[3])	#timestamp|url
-			par="\""+id+"\","+par
-		end	
 		return execute("INSERT INTO '#{table}' VALUES ",par)
 	end
 
