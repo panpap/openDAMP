@@ -92,7 +92,7 @@ class Operations
 	def plot(path)
 		puts "> Plotting existing output from <"+path+">..."
 		#f=File.new(@defines.files['userFile'],'r')
-		db=Database.new(path+@defines.traceFile+".db")
+		db=Database.new(path+@defines.traceFile+".db",@defines)
 		types=db.get("beacons","beaconType",nil,nil)
 		folder=path+@defines.adsDir
 		files=Dir.entries(folder) rescue entries=Array.new

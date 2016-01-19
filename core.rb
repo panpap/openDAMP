@@ -174,7 +174,7 @@ class Core
         for field in fields do
             keyVal=field.split("=")
             if(not @filters.is_GarbageOrEmpty?(keyVal))
-				if(detectPrice(keyVal,row['host']))
+				if(detectPrice(row['tmstp'],keyVal,row['host']))
 					Utilities.printRow(row,File.new(@defines.dirs['rootDir']+"PriceAds.out",'a'))
 				end
 			end
@@ -242,12 +242,12 @@ class Core
 		Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
 		Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
 		print "database tabes..."
-		@database=Database.new(@defines.dirs['rootDir']+@defines.traceFile+".db")
-		@database.create(@defines.tables['publishersTable'],  'timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR PRIMARY KEY, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
-		@database.create(@defines.tables['impTable'], 'timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR PRIMARY KEY, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
-		@database.create(@defines.tables['adsTable'], 'timestamp BIGINT PRIMARY KEY, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR PRIMARY KEY, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
-		@database.create(@defines.tables['bcnTable'], 'timestamp BIGINT, ip_port VARCHAR, userIP VARCHAR ,url VARCHAR PRIMARY KEY, host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER, beaconType VARCHAR')
-		@database.create(@defines.tables['priceTable'], 'host VARCHAR, priceTag VARCHAR, priceValue VARCHAR')
+		@database=Database.new(@defines.dirs['rootDir']+@defines.traceFile+".db",@defines)
+		@database.create(@defines.tables['publishersTable'],  'id VARCHAR PRIMARY KEY, timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR , Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
+		@database.create(@defines.tables['impTable'], 'id VARCHAR PRIMARY KEY,timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
+		@database.create(@defines.tables['adsTable'], 'timestamp BIGINT PRIMARY KEY, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
+		@database.create(@defines.tables['bcnTable'], 'id VARCHAR PRIMARY KEY, timestamp BIGINT, ip_port VARCHAR, userIP VARCHAR ,url VARCHAR, host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER, beaconType VARCHAR')
+		@database.create(@defines.tables['priceTable'], 'timestamp BIGINT PRIMARY KEY, host VARCHAR, priceTag VARCHAR, priceValue VARCHAR')
 		@database.create(@defines.tables['userTable'], 'id VARCHAR PRIMARY KEY, advertising INTEGER, adExtra INTEGER, analytics INTEGER, social INTEGER, content INTEGER, noAdBeacons INTEGER, other INTEGER, thirdPartySize_avgPerReq FLOAT, thirdPartySize INTEGER, adcontent INTEGER, numOfPrices INTEGER, adNumOfParams_min INTEGER, adNumOfParams_max INTEGER, adNumOfParams_avg FLOAT, restNumOfParams_min INTEGER, restNumOfParams_max INTEGER, restNumOfParams_avg FLOAT, adBeacons INTEGER, impressions INTEGER')
 
 
@@ -266,13 +266,13 @@ class Core
 		@fnp=File.new(@defines.files['priceTagsFile'],'w')
 	end
 
-    def detectPrice(keyVal,domainStr)          	# Detect possible price in parameters and returns URL Parameters in String
+    def detectPrice(tmstp,keyVal,domainStr)          	# Detect possible price in parameters and returns URL Parameters in String
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
 			priceTag=keyVal[0]
 			priceVal=keyVal[1]
-			@database.insert(@defines.tables['priceTable'], [host,priceTag,priceVal])
+			@database.insert(@defines.tables['priceTable'], [tmstp,host,priceTag,priceVal])
 			if (Utilities.is_numeric?(keyVal[1]) and @fnp!=nil)
 				@fnp.puts host+"\t"+keyVal[0].downcase
 			end
@@ -305,7 +305,7 @@ class Core
 				if(@filters.is_Beacon_param?(keyVal) and not @isBeacon)
 					beaconSave(url[0],row)
 				end
-				if(detectPrice(keyVal,row['host']))
+				if(detectPrice(row['tmstp'],keyVal,row['host']))
 					if @trace.fromBrowser.include? row					
 						@trace.browserPrices+=1
 					end

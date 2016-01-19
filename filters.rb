@@ -11,7 +11,7 @@ class Filters
 	def initialize(defs)
 		@defines=defs
 		@latency=Array.new
-		@db = Database.new(@defines.beaconDB)
+		@db = Database.new(@defines.beaconDB,@defines)
 		@db.create(@defines.tables['beaconDBTable'],'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
 	end
 
@@ -79,7 +79,7 @@ class Filters
             return true,"iPad"
         elsif ua.include? "windows"
             if ua.include? "arm" or ua.include? "nokia"
-                return true, "Windows Mobile"
+                return true, "Windows_Mobile"
             else
                 return false,"Windows"
             end
@@ -88,7 +88,7 @@ class Filters
         elsif (ua.include? "linux" or ua.include? "ubuntu")
             return false,"Linux"
         elsif (ua.include? "darwin" or ua.include? "ios" or ua.include? "CFNetwork" or ua.include? "apple.mobile" or ua.include? "com.apple.Map")
-            return true,"Apple Mobile"
+            return true,"Apple_Mobile"
         elsif (ua.include? "freebsd" or ua.include? "openbsd")
             return false,"BSD"
         else
