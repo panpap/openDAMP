@@ -16,6 +16,7 @@ class Defines
 			abort("Error: Input file <"+filename+"> could not be found!")
 		end
 
+		@tables=Hash.new
 		@tables['publishersTable']="publishers"
 		@tables['beaconDBTable']="beaconURLs"
 		@tables['impTable']="impressions"		

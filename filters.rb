@@ -12,7 +12,7 @@ class Filters
 		@defines=defs
 		@latency=Array.new
 		@db = Database.new(@defines.beaconDB)
-		@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
+		@db.create(@defines.tables['beaconDBTable'],'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
 	end
 
 	def close
