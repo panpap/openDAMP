@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :traceFile, :adsDir, :beaconDBTable, :beaconDB, :impTable, :bcnTable,:adsTable,:userTable,:priceTable,:filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :tables, :traceFile, :adsDir, :beaconDB, :filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1,'10k_trace'=>1 ,
@@ -16,12 +16,13 @@ class Defines
 			abort("Error: Input file <"+filename+"> could not be found!")
 		end
 
-		@beaconDBTable="beaconURLs"
-		@impTable="impressions"		
-		@bcnTable="beacons"
-		@adsTable="advertisements"
-		@userTable="userResults"
-		@priceTable="prices"
+		@tables['publishersTable']="publishers"
+		@tables['beaconDBTable']="beaconURLs"
+		@tables['impTable']="impressions"		
+		@tables['bcnTable']="beacons"
+		@tables['adsTable']="advertisements"
+		@tables['userTable']="userResults"
+		@tables['priceTable']="prices"
 		@beaconDB="beaconsDB.db"
 
 		#DIRECTORIES

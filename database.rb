@@ -30,6 +30,22 @@ class Database
 		end
 	end
 
+	def getAll(table,what,param,value)
+		if param==nil
+			if what==nil
+				return @db.execute "SELECT * FROM '#{table}'"	
+			else
+				return @db.execute "SELECT "+what+" FROM '#{table}'"
+			end
+		else
+			if what==nil
+				return @db.execute "SELECT * FROM '#{table}' WHERE "+param+"="+par	
+			else
+				return @db.execute "SELECT "+what+" FROM '#{table}' WHERE "+param+"="+par
+			end
+		end
+	end
+
 	def close
 		puts "FREED"
 		@db.close if @db

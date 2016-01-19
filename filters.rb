@@ -161,26 +161,26 @@ private
 
     def is_1pixel_image?(url)
         if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)} #IS IMAGE?
-			isthere=@db.get(@defines.beaconDBTable,"singlePixel","url",url)
+			isthere=@db.get(@defines.tables['beaconDBTable'],"singlePixel","url",url)
 			if isthere!=nil		# I've already seen that url 
 				return isthere == 1
 			else	# no... wget it
 				begin
 					pixels=FastImage.size("http://"+url)
 				    if pixels==[1,1]         # 1x1 pixel
-						@db.insert(@defines.beaconDBTable,[url,1])
+						@db.insert(@defines.tables['beaconDBTable',[url,1])
 				        return true
 					else
-						@db.insert(@defines.beaconDBTable,[url,0])
+						@db.insert(@defines.tables['beaconDBTable'],[url,0])
 				        return false
 				   	end
 				rescue Exception => e  
 					if not e.message.include? "Network is unreachable"
 						puts "is_1pixel_image: "+e.message
 						puts e.backtrace.inspect   
-						@db.insert(@defines.beaconDBTable,[url,0])
+						@db.insert(@defines.tables['beaconDBTable'],[url,0])
 					end
-				end					
+				end				
 			end			
         end		
         return false
