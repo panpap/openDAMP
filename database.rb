@@ -12,6 +12,7 @@ class Database
 		if not table==@defines.tables['userTable'] and not table==@defines.tables['priceTable']
 			id=Digest::SHA256.hexdigest (params[0]+"|"+params[3])	#timestamp|url
 			params=id+params
+		end
 		par=prepareStr(params)
 		return execute("INSERT INTO '#{table}' VALUES ",par)
 	end
