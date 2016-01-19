@@ -9,7 +9,6 @@ class Database
 	end
 
 	def insertRow(table, params)
-		system("echo "+table+' >> tttt')
 		par=prepareStr(params)
 		id=Digest::SHA256.hexdigest (params[0]+"|"+params[3])	#timestamp|url
 		par="\""+id+"\","+par
