@@ -137,14 +137,14 @@ module Utilities
 			trace.party3rd['Advertising'].to_s+"\n"+"Number of parameters:\nmax => "+paramsStats['max'].to_s+" min=>"+paramsStats['min'].to_s+" avg=>"+
 			paramsStats['avg'].to_s+"\n"+"Price tags found: "+prices.length.to_s+"\n"+numericPrices.size.to_s+"/"+prices.size.to_s+
 			" are actually numeric values"+"\n"+"Average price "+pricesStats['avg'].to_s+"\n"+"Beacons found: "+trace.party3rd['totalBeacons'].to_s+
-			"\nAds-related beacons: "+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+"\n"+"Impressions detected "+trace.totalImps.to_s+"\n"
+			"\nAds-related beacons: "+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+"\n"+"Impressions detected "+trace.totalImps.to_s+" Publishers Found: "+trace.publishers.size.to_s"\n"
 	#        puts "Average latency "+avgL.to_s
 			return s
 		else
 			header="Total users in trace;Traffic from mobile devices;Traffic originated from Browser;Browser-prices;"+
 			"3rd Party content detected: [Advertising,Analytics,Social,Content,Beacons,Other];"+
 			"3rd Party content size: [Total,Average];Total Number of rows;Total Ads-related requests found;Ad-related traffic using mobile devices;"+
-			"Number of parameters:[max,min,avg];Price tags found;numeric values;Average price;Beacons found;Ads-related beacons;Impressions detected;Publishers;\n"
+			"Number of parameters:[max,min,avg];Price tags found;numeric values;Average price;Beacons found;Ads-related beacons;Impressions detected;noOfPublishers;Publishers;\n"
 			s=trace.users.size.to_s+";"+
 			trace.mobDev.to_s+"/"+totalNumofRows.to_s+";"+trace.fromBrowser.size.to_s+";"+trace.browserPrices.to_s+";["+trace.party3rd['Advertising'].to_s+
 			","+trace.party3rd['Analytics'].to_s+","+trace.party3rd['Social'].to_s+","+trace.party3rd['Content'].to_s+
@@ -155,7 +155,7 @@ module Utilities
 			trace.party3rd['Advertising'].to_s+";["+paramsStats['max'].to_s+","+paramsStats['min'].to_s+","+
 			paramsStats['avg'].to_s+"];"+prices.length.to_s+";"+numericPrices.size.to_s+"/"+prices.size.to_s+
 			";"+pricesStats['avg'].to_s+";"+trace.party3rd['totalBeacons'].to_s+
-			";"+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+";"+trace.totalImps.to_s
+			";"+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+";"+trace.totalImps.to_s+";"+trace.publishers.size.to_s+"\n"
 			if trace.publishers.size>0 
 				str="["
 				trace.publishers.each{ |pubs| str=str+" | "+pubs}
