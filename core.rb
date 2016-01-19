@@ -218,6 +218,7 @@ class Core
 		else		
 			if @isBeacon 	#Beacon NOT ad-related
 				@trace.users[@curUser].row3rdparty["Beacons"].push(row)
+				
 			elsif isPorI>0	# Impression or ad in param
 				@trace.users[@curUser].row3rdparty["AdExtra"].push(row)
 				ad_detected(row,noOfparam,mob,dev,url)
