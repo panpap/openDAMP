@@ -8,7 +8,7 @@ class Database
 		@defines=defs
 	end
 
-	def insertRow()
+	def insertRow(table, params)
 		par=prepareStr(params)
 		id=Digest::SHA256.hexdigest (params[0]+"|"+params[3])	#timestamp|url
 		par="\""+id+"\","+par
