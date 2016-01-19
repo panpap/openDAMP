@@ -175,7 +175,7 @@ private
 				        return false
 				   	end
 				rescue Exception => e  
-					if not e.message.indlude? "Network is unreachable"
+					if not e.message.include? "Network is unreachable"
 						puts "is_1pixel_image: "+e.message 
 						puts e.backtrace.inspect   
 					end
