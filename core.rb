@@ -223,7 +223,6 @@ class Core
 				@trace.users[@curUser].row3rdparty["AdExtra"].push(row)
 				ad_detected(row,noOfparam,mob,dev,url)
 				@trace.party3rd["Advertising"]+=1
-				Utilities.printRowToDB(row,@database,@defines.tables['adsTable'],nil)
 			elsif isPorI<1	# Rest
 				@trace.users[@curUser].row3rdparty["Other"].push(row)
 				@trace.party3rd["Other"]+=1
@@ -246,7 +245,7 @@ class Core
 		@database=Database.new(@defines.dirs['rootDir']+@defines.traceFile+".db")
 		@database.create(@defines.tables['publishersTable'],  'timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR PRIMARY KEY, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
 		@database.create(@defines.tables['impTable'], 'timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR PRIMARY KEY, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
-		@database.create(@defines.tables['adsTable'], 'timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR PRIMARY KEY, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
+		@database.create(@defines.tables['adsTable'], 'timestamp BIGINT PRIMARY KEY, IP_Port VARCHAR, UserIP VARCHAR ,url VARCHAR PRIMARY KEY, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
 		@database.create(@defines.tables['bcnTable'], 'timestamp BIGINT, ip_port VARCHAR, userIP VARCHAR ,url VARCHAR PRIMARY KEY, host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER, beaconType VARCHAR')
 		@database.create(@defines.tables['priceTable'], 'host VARCHAR, priceTag VARCHAR, priceValue VARCHAR')
 		@database.create(@defines.tables['userTable'], 'id VARCHAR PRIMARY KEY, advertising INTEGER, adExtra INTEGER, analytics INTEGER, social INTEGER, content INTEGER, noAdBeacons INTEGER, other INTEGER, thirdPartySize_avgPerReq FLOAT, thirdPartySize INTEGER, adcontent INTEGER, numOfPrices INTEGER, adNumOfParams_min INTEGER, adNumOfParams_max INTEGER, adNumOfParams_avg FLOAT, restNumOfParams_min INTEGER, restNumOfParams_max INTEGER, restNumOfParams_avg FLOAT, adBeacons INTEGER, impressions INTEGER')
