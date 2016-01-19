@@ -178,11 +178,11 @@ private
 					if not e.message.include? "Network is unreachable"
 						puts "is_1pixel_image: "+e.message
 						puts e.backtrace.inspect   
+						@db.insert(@defines.beaconDBTable,[url,0])
 					end
-				end	
-			end
-        end
-		@db.insert(@defines.beaconDBTable,[url,0])
+				end					
+			end			
+        end		
         return false
     end
 end
