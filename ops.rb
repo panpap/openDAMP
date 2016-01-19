@@ -92,9 +92,15 @@ class Operations
 	def plot(path)
 		puts "> Plotting existing output from <"+path+">..."
 		#f=File.new(@defines.files['userFile'],'r')
-		db=Database.new(path+@defines.traceFile+".db",@defines)
-		types=db.get("beacons","beaconType",nil,nil)
 		folder=path+@defines.adsDir
+
+		#DB-BASED
+		db=Database.new(path+@defines.traceFile+".db",@defines)
+		table="beacons"
+		column="beaconType"
+		plotDB(db,table,column,folder)
+
+		#FILE-BASED
 		files=Dir.entries(folder) rescue entries=Array.new
 		for fl in files do
 			if not fl.eql? '.' and not fl.eql? ".." and not fl.include? ".eps" and fl.include? "_cnt" and not File.directory?(fl)
@@ -111,7 +117,7 @@ class Operations
 				system("gnuplot -e \"xTitle=\'"+param.split(".")[0]+"\'\" "+plotscript+" > "+folder+fl.split(".")[0]+"CDF.eps")
 			end
 		end
-		#system("rm -f temp.data")
+		system("rm -f temp.data")
 	end
 
 #------------------------------------------------------------------------
@@ -120,6 +126,23 @@ class Operations
 
 	private
 
+	def plotDB(db,table,column,folder)
+		data=db.getAll(table,column,nil,nil).sort
+		instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word] += 1 }		
+		f=File.open('temp.data','w')
+		s=0
+		plotscript=""
+		if Utilities.is_numeric?(data[0])
+			plotscript="plot1.gn"
+			instances.each{|word, count| s+=count.to_f/data.size.to_f; f.puts word[0]+" "+s.to_s+" "+(count.to_f/data.size.to_f).to_s}		
+		else 
+			plotscript="plot2.gn"
+			instances.each{|word, count| f.puts count.to_s+" "+word[0]}	
+		end
+		f.close
+		system("sort -rg temp > temp.data")
+		system("gnuplot -e \"xTitle=\'"+column+"\'\" "+plotscript+" > "+folder+column+"CDF.eps")
+	end
 
 	def analysisResults(trace)
 		fw=File.new(@defines.files['parseResults'],'w')

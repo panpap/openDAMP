@@ -22,12 +22,15 @@ class Database
 	end
 
 	def get(table,what,param,value)
-		par=prepareStr(value)
+		if table==nil or param==nil or value==nil
+			return
+		end
+		val=prepareStr(value)
 		begin
 			if what==nil
-				return @db.get_first_row "SELECT * FROM '#{table}' WHERE "+param+"="+par	
+				return @db.get_first_row "SELECT * FROM '#{table}' WHERE "+param+"="+val	
 			else
-				return @db.get_first_row "SELECT "+what+" FROM '#{table}' WHERE "+param+"="+par
+				return @db.get_first_row "SELECT "+what+" FROM '#{table}' WHERE "+param+"="+val
 			end
 		rescue SQLite3::Exception => e 
 			puts "SQLite Exception during GET! "+e.to_s+"\n"+table+" "+param+" "+value
@@ -36,6 +39,9 @@ class Database
 	end
 
 	def getAll(table,what,param,value)
+		if table==nil
+			return
+		end
 		if param==nil
 			if what==nil
 				return @db.execute "SELECT * FROM '#{table}'"	
@@ -43,10 +49,11 @@ class Database
 				return @db.execute "SELECT "+what+" FROM '#{table}'"
 			end
 		else
+			val=prepareStr(value)
 			if what==nil
-				return @db.execute "SELECT * FROM '#{table}' WHERE "+param+"="+par	
+				return @db.execute "SELECT * FROM '#{table}' WHERE "+param+"="+val	
 			else
-				return @db.execute "SELECT "+what+" FROM '#{table}' WHERE "+param+"="+par
+				return @db.execute "SELECT "+what+" FROM '#{table}' WHERE "+param+"="+val
 			end
 		end
 	end

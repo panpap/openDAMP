@@ -11,7 +11,7 @@ set terminal postscript enhanced eps  defaultplex \
 set auto x
 
 set style data linespoints
-set ylabel "Percentage of users"
+set ylabel "Number of reqs"
 set xlabel xTitle
 set grid y lt 0 lw 1 lc rgb "#B8B8B8"
 set log y
