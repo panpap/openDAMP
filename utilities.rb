@@ -137,7 +137,7 @@ module Utilities
 			trace.party3rd['Advertising'].to_s+"\n"+"Number of parameters:\nmax => "+paramsStats['max'].to_s+" min=>"+paramsStats['min'].to_s+" avg=>"+
 			paramsStats['avg'].to_s+"\n"+"Price tags found: "+prices.length.to_s+"\n"+numericPrices.size.to_s+"/"+prices.size.to_s+
 			" are actually numeric values"+"\n"+"Average price "+pricesStats['avg'].to_s+"\n"+"Beacons found: "+trace.party3rd['totalBeacons'].to_s+
-			"\nAds-related beacons: "+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+"\n"+"Impressions detected "+trace.totalImps.to_s+" Publishers Found: "+trace.publishers.size.to_s"\n"
+			"\nAds-related beacons: "+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+"\n"+"Impressions detected "+trace.totalImps.to_s+" Publishers Found: "+trace.publishers.size.to_s+"\n"
 	#        puts "Average latency "+avgL.to_s
 			return s
 		else
