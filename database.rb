@@ -10,7 +10,7 @@ class Database
 
 	def insert(table, params)
 		par=prepareStr(params)
-		if not table==@defines.tables['userTable'] and not table==@defines.tables['priceTable']
+		if @defines!=nil and not table==@defines.tables['userTable'] and not table==@defines.tables['priceTable']
 			id=Digest::SHA256.hexdigest (params[0]+"|"+params[3])	#timestamp|url
 			par="\""+id+"\","+par
 		end	
@@ -27,7 +27,7 @@ class Database
 			if what==nil
 				return @db.get_first_row "SELECT * FROM '#{table}' WHERE "+param+"="+par	
 			else
-				return @db.get_first_row "SELECT '#{what}' FROM '#{table}' WHERE "+param+"="+par
+				return @db.get_first_row "SELECT "+what+" FROM '#{table}' WHERE "+param+"="+par
 			end
 		rescue SQLite3::Exception => e 
 			puts "SQLite Exception during GET! "+e.to_s+"\n"+table+" "+param+" "+value

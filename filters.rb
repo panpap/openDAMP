@@ -46,10 +46,10 @@ class Filters
     end
 
     def is_Beacon?(url)
-		if is_1pixel_image?(url)
-			return true
-        elsif (url.downcase.include? ".htm" or url.downcase.include? ".xml")
+		if (url.downcase.include? ".htm" or url.downcase.include? ".xml" or url.downcase.include? ".js" or url.downcase.include? ".jsp" or url.downcase.include? ".php")
             return false
+        elsif is_1pixel_image?(url)
+			return true
         elsif(@defines.beacon_key.any? { |word| url.include?(word)})
             return true
         else
