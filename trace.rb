@@ -1,7 +1,7 @@
 load 'user.rb'
 
 class Trace
-	attr_accessor :rows, :fromBrowser, :devs, :publishers, :browserPrices, :mobDev, :numOfMobileAds, :totalAdBeacons, :totalImps, :users, :detectedPrices, :party3rd, :sizes, :totalParamNum
+	attr_accessor :rows, :fromBrowser, :restNumOfParams, :adNumOfParams, :devs, :publishers, :browserPrices, :mobDev, :numOfMobileAds, :totalAdBeacons, :totalImps, :users, :detectedPrices, :party3rd, :sizes, :totalParamNum
 
 	def initialize(defs)
 		@defines=defs
@@ -18,13 +18,16 @@ class Trace
 		@browserPrices=0
 		@totalAdBeacons=0
 		@numOfMobileAds=0
+		@adNumOfParams=Array.new
+		@restNumOfParams=Array.new
 		@party3rd={"Advertising"=>0,"Social"=>0,"Analytics"=>0,"Content"=>0, "Other"=>0, "totalBeacons"=>0}
 	end
 
 	def analyzeTotalAds    #Analyze global variables
-		Utilities.countInstances(@defines.files['paramsNum'])
+		Utilities.countInstances(@defines.files['adParamsNum'])
+		Utilities.countInstances(@defines.files['restParamsNum'])
 		Utilities.countInstances(@defines.files['devices'])
 		Utilities.countInstances(@defines.files['size3rdFile'])
-		return Utilities.makeStats(@totalParamNum),Utilities.makeStats(@sizes)
+		return Utilities.makeStats(@totalParamNum),Utilities.makeStats(@adNumOfParams),Utilities.makeStats(@restNumOfParams),Utilities.makeStats(@sizes)
 	end
 end

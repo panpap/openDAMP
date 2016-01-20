@@ -1,19 +1,19 @@
 class Defines
-	attr_accessor :tables, :traceFile, :adsDir, :beaconDB, :filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :tables, :resultsDB, :traceFile, :adsDir, :beaconDB, :filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1,'10k_trace'=>1 ,
 			'full_trace'=>1, 	#awazza dataset 6million reqs
-			'souneil_trace'=>2,"soun10_trace"=>2} 	#awazza dataset 1million reqs
+			'souneil_trace'=>2} 	#awazza dataset 1million reqs
 
 		if filename==nil
 			puts "Warning: Using pre-defined input file..."
-			@traceFile='100k_trace'
+			@traceFile='full_trace'
 		else
 			@traceFile=filename
 		end
 		if not File.exist?(@traceFile)
-			abort("Error: Input file <"+filename+"> could not be found!")
+			abort("Error: Input file <"+filename.to_s+"> could not be found!")
 		end
 
 		@tables=Hash.new
@@ -24,7 +24,10 @@ class Defines
 		@tables['adsTable']="advertisements"
 		@tables['userTable']="userResults"
 		@tables['priceTable']="prices"
+		@tables['traceTable']="traceResults"
+
 		@beaconDB="beaconsDB.db"
+		@resultsDB=@traceFile+"_analysis.db"
 
 		#DIRECTORIES
 		@dirs=Hash.new
@@ -42,18 +45,14 @@ class Defines
 		#FILENAMES
 		@files=Hash.new
 		@files['parseResults']=@dirs['rootDir']+"results.out"
-		#@files['impFile']=@dirs['adsDir']+"impressions.out"
-		#@files['adfile']=@dirs['adsDir']+"ads.out"
-		#@files['prices']=@dirs['adsDir']+"prices.csv"
 		@files['priceTagsFile']=@dirs['adsDir']+"priceTags"
 		@files['devices']=@dirs['adsDir']+"devices.csv"
-		#@files['bcnFile']=@dirs['adsDir']+"beacons.out"
 		@files['size3rdFile']=@dirs['adsDir']+"sizes3rd.csv"
-		@files['paramsNum']=@dirs['adsDir']+"adParamsNum.csv"
-		@files['adDevices']=@dirs['adsDir']+"adDevices.csv"
-		#@files['beaconT']=@dirs['adsDir']+"beaconsTypes.csv"
+		@files['adParamsNum']=@dirs['adsDir']+"adParamsNum.csv"
+		@files['restParamsNum']=@dirs['adsDir']+"restParamsNum.csv"
+		#@files['adDevices']=@dirs['adsDir']+"adDevices.csv"
 		@files['userFile']=@dirs['userDir']+"userAnalysis.csv"
-		@files['publishers']=@dirs['adsDir']+"publishers.csv"
+		#@files['publishers']=@dirs['adsDir']+"publishers.csv"
 		@files['leftovers']="leftovers.out"
 		@files['formatFile']="format.in"
 		@filterFile=@resources+'disconnect_merged.json'

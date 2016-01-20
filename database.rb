@@ -96,7 +96,7 @@ private
 			return true
 		rescue SQLite3::Exception => e 
 			if e.to_s.include? "no such table" 
-				puts "no such table"
+				# DO NOTHING
 			else
 				puts "SQLite Exception "+command+"! "+e.to_s+"\n"+params
 			end

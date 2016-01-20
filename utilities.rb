@@ -93,28 +93,30 @@ module Utilities
     end
 
 	def Utilities.printRowToDB(row,db,table,extra)
-		url=row['url']
-		tmstp=row['tmstp']
-		id=Digest::SHA256.hexdigest (tmstp+"|"+url)
-		isthere=db.get(table,"timestamp","id",id)		
-		if isthere==nil
-			ua=row['ua']
-			uip=row['uIP']			
-			status=row['status']
-			length=row['length']
-			dataSz=row['dataSz']
-			dur=row['dur']
-			ipport=row['IPport']
-			host=row['host']
-			params=[tmstp,ipport,uip,url,host,ua,status,length,dataSz,dur]
-			if extra!=nil
-				params.push(extra)
+		if db!=nil
+			url=row['url']
+			tmstp=row['tmstp']
+			id=Digest::SHA256.hexdigest (tmstp+"|"+url)
+			isthere=db.get(table,"timestamp","id",id)		
+			if isthere==nil
+				ua=row['ua']
+				uip=row['uIP']			
+				status=row['status']
+				length=row['length']
+				dataSz=row['dataSz']
+				dur=row['dur']
+				ipport=row['IPport']
+				host=row['host']
+				params=[tmstp,ipport,uip,url,host,ua,status,length,dataSz,dur]
+				if extra!=nil
+					params.push(extra)
+				end
+				db.insertRow(table,params)
 			end
-			db.insertRow(table,params)
 		end
 	end
 
-	def Utilities.results_toString(trace,printVertical)
+	def Utilities.results_toString(trace,db,table)
 		numericPrices=Array.new
 		prices=trace.detectedPrices
         for p in prices do
@@ -124,9 +126,9 @@ module Utilities
         end
 		totalNumofRows=trace.rows.size
 		pricesStats=Utilities.makeStats(numericPrices)
-		paramsStats,sizeStats=trace.analyzeTotalAds
+		paramsStats,adParamsStats,restParamsStats,sizeStats=trace.analyzeTotalAds
 		#PRINTING RESULTS
-		if printVertical
+		if table!=nil
 			s="> Printing Results...\nTRACE STATS\n------------\n"+"Total users in trace: "+trace.users.size.to_s+"\n"+"Traffic from  mobile devices: "+
 			trace.mobDev.to_s+"/"+totalNumofRows.to_s+"\n"+"Traffic originated from Browser: "+trace.fromBrowser.size.to_s+"\n Browser-prices: "+trace.browserPrices.to_s+"\n"+"3rd Party content detected:"+"\n"+"Advertising => "+trace.party3rd['Advertising'].to_s+
 			" Analytics => "+trace.party3rd['Analytics'].to_s+" Social => "+trace.party3rd['Social'].to_s+" Content => "+trace.party3rd['Content'].to_s+
@@ -136,16 +138,31 @@ module Utilities
 			trace.party3rd['totalBeacons']+trace.party3rd['Content']+trace.party3rd['Other']-trace.totalAdBeacons).to_s+"\n"+"Total Ads-related requests found: "+
 			trace.party3rd['Advertising'].to_s+"/"+totalNumofRows.to_s+"\n"+"Ad-related traffic using mobile devices: "+trace.numOfMobileAds.to_s+"/"+
 			trace.party3rd['Advertising'].to_s+"\n"+"Number of parameters:\nmax => "+paramsStats['max'].to_s+" min=>"+paramsStats['min'].to_s+" avg=>"+
-			paramsStats['avg'].to_s+"\n"+"Price tags found: "+prices.length.to_s+"\n"+numericPrices.size.to_s+"/"+prices.size.to_s+
+			paramsStats['avg'].to_s+"\n"+"Number of ad-related parameters:\nmax => "+adParamsStats['max'].to_s+" min=>"+adParamsStats['min'].to_s+" avg=>"+
+			adParamsStats['avg'].to_s+"\n"+"Number of rest parameters:\nmax => "+restParamsStats['max'].to_s+" min=>"+restParamsStats['min'].to_s+" avg=>"+
+			restParamsStats['avg'].to_s+"\n"+"Price tags found: "+prices.length.to_s+"\n"+numericPrices.size.to_s+"/"+prices.size.to_s+
 			" are actually numeric values"+"\n"+"Average price "+pricesStats['avg'].to_s+"\n"+"Beacons found: "+trace.party3rd['totalBeacons'].to_s+
 			"\nAds-related beacons: "+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+"\n"+"Impressions detected "+trace.totalImps.to_s+"\nPublishers Found: "+trace.publishers.size.to_s+"\n"
 	#        puts "Average latency "+avgL.to_s
+			if db!=nil
+				db.insert(table,[trace.users.size,trace.mobDev.to_s+"/"+totalNumofRows.to_s,trace.fromBrowser.size,trace.browserPrices,
+				"["+trace.party3rd['Advertising'].to_s+","+trace.party3rd['Analytics'].to_s+","+trace.party3rd['Social'].to_s+","+
+				trace.party3rd['Content'].to_s+","+trace.party3rd['totalBeacons'].to_s+","+trace.party3rd['Other'].to_s+"]",
+				sizeStats['sum'],sizeStats['avg'],(trace.party3rd['Advertising']+trace.party3rd['Analytics']+trace.party3rd['Social']+
+				trace.party3rd['totalBeacons']+trace.party3rd['Content']+trace.party3rd['Other']-trace.totalAdBeacons),
+				trace.party3rd['Advertising'].to_s+"/"+totalNumofRows.to_s,trace.numOfMobileAds.to_s+"/"+
+				trace.party3rd['Advertising'].to_s,paramsStats['max'],paramsStats['min'],paramsStats['avg'],adParamsStats['max'],
+				adParamsStats['min'],adParamsStats['avg'],restParamsStats['max'],restParamsStats['min'],
+				restParamsStats['avg'],prices.length,numericPrices.size.to_s+"/"+prices.size.to_s,pricesStats['avg'],trace.party3rd['totalBeacons'],
+				trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s,trace.totalImps,trace.publishers.size])
+			end
 			return s
 		else
 			header="Total users in trace;Traffic from mobile devices;Traffic originated from Browser;Browser-prices;"+
 			"3rd Party content detected: [Advertising,Analytics,Social,Content,Beacons,Other];"+
 			"3rd Party content size: [Total,Average];Total Number of rows;Total Ads-related requests found;Ad-related traffic using mobile devices;"+
-			"Number of parameters:[max,min,avg];Price tags found;numeric values;Average price;Beacons found;Ads-related beacons;Impressions detected;noOfPublishers;Publishers;\n"
+			"Number of parameters:[max,min,avg];Number of dParameters:[max,min,avg];Number of restParameters:[max,min,avg];Price tags found;numeric values;"+
+			"Average price;Beacons found;Ads-related beacons;Impressions detected;noOfPublishers;Publishers;\n"
 			s=trace.users.size.to_s+";"+
 			trace.mobDev.to_s+"/"+totalNumofRows.to_s+";"+trace.fromBrowser.size.to_s+";"+trace.browserPrices.to_s+";["+trace.party3rd['Advertising'].to_s+
 			","+trace.party3rd['Analytics'].to_s+","+trace.party3rd['Social'].to_s+","+trace.party3rd['Content'].to_s+
@@ -154,7 +171,9 @@ module Utilities
 			trace.party3rd['totalBeacons']+trace.party3rd['Content']+trace.party3rd['Other']-trace.totalAdBeacons).to_s+";"+
 			trace.party3rd['Advertising'].to_s+"/"+totalNumofRows.to_s+";"+trace.numOfMobileAds.to_s+"/"+
 			trace.party3rd['Advertising'].to_s+";["+paramsStats['max'].to_s+","+paramsStats['min'].to_s+","+
-			paramsStats['avg'].to_s+"];"+prices.length.to_s+";"+numericPrices.size.to_s+"/"+prices.size.to_s+
+			paramsStats['avg'].to_s+"];"+";["+adParamsStats['max'].to_s+","+adParamsStats['min'].to_s+","+
+			adParamsStats['avg'].to_s+"];"+";["+restParamsStats['max'].to_s+","+restParamsStats['min'].to_s+","+
+			restParamsStats['avg'].to_s+"];"+prices.length.to_s+";"+numericPrices.size.to_s+"/"+prices.size.to_s+
 			";"+pricesStats['avg'].to_s+";"+trace.party3rd['totalBeacons'].to_s+
 			";"+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+";"+trace.totalImps.to_s+";"+trace.publishers.size.to_s+"\n"
 			if trace.publishers.size>0 
@@ -210,8 +229,7 @@ module Utilities
 	end
 
 	def Utilities.countInstances(file)
-		if file!=nil and File.exists?(file)
-        	system('sort -n '+file+' | uniq > '+file+"_uniq")
+		if (file!=nil and File.exists?(file))
         	system('sort -n '+file+' | uniq -c | sort -n  |tac > '+file+"_cnt") #calculate distribution
 		end	
 	end

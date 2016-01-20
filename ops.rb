@@ -1,13 +1,15 @@
 load 'define.rb'
 load 'core.rb'
+load 'plotter.rb'
 require 'digest/sha1'
 
 class Operations
 	@@loadedRows=nil
-
-	def initialize(filename)
+	
+	def initialize(filename,dump)
+		@dump=dump
 		@defines=Defines.new(filename)
-		@func=Core.new(@defines,false)
+		@func=Core.new(@defines,dump)
 	end
 
 	def loadFile()
@@ -56,7 +58,7 @@ class Operations
 		end
 	end
 
-  	def stripURL      
+  	def analysis      
 		puts "> Stripping parameters, detecting and classifying Third-Party content..."
 		for r in @@loadedRows do
 			@func.parseRequest(r,false,false)
@@ -93,83 +95,52 @@ class Operations
 		puts "> Plotting existing output from <"+path+">..."
 		#f=File.new(@defines.files['userFile'],'r')
 		folder=path+@defines.adsDir
-
+		
 		#DB-BASED
-		db=Database.new(path+@defines.traceFile+".db",@defines)
-		table="beacons"
+		db=Database.new(path+@defines.resultsDB,@defines)
+		table=@defines.tables['bcnTable']
 		column="beaconType"
-		plotDB(db,table,column,folder)
+		Plotter.plotDB(db,table,column,folder)
 
 		#FILE-BASED
-		files=Dir.entries(folder) rescue entries=Array.new
-		for fl in files do
-			if not fl.eql? '.' and not fl.eql? ".." and not fl.include? ".eps" and fl.include? "_cnt" and not File.directory?(fl)
-				puts fl
-				total="1"
-				param=fl.split("_")[0]
-				IO.popen('wc -l '+folder+param) { |io| total=io.gets.split(" ")[0] }
-				system("cat "+folder+fl+" | awk '{print ($1/"+total+")\" \"$2}' | awk '{gsub(\",\",\".\"); print}' > temp.data")
-				if Utilities.is_numeric?((File.open(folder+fl, &:readline)).split(" ")[1])
-					plotscript="plot1.gn"
-				else
-					plotscript="plot2.gn"
-				end
-				system("gnuplot -e \"xTitle=\'"+param.split(".")[0]+"\'\" "+plotscript+" > "+folder+fl.split(".")[0]+"CDF.eps")
-			end
-		end
+		Plotter.plotFile(folder)
 		system("rm -f temp.data")
 	end
 
 #------------------------------------------------------------------------
 
 
-
 	private
 
-	def plotDB(db,table,column,folder)
-		data=db.getAll(table,column,nil,nil).sort
-		instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word] += 1 }		
-		f=File.open('temp.data','w')
-		s=0
-		plotscript=""
-		if Utilities.is_numeric?(data[0])
-			plotscript="plot1.gn"
-			instances.each{|word, count| s+=count.to_f/data.size.to_f; f.puts word[0]+" "+s.to_s+" "+(count.to_f/data.size.to_f).to_s}		
-		else 
-			plotscript="plot2.gn"
-			instances.each{|word, count| f.puts count.to_s+" "+word[0]}	
-		end
-		f.close
-		system("sort -rg temp > temp.data")
-		system("gnuplot -e \"xTitle=\'"+column+"\'\" "+plotscript+" > "+folder+column+"CDF.eps")
-	end
-
 	def analysisResults(trace)
-		fw=File.new(@defines.files['parseResults'],'w')
+		@func.close
+		if @dump
+			fw=File.new(@defines.files['parseResults'],'w')		
+			fd=File.new(@defines.files['devices'],'w')
+			trace.devs.each{|dev| fd.puts dev}
+			fd.close
+			fpar=File.new(@defines.files['restParamsNum'],'w')
+			trace.restNumOfParams.each{|p| fpar.puts p}
+			fpar.close
+			fpar=File.new(@defines.files['adParamsNum'],'w')
+			trace.adNumOfParams.each{|p| fpar.puts p}
+			fpar.close
+			fsz=File.new(@defines.files['size3rdFile'],'w')
+			trace.sizes.each{|sz| fsz.puts sz}
+			fsz.close
+		end
 		puts "> Calculating Statistics about detected ads..."
 		#LATENCY
 	#	lat=@func.getLatency
 	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.size
 	#	Utilities.makeDistrib_LaPr(@@adsDir)
-		#PRICES
-        #Utilities.countInstances(@defines.files['beaconT'])
 		system("sort "+@defines.files['priceTagsFile']+" | uniq >"+@defines.files['priceTagsFile']+".csv")
 		system("rm -f "+@defines.files['priceTagsFile'])
 		@func.perUserAnalysis()
-		results=Utilities.results_toString(trace,true)
-		fw.puts results
-		puts results
-		fd=File.new(@defines.files['devices'],'w')
-		trace.devs.each{|dev| fd.puts dev}
-		fd.close
-		fsz=File.new(@defines.files['size3rdFile'],'w')
-		trace.sizes.each{|sz| fsz.puts sz}
-		fsz.close
+		toPrinter=Utilities.results_toString(trace,@func.database,@defines.tables['traceTable'])
+		fw.puts toPrinter
+		puts toPrinter
 		fw.close
-		#PLOTING CDFs
-		puts "Creating CDFs..."
-		puts "TODO... Devices, Prices, NumOfParameters,popular ad-related hosts,3rdParty Size"
-		@func.close
 	end
 end
 
