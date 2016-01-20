@@ -12,6 +12,7 @@ class Database
 		par=prepareStr(params)
 		id=Digest::SHA256.hexdigest (params[0]+"|"+params[3])	#timestamp|url
 		par="\""+id+"\","+par
+		
 		return execute("INSERT INTO '#{table}' VALUES ",par)
 	end
 
@@ -95,7 +96,7 @@ private
 			return true
 		rescue SQLite3::Exception => e 
 			if e.to_s.include? "no such table" 
-				# DO NOTHING
+				puts "no such table"
 			else
 				puts "SQLite Exception "+command+"! "+e.to_s+"\n"+params
 			end
