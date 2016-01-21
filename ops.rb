@@ -92,17 +92,22 @@ class Operations
 	end
 
 	def plot(path)
-		plotter=Plotter.new(@defines,@db)
+		if @database==nil
+			@database=Database.new(@defines.dirs['rootDir']+@defines.resultsDB,@defines)
+		end
+		plotter=Plotter.new(@defines,@database)
 		puts "> Plotting existing output from <"+path+">..."
 		
 		#DB-BASED
-		db=Database.new(path+@defines.resultsDB,@defines)
 		table=@defines.tables['bcnTable']
-		column="beaconType"
-		Plotter.plotDB(table,column)
+		whatToPlot={"priceTag"=>@defines.tables['priceTable'],
+					"host"=>@defines.tables['priceTable'],
+					"beaconType" => @defines.tables['bcnTable'],
+					"thirdPartyContent" => @defines.tables['traceTable']}
+		whatToPlot.each{|column, table|	plotter.plotDB(table,column)}
 
 		#FILE-BASED
-		Plotter.plotFile()
+		plotter.plotFile()
 		system("rm -f .temp.data .temp2.data")
 	end
 
@@ -113,6 +118,7 @@ class Operations
 
 	def analysisResults(trace)
 		@func.close
+		fw=nil
 		if @dump
 			fw=File.new(@defines.files['parseResults'],'w')		
 			fd=File.new(@defines.files['devices'],'w')
@@ -137,9 +143,11 @@ class Operations
 		system("rm -f "+@defines.files['priceTagsFile'])
 		@func.perUserAnalysis()
 		toPrinter=Utilities.results_toString(trace,@func.database,@defines.tables['traceTable'])
-		fw.puts toPrinter
-		puts toPrinter
-		fw.close
+		if fw!=nil
+			fw.puts toPrinter
+			puts toPrinter
+			fw.close
+		end
 	end
 end
 

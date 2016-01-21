@@ -177,7 +177,7 @@ private
 				rescue Exception => e  
 					if not e.message.include? "Network is unreachable"
 						puts "is_1pixel_image: "+e.message
-						puts e.backtrace.inspect   
+						puts url  
 						@db.insert(@defines.tables['beaconDBTable'],[url,0])
 					end
 				end				

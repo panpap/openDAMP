@@ -5,6 +5,7 @@ set terminal postscript enhanced eps  defaultplex \
    "Helvetica" 24 
 
 set grid y lt 0 lw 1 lc rgb "#B8B8B8"
+set grid x lt 0 lw 1 lc rgb "#B8B8B8"
 set ylabel "CDF"
 set xlabel xTitle
 set style data lines
