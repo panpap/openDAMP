@@ -142,7 +142,7 @@ class Core
 					nbucket=applyTimeWindow(firstTime,r,fw)
 					if bucket!=nbucket						
 						fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
-						fw.puts Utilities.results_toString(@trace,db,nil)+"\n"
+						fw.puts Utilities.results_toString(@trace,@database,nil)+"\n"
 						bucket=nbucket
 						@trace=Trace.new(@defines)
 						startBucket=r['tmstp']
@@ -160,7 +160,7 @@ class Core
 			end
 			if startBucket!=-1 && endBucket!=-1
 				fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
-				fw.puts Utilities.results_toString(@trace,db,nil)+"\n"
+				fw.puts Utilities.results_toString(@trace,@database,nil)+"\n"
 			end
 			@trace=Trace.new(@defines)
 			fr.close
