@@ -92,19 +92,18 @@ class Operations
 	end
 
 	def plot(path)
+		plotter=Plotter.new(@defines,@db)
 		puts "> Plotting existing output from <"+path+">..."
-		#f=File.new(@defines.files['userFile'],'r')
-		folder=path+@defines.adsDir
 		
 		#DB-BASED
 		db=Database.new(path+@defines.resultsDB,@defines)
 		table=@defines.tables['bcnTable']
 		column="beaconType"
-		Plotter.plotDB(db,table,column,folder)
+		Plotter.plotDB(table,column)
 
 		#FILE-BASED
-		Plotter.plotFile(folder)
-		system("rm -f temp.data")
+		Plotter.plotFile()
+		system("rm -f .temp.data .temp2.data")
 	end
 
 #------------------------------------------------------------------------

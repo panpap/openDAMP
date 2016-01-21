@@ -4,13 +4,8 @@ set terminal postscript enhanced eps  defaultplex \
    palfuncparam 2000,0.003 \
    "Helvetica" 24
 
-#set boxwidth 0.8 absolute
-#set style fill solid 1.00 border -1
-#set style data histogram
-#set style histogram cluster gap 1
-set auto x
 
-set style data linespoints
+set auto x
 set ylabel "Number of reqs"
 set xlabel xTitle
 set grid y lt 0 lw 1 lc rgb "#B8B8B8"
@@ -18,7 +13,19 @@ set log y
 set format y "10^{%L}"
 set nokey
 set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 pi -1 ps 1.2
-set pointintervalbox 2
 set xtic rotate by -40 scale 0
-N = system("awk 'NR==1{print NF}' temp.data")
-plot for [i=1:N] "temp.data" u 1:xtic(2) with linespoints ls 1
+
+if(histo>0){
+	set boxwidth 0.5
+	set style fill solid
+	N = system("awk 'NR==1{print NF}' .temp.data")
+	plot for [i=1:N] ".temp.data" u 1:xtic(2) w boxes
+}else{
+	set style data linespoints
+	set pointintervalbox 2
+	N = system("awk 'NR==1{print NF}' .temp.data")
+	plot for [i=1:N] ".temp.data" u 1:xtic(2) with linespoints ls 1
+}
+
+
+
