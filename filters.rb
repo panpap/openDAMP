@@ -115,7 +115,7 @@ class Filters
  #           fa=File.new('./latency.out','a')
  #           fa.puts param[1]
  #           fa.close
-       end
+ #      end
        return (@defines.keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
     end
 
