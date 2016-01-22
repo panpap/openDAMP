@@ -16,6 +16,7 @@ class Core
 		@window=-1
 		@cwd=nil
 		@database=nil
+		@pubsDB
 		@adFilter=@filters.loadExternalFilter()
 	end
 
@@ -249,7 +250,11 @@ class Core
 				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
 				if (browser)
 					@trace.publishers.push(row['url'])
-					Utilities.printRowToDB(row,@database,@defines.tables['publishersTable'],nil)
+					if @pubsDB==nil
+						@pubsDB=Database.new(@defines.dirs['rootDir']+"pubsDB.db",@defines)
+						@database.create(@defines.tables['publishersTable'],  'id VARCHAR PRIMARY KEY, timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR , Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
+					end
+					Utilities.printRowToDB(row,@pubsDB,@defines.tables['publishersTable'],nil)
 				end
 				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
