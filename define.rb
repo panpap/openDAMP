@@ -66,7 +66,7 @@ class Defines
 		               "win_price","wp","chargeprice","charge_price","cp","extcost","tt_bidprice","bdrct",
 		               "ext_cost","cost","rtbwinprice","rtb_win_price","rtbwp","bidfloor","seatbid"]
 
-		@inria={ "rfihub.net" => "ep","invitemedia.com" => "cost","scorecardresearch.com" => "uid", 
+		@inria={ "rfihub.net" => "ep","invitemedia.com" => "cost",#,"scorecardresearch.com" => "uid" 
 				"ru4.com" => "_pp","tubemogul.com" => "x_price", "invitemedia.com" => "cost", 
 			"tubemogul.com" => "price", #"bluekai.com" => "phint", 
 			"adsrvr.org" => "wp",  
