@@ -110,11 +110,11 @@ class Filters
     end
 
     def has_PriceKeyword?(param)            # Check if there is a price-related keyword and return the price
-       if param[0].eql? "latency"
-            @latency.push(param[1].to_f)
-            fa=File.new('./latency.out','a')
-            fa.puts param[1]
-            fa.close
+ #      if param[0].eql? "latency"
+ #           @latency.push(param[1].to_f)
+ #           fa=File.new('./latency.out','a')
+ #           fa.puts param[1]
+ #           fa.close
        end
        return (@defines.keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
     end
