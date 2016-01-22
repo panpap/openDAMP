@@ -6,12 +6,12 @@ set terminal postscript enhanced eps  defaultplex \
 
 
 set auto x
-set ylabel "Number of reqs"
+set ylabel "Percentage of reqs"
 set xlabel xTitle
 set grid y lt 0 lw 1 lc rgb "#B8B8B8"
 set grid x lt 0 lw 1 lc rgb "#B8B8B8"
-set log y
-set format y "10^{%L}"
+#set log y
+set format y "%g %%"
 set nokey
 set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 pi -1 ps 1.2
 set xtic rotate by -50 scale 0

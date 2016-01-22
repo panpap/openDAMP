@@ -51,7 +51,7 @@ class Defines
 		@files['adParamsNum']=@dirs['adsDir']+"adParamsNum.csv"
 		@files['restParamsNum']=@dirs['adsDir']+"restParamsNum.csv"
 		#@files['adDevices']=@dirs['adsDir']+"adDevices.csv"
-		@files['userFile']=@dirs['userDir']+"userAnalysis.csv"
+		#@files['userFile']=@dirs['userDir']+"userAnalysis.csv"
 		#@files['publishers']=@dirs['adsDir']+"publishers.csv"
 		@files['leftovers']="leftovers.out"
 		@files['formatFile']="format.in"

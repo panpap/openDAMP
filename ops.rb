@@ -95,20 +95,24 @@ class Operations
 		if @database==nil
 			@database=Database.new(@defines.dirs['rootDir']+@defines.resultsDB,@defines)
 		end
-		plotter=Plotter.new(@defines,@database)
+		total="0"
+		IO.popen('wc -l '+@defines.traceFile) { |io| total=io.gets.split(" ")[0]}
+		plotter=Plotter.new(@defines,@database,(total.to_i-1).to_s)
 		puts "> Plotting existing output from <"+path+">..."
 		
 		#DB-BASED
 		table=@defines.tables['bcnTable']
-		whatToPlot={"priceTag"=>@defines.tables['priceTable'],
-					"host"=>@defines.tables['priceTable'],
-					"beaconType" => @defines.tables['bcnTable'],
-					"thirdPartyContent" => @defines.tables['traceTable']}
+		whatToPlot={#"priceTag"=>@defines.tables['priceTable'],
+					#"host"=>@defines.tables['priceTable'],
+					#"beaconType" => @defines.tables['bcnTable'],
+					#"thirdPartyContent" => @defines.tables['traceTable'],
+					#"advertising,adExtra,analytics,social,content,noAdBeacons,other" => @defines.tables['userTable']
+					"advertising,adExtra,analytics,social,content,noAdBeacons,other,thirdPartySize" => @defines.tables['userTable']}
 		whatToPlot.each{|column, table|	plotter.plotDB(table,column)}
 
 		#FILE-BASED
-		plotter.plotFile()
-		system("rm -f .temp.data .temp2.data")
+	#	plotter.plotFile()
+		#system("rm -f .*.data")
 	end
 
 #------------------------------------------------------------------------

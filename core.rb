@@ -16,7 +16,6 @@ class Core
 		@window=-1
 		@cwd=nil
 		@database=nil
-		@pubsDB
 		@adFilter=@filters.loadExternalFilter()
 	end
 
@@ -64,24 +63,24 @@ class Core
 	end
 
 	def close
-		@fnp.close;@fl.close
+		@fnp.close;#@fl.close
 	end
 
 	def perUserAnalysis
-		fu=File.new(@defines.files['userFile'],'w')
+		#fu=File.new(@defines.files['userFile'],'w')
 		puts "> Per user analysis..."
-		fu.puts "ID\tAdvertising\tAdExtra\tAnalytics\tSocial\tContent\tnoAdBeacons\tOther\t3rdSize(avgPerReq)\t3rdSize(sum)\tAd-content\tNumOfPrices\tAdNumOfParams(min)\tAdNumOfParams(max)\tAdNumOfParams(avg)\tRestNumOfParams(min)\tRestNumOfParams(max)\tRestNumOfParams(avg)\tadBeacons\tImpressions"
+		#fu.puts "ID\tAdvertising\tAdExtra\tAnalytics\tSocial\tContent\tnoAdBeacons\tOther\t3rdSize(avgPerReq)\t3rdSize(sum)\tAd-content\tNumOfPrices\tAdNumOfParams(min)\tAdNumOfParams(max)\tAdNumOfParams(avg)\tRestNumOfParams(min)\tRestNumOfParams(max)\tRestNumOfParams(avg)\tadBeacons\tImpressions"
 		for id,user in @trace.users do
 			type3rd=user.filterType
 			paramsStats=Utilities.makeStats(user.restNumOfParams)
 			adParamsStats=Utilities.makeStats(user.adNumOfParams)
 			sizeStats=Utilities.makeStats(user.sizes3rd)
-			fu.puts id+"\t"+user.row3rdparty['Advertising'].size.to_s+"\t"+user.row3rdparty['AdExtra'].size.to_s+"\t"+user.row3rdparty['Analytics'].size.to_s+"\t"+user.row3rdparty['Social'].size.to_s+"\t"+user.row3rdparty['Content'].size.to_s+"\t"+user.row3rdparty['Beacons'].size.to_s+"\t"+user.row3rdparty['Other'].size.to_s+"\t"+sizeStats['avg'].to_s+"\t"+sizeStats['sum'].to_s+"\t"+user.ads.length.to_s+"\t"+user.dPrices.length.to_s+"\t"+adParamsStats['min'].to_s+"\t"+adParamsStats['max'].to_s+"\t"+adParamsStats['avg'].to_s+"\t"+paramsStats['min'].to_s+"\t"+paramsStats['max'].to_s+"\t"+paramsStats['avg'].to_s+"\t"+user.adBeacon.to_s+"\t"+user.imp.length.to_s
+			#fu.puts id+"\t"+user.row3rdparty['Advertising'].size.to_s+"\t"+user.row3rdparty['AdExtra'].size.to_s+"\t"+user.row3rdparty['Analytics'].size.to_s+"\t"+user.row3rdparty['Social'].size.to_s+"\t"+user.row3rdparty['Content'].size.to_s+"\t"+user.row3rdparty['Beacons'].size.to_s+"\t"+user.row3rdparty['Other'].size.to_s+"\t"+sizeStats['avg'].to_s+"\t"+sizeStats['sum'].to_s+"\t"+user.ads.length.to_s+"\t"+user.dPrices.length.to_s+"\t"+adParamsStats['min'].to_s+"\t"+adParamsStats['max'].to_s+"\t"+adParamsStats['avg'].to_s+"\t"+paramsStats['min'].to_s+"\t"+paramsStats['max'].to_s+"\t"+paramsStats['avg'].to_s+"\t"+user.adBeacon.to_s+"\t"+user.imp.length.to_s
 			if @database!=nil
 				@database.insert(@defines.tables['userTable'],[id,user.row3rdparty['Advertising'].size,user.row3rdparty['AdExtra'].size,user.row3rdparty['Analytics'].size,user.row3rdparty['Social'].size,user.row3rdparty['Content'].size,user.row3rdparty['Beacons'].size,user.row3rdparty['Other'].size,sizeStats['avg'],sizeStats['sum'],user.ads.length,user.dPrices.length,adParamsStats['min'],adParamsStats['max'],adParamsStats['avg'],paramsStats['min'],paramsStats['max'],paramsStats['avg'],user.adBeacon,user.imp.length])
 			end
 		end
-		fu.close
+		#fu.close
 	end
 
 	def readUserAcrivity(tmlnFiles)
@@ -250,11 +249,7 @@ class Core
 				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
 				if (browser)
 					@trace.publishers.push(row['url'])
-					if @pubsDB==nil
-						@pubsDB=Database.new(@defines.dirs['rootDir']+"pubsDB.db",@defines)
-						@database.create(@defines.tables['publishersTable'],  'id VARCHAR PRIMARY KEY, timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR , Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
-					end
-					Utilities.printRowToDB(row,@pubsDB,@defines.tables['publishersTable'],nil)
+					Utilities.printRowToDB(row,@database,@defines.tables['publishersTable'],nil)
 				end
 				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
@@ -281,7 +276,7 @@ class Core
 			puts "and files..."
 		    #@fi=File.new(@defines.files['impFile'],'w')
 		    #@fa=File.new(@defines.files['adfile'],'w')
-		    @fl=File.new(@defines.files['leftovers'],'w')
+		    #@fl=File.new(@defines.files['leftovers'],'w')
 		    #@fp=File.new(@defines.files['prices'],'w')
 			#@fpub=File.new(@defines.files['publishers'],'w')
 		    #@fb=File.new(@defines.files['bcnFile'],'w')
