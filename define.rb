@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :tables, :resultsDB, :traceFile, :adsDir, :beaconDB, :filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
+	attr_accessor :tables, :plotDir, :resultsDB, :traceFile, :adsDir, :beaconDB, :filterFile, :parseResults, :userDir, :dirs, :files, :inria, :subStrings, :dataDir, :tmln_path, :beacon_key, :imps, :keywords, :adInParam, :rtbCompanies, :browsers
 	
 	def initialize(filename)
 		@column_Format={'100k_trace'=>1,'10k_trace'=>1 ,
@@ -34,12 +34,14 @@ class Defines
 		@dataDir="dataset/"
 		@adsDir="adRelated/"
 		@userDir="users/"
+		@plotDir="plots/"
 		@tmln_path="timelines/"
 		@dirs['rootDir']="results_"+@traceFile+"/"
 		@dirs['dataDir']=@dirs['rootDir']+@dataDir
 		@dirs['adsDir']=@dirs['rootDir']+@adsDir
 		@dirs['userDir']=@dirs['rootDir']+@userDir
 		@dirs['timelines']=@dirs['userDir']+@tmln_path
+		@dirs['plotDir']=nil
 		@resources='resources/'
 
 		#FILENAMES

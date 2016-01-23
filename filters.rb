@@ -46,15 +46,14 @@ class Filters
     end
 
     def is_Beacon?(url)
-		if (url.downcase.include? ".htm" or url.downcase.include? ".xml" or url.downcase.include? ".js" or url.downcase.include? ".jsp" or url.downcase.include? ".php")
-            return false
-        elsif is_1pixel_image?(url)
-			return true
-        elsif(@defines.beacon_key.any? { |word| url.include?(word)})
-            return true
-        else
-        	return false
-        end
+		if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)}
+		    if is_1pixel_image?(url)
+				return true
+		    elsif(@defines.beacon_key.any? { |word| url.include?(word)})
+		        return true
+		    end
+		end
+		return false
     end
 
 	def is_Browser?(row,type)

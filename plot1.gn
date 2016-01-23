@@ -12,9 +12,10 @@ set style data lines
 set style line 1 lt 1  lw 2.5 lc rgb '#0060ad'
 set style line 2 lt 1  lw 2.5 lc rgb 'red'
 
-#set log y
-#set format y "10^{%L}"
-
+if (y){
+	set log x
+	set format x "%g %%"
+}
 if (x>0){
 	set key right bottom; 
 	if (t1 eq 'rest'){

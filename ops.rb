@@ -92,6 +92,9 @@ class Operations
 	end
 
 	def plot(path)
+		@defines.dirs['rootDir']=path
+		@defines.dirs['plotDir']=@defines.dirs['rootDir']+@defines.plotDir
+		Dir.mkdir @defines.dirs['plotDir'] unless File.exists?(@defines.dirs['plotDir'])
 		if @database==nil
 			@database=Database.new(@defines.dirs['rootDir']+@defines.resultsDB,@defines)
 		end
@@ -103,11 +106,12 @@ class Operations
 		#DB-BASED
 		table=@defines.tables['bcnTable']
 		whatToPlot={#"priceTag"=>@defines.tables['priceTable'],
-					#"host"=>@defines.tables['priceTable'],
+					"host"=>@defines.tables['priceTable'],
 					#"beaconType" => @defines.tables['bcnTable'],
 					#"thirdPartyContent" => @defines.tables['traceTable'],
 					#"advertising,adExtra,analytics,social,content,noAdBeacons,other" => @defines.tables['userTable']
-					"advertising,adExtra,analytics,social,content,noAdBeacons,other,thirdPartySize" => @defines.tables['userTable']}
+					#"advertising,adExtra,analytics,social,content,noAdBeacons,other,thirdPartySize" => @defines.tables['userTable']
+					}
 		whatToPlot.each{|column, table|	plotter.plotDB(table,column)}
 
 		#FILE-BASED

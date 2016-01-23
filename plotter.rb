@@ -20,7 +20,7 @@ class Plotter
 				tempOut=".temp.data"
 				param=fl.split("_")[0]				
 				title=param.split(".")[0]
-				out=folder+fl.split(".")[0]+".eps"
+				out=@defines.dirs['plotDir']+fl.split(".")[0]+".eps"
 				if fl.include? "Params"
 					title='Number of URL params'
 					out=folder+"noOfparamsCDF.eps"
@@ -50,9 +50,9 @@ class Plotter
 					plotscript="plot2.gn"			
 				end
 				if not fl.include? "Params"
-					system("gnuplot -e \"histo=0;x=0;xTitle=\'"+title+"\';t1='';t2=''\" "+plotscript+" > "+out)
+					system("gnuplot -e \"y=0;x=0;xTitle=\'"+title+"\';t1='';t2=''\" "+plotscript+" > "+out)
 				elsif double==1
-					system("gnuplot -e \"histo=0;x=1;xTitle=\'"+title+"\';"+s+"\" "+plotscript+" > "+out)	
+					system("gnuplot -e \"y=0;x=1;xTitle=\'"+title+"\';"+s+"\" "+plotscript+" > "+out)	
 					double=-1
 				end
 			end
@@ -60,7 +60,7 @@ class Plotter
 	end
 
 	def plotDB(table,column)
-		histo=0
+		y=0
 		puts column
 		tempFile='.'+column+'.data'
 		if column.include? ","	# plot more than one columns
@@ -71,14 +71,14 @@ class Plotter
 		if data.size==0
 			puts "Warning: No data was found in =>\ntable: <"+table+"> \ncolumn: <"+column+">"
 			return
-		elsif data.size==1	# plotting histogram
+		elsif data.size==1	# plotting ygram
 			# Nested array
 			f=File.open(tempFile,'w')
 			newdata=data[0][0].gsub(/([\[\]])/,"").split(",")
 			if(newdata.size==6)	# content of Req
 				adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
 				data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Content"=>newdata[3],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"Other"=>newdata[5]}
-				histo=1
+				y=1
 				data.each{|key, value| f.puts (value.to_f*100/@totalRows.to_f).to_s+" "+key}
 				plotscript="plot2.gn"
 			end
@@ -94,13 +94,18 @@ class Plotter
 			else 
 				plotscript="plot2.gn"
 				instances.each{|word, count| f.puts (count.to_f*100/data.size.to_f).to_s+" \""+word[0].gsub(/([_])/,"\\\\\\_")+"\""}	
+				if column=="host" and table=="prices"
+					instances.each{|word, count| f.puts (count.to_f*100/data.size.to_f.round(2)).to_s}
+					system("awk '{print $1}' temp.csv|sort -g| uniq -c | awk '{print ($1/78)\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > .temp.data")
+					system("gnuplot -e \"x=0;y=1;xTitle=\'Percentage of detected prices\'\" plot1.gn > "+@defines.dirs['plotDir']+"pricesDSP_cdf.eps")
+				end
 			end
 			f.close
 			system("sort -rg ."+column+"2.data > "+tempFile)
 		end
 		xtitle=table+"-"+column
 		system("mv "+tempFile+" .temp.data")
-		system("gnuplot -e \"x=0;histo="+histo.to_s+";t1='';t2='';xTitle=\'"+xtitle+"\'\" "+plotscript+" > "+@defines.dirs['adsDir']+xtitle+".eps")
+		system("gnuplot -e \"x=0;y="+y.to_s+";t1='';t2='';xTitle=\'"+xtitle+"\'\" "+plotscript+" > "+@defines.dirs['plotDir']+xtitle+".eps")
 	end
 
 
@@ -129,7 +134,7 @@ class Plotter
 			fw.close
 			system("echo "+columns[columns.size-1]+" "+columns.to_s.gsub(/([\[\]])/,"").gsub(","," ")+"> .temp.data")
 			system("awk '{print $8\" \"$1\" \"$2\" \"$3\" \"$4\" \"$5\" \"$6\" \"$7}' "+tempFile+" | sort -gk1 >> .temp.data")
-			system("gnuplot stacked_area.gn; mv trafficBytes.png "+@defines.dirs['adsDir'])
+			system("gnuplot stacked_area.gn; mv trafficBytes.png "+@defines.dirs['plotDir'])
 		elsif columns.size==7
 			tdata.each{|row| total=(row.inject{|sum,x| sum + x }); row.each{|cell| fw.print (cell.to_f*100/total.to_f).to_s+" " }; fw.print "\n"}
 			i=2
@@ -142,7 +147,7 @@ class Plotter
 				system(s+tempFile+" | sort | uniq -c | sort -gk2  | awk '{print ($1/"+data[0].size.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2}' > .temp"+i.to_s+".data")
 				i+=1
 			end
-			system("gnuplot plot3.gn; mv content*.eps "+@defines.dirs['adsDir'])
+			system("gnuplot plot3.gn; mv content*.eps "+@defines.dirs['plotDir'])
 		end
 	end
 end
