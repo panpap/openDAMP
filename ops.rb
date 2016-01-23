@@ -105,12 +105,12 @@ class Operations
 		
 		#DB-BASED
 		table=@defines.tables['bcnTable']
-		whatToPlot={#"priceTag"=>@defines.tables['priceTable'],
+		whatToPlot={"priceTag"=>@defines.tables['priceTable'],
 					"host"=>@defines.tables['priceTable'],
-					#"beaconType" => @defines.tables['bcnTable'],
-					#"thirdPartyContent" => @defines.tables['traceTable'],
-					#"advertising,adExtra,analytics,social,content,noAdBeacons,other" => @defines.tables['userTable']
-					#"advertising,adExtra,analytics,social,content,noAdBeacons,other,thirdPartySize" => @defines.tables['userTable']
+					"beaconType" => @defines.tables['bcnTable'],
+					"thirdPartyContent" => @defines.tables['traceTable'],
+					"advertising,adExtra,analytics,social,content,noAdBeacons,other" => @defines.tables['userTable'],
+					"advertising,adExtra,analytics,social,content,noAdBeacons,other,thirdPartySize" => @defines.tables['userTable']
 					}
 		whatToPlot.each{|column, table|	plotter.plotDB(table,column)}
 
