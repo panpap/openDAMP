@@ -264,7 +264,7 @@ class Core
 			Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
 			Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
 			Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
-			print "database tabes..."
+			print "database tables..."
 			@database=Database.new(@defines.dirs['rootDir']+@defines.resultsDB,@defines)
 			@database.create(@defines.tables['publishersTable'],  'id VARCHAR PRIMARY KEY, timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR , Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
 			@database.create(@defines.tables['impTable'], 'id VARCHAR PRIMARY KEY,timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')

@@ -1,0 +1,30 @@
+set terminal postscript enhanced eps  defaultplex \
+   leveldefault  blacktext \
+   dashed dashlength 2.0 linewidth 3.0 butt \
+   palfuncparam 2000,0.003 \
+   "Helvetica" 24 
+
+set grid y lt 0 lw 1 lc rgb "#B8B8B8"
+set grid x lt 0 lw 1 lc rgb "#B8B8B8"
+set ylabel "CDF"
+set title "Traffic Split"
+set xlabel "Percentage of Traffic"
+set style data lines
+
+set format x "%g %%"
+
+set out "content_cdf.eps"
+set key right bottom; 
+plot '.temp2.data' u 2:1 title 'Advertising', \
+	'.temp3.data' u 2:1 title 'Analytics', \
+	'.temp4.data' u 2:1 title 'Social', \
+	'.temp5.data' u 2:1 title '3rd party Content', \
+	'.temp6.data' u 2:1 title 'Beacons', \
+	'.temp7.data' u 2:1 title 'Other';
+
+set out "content2_cdf.eps"
+plot '.temp2.data' u 2:1 title 'Advertising', \
+	'.temp3.data' u 2:1 title 'Analytics', \
+	'.temp4.data' u 2:1 title 'Social', \
+	'.temp5.data' u 2:1 title '3rd party Content', \
+	'.temp6.data' u 2:1 title 'Beacons', \
