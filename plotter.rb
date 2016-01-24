@@ -1,9 +1,10 @@
 class Plotter
 	
-	def initialize(defs,database,total)
+	def initialize(defs,database)
 		@defines=defs	
 		@db=database
-		@totalRows=total
+		@totalRows=@db.get("traceResults","totalRows","users",@db.count(@defines.tables['userTable']).to_s)[0]
+		puts @totalRows
 	end
 
 	def plotFile()
@@ -90,17 +91,21 @@ class Plotter
 			if Utilities.is_numeric?(data[0])
 				plotscript="plot1.gn"
 				s=0
-				instances.each{|word, count| s+=count.to_f/data.size.to_f; f.puts word[0].gsub(/([_])/,'\_')+" "+s.to_s+" "+(count.to_f/data.size.to_f).to_s}		
+				instances.each{|word, count| s+=count.to_f/data.size.to_f; f.puts word[0].gsub(/([_])/,'\_')+" "+s.to_s+" "+(count.to_f/data.size.to_f).to_s}	
 			else 
 				plotscript="plot2.gn"
 				instances.each{|word, count| f.puts (count.to_f*100/data.size.to_f).to_s+" \""+word[0].gsub(/([_])/,"\\\\\\_")+"\""}	
 				if column=="host" and table=="prices"
-					instances.each{|word, count| f.puts (count.to_f*100/data.size.to_f.round(2)).to_s}
-					system("awk '{print $1}' temp.csv|sort -g| uniq -c | awk '{print ($1/78)\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > .temp.data")
+					fw=File.open(tempFile,'w')
+					instances.each{|word, count| fw.puts (count.to_f*100/data.size.to_f.round(2)).to_s}
+					fw.close
+					total=0
+					IO.popen('wc -l '+tempFile) { |io| total=io.gets.split(" ")[0] }
+					system("awk '{print $1}' "+tempFile+" |sort -g| uniq -c | awk '{print ($1/"+total.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > .temp.data")
 					system("gnuplot -e \"x=0;y=1;xTitle=\'Percentage of detected prices\'\" plot1.gn > "+@defines.dirs['plotDir']+"pricesDSP_cdf.eps")
 				end
 			end
-			f.close
+			f.close	
 			system("sort -rg ."+column+"2.data > "+tempFile)
 		end
 		xtitle=table+"-"+column
@@ -132,22 +137,126 @@ class Plotter
 				fw.print s.to_s+" " }; 
 			fw.print "\n"}
 			fw.close
-			system("echo "+columns[columns.size-1]+" "+columns.to_s.gsub(/([\[\]])/,"").gsub(","," ")+"> .temp.data")
-			system("awk '{print $8\" \"$1\" \"$2\" \"$3\" \"$4\" \"$5\" \"$6\" \"$7}' "+tempFile+" | sort -gk1 >> .temp.data")
-			system("gnuplot stacked_area.gn; mv trafficBytes.png "+@defines.dirs['plotDir'])
+			tempFile2=".temp2.data"
+			system("echo "+columns[columns.size-1]+" "+columns.to_s.gsub(/([\[\]])/,"").gsub(","," ")+"> "+tempFile2)
+			system("awk '{print $8/1000\" \"$1\" \"$2\" \"$3\" \"$4\" \"$5\" \"$6\" \"$7}' "+tempFile+" | sort -gk1 >> "+tempFile2)
+			makeBins(1,tempFile2)
 		elsif columns.size==7
-			tdata.each{|row| total=(row.inject{|sum,x| sum + x }); row.each{|cell| fw.print (cell.to_f*100/total.to_f).to_s+" " }; fw.print "\n"}
+			tdata.each{|row| total=(row.inject{|sum,x| sum + x }); row.each{|cell| fw.print (cell.to_f*100/total.to_f).to_i.to_s+" " }; fw.print "\n"}
 			i=2
 			fw.close
 			while i<=data.size
 				s="awk '{print $"+i.to_s+"}' "
 				if i==2
 					s="awk '{print ($1+$2)}' "
+				elsif i==5
+					s=nil
+				elsif i==7
+					s="awk '{print ($5+$7)}' "
 				end
-				system(s+tempFile+" | sort | uniq -c | sort -gk2  | awk '{print ($1/"+data[0].size.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2}' > .temp"+i.to_s+".data")
+				if s!=nil
+					system(s+tempFile+" | sort | uniq -c | sort -gk2  | awk '{print ($1/"+data[0].size.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2}' > .temp"+i.to_s+".data")
+				end
 				i+=1
 			end
 			system("gnuplot plot3.gn; mv content*.eps "+@defines.dirs['plotDir'])
 		end
+	end
+
+	def makeBins(c,tempFile2)
+		binAd=Array.new
+		binEx=Array.new
+		binAn=Array.new
+		binSoc=Array.new
+		binCon=Array.new
+		binBea=Array.new
+		binOth=Array.new
+		f=File.new(tempFile2)
+		fw=File.new(".temp.data",'w')
+		#log
+		if c==1
+			i=10;b=1
+		#binary
+		elsif c==2
+			i=10
+		#exponential
+		elsif c==3
+			i=10;b=10
+		end
+		size=nil
+		while(line=f.gets) do
+			elem=line.split(" ")
+			if Utilities.is_numeric?(elem[0])
+				if elem[0].to_i>i
+			
+					if c==1
+						i,b=log(i,b)
+					elsif c==2
+						i=binary(i)			
+					elsif c==3
+						i,b=exponential(i,b)
+					end			
+					print elem[0].to_i.to_s+"\n"
+					size=elem[0].to_i.to_s
+					output(fw,binAd,binEx,binAn,binSoc,binCon,binBea,binOth,size)
+					binAd=Array.new
+					binEx=Array.new
+					binAn=Array.new
+					binSoc=Array.new
+					binCon=Array.new
+					binBea=Array.new
+					binOth=Array.new
+				end
+				binAd.push(elem[1].to_f)
+				binEx.push(elem[2].to_f)
+				binAn.push(elem[3].to_f)
+				binSoc.push(elem[4].to_f)
+				binCon.push(elem[5].to_f)
+				binBea.push(elem[6].to_f)
+				binOth.push(elem[7].to_f)
+				size=elem[0].to_i.to_s
+			else
+				fw.puts line.gsub("noAdBeacons","beacons")
+			end
+		end
+		if c<3
+			output(fw,binAd,binEx,binAn,binSoc,binCon,binBea,binOth,size)
+		end
+		fw.close
+		f.close
+		system("gnuplot stacked_area.gn; mv *.eps "+@defines.dirs['plotDir'])
+	end
+
+	def output(fw,binAd,binEx,binAn,binSoc,binCon,binBea,binOth,size)
+		a=Utilities.makeStats(binAd)['avg']
+		a1=Utilities.makeStats(binEx)['avg']
+		a2=Utilities.makeStats(binAn)['avg']
+		a3=Utilities.makeStats(binSoc)['avg']
+		a4=Utilities.makeStats(binCon)['avg']
+		a5=Utilities.makeStats(binBea)['avg']
+		a6=Utilities.makeStats(binOth)['avg']
+		sum= (a+a1+a2+a3+a4+a5+a6).to_s
+		fw.puts size+" "+a.to_s+" "+a1.to_s+" "+a2.to_s+" "+a3.to_s+" "+a4.to_s+" "+a5.to_s+" "+a6.to_s+" "+sum
+	end
+
+	def exponential(i,b)
+		if i==100 or i==1000 or i==10000
+			b*=10
+		end
+		i+=b; 
+		print i.to_s+" "+b.to_s+" "
+		return i,b
+	end
+
+	def log(i,b)
+		b+=1;
+		i=10**b
+		print i.to_s+" "+b.to_s+" "
+		return i,b
+	end
+
+	def binary(i)
+		print i.to_s+" "
+		return i*2
 	end
 end

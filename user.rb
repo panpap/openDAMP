@@ -1,6 +1,6 @@
 
 class User
-	attr_accessor :dPrices, :row3rdparty, :adNumOfParams, :sizes3rd, :imp, :latency, :ads, :adBeacon, :filterType, :adsType, :restNumOfParams
+	attr_accessor :dur3rd, :dPrices, :row3rdparty, :adNumOfParams, :sizes3rd, :imp, :latency, :ads, :adBeacon, :filterType, :adsType, :restNumOfParams
 
 	def initialize
 		@dPrices=Array.new
@@ -11,6 +11,7 @@ class User
 		@restNumOfParams=Array.new
 		@adNumOfParams=Array.new
 		@sizes3rd=Array.new
+		@dur3rd=Array.new
 		@row3rdparty={"Advertising"=>[],"AdExtra"=>[],"Beacons"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"Other"=>[]}
 	end
 end

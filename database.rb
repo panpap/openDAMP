@@ -25,6 +25,10 @@ class Database
 		return execute("CREATE TABLE IF NOT EXISTS '#{table}' ",params) 
 	end
 
+	def count(table)
+		return @db.get_first_value( "select count(*) from "+table)
+	end
+
 	def get(table,what,param,value)
 		if table==nil or param==nil or value==nil
 			return
