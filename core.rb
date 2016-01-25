@@ -229,6 +229,7 @@ class Core
 				#CALCULATE SIZE
 				sz=row['length']
 				@trace.users[@curUser].sizes3rd.push(sz.to_i)
+				@trace.users[@curUser].dur3rd.push(row['dur'].to_i)
 				@trace.sizes.push(sz.to_i)
 			else	#CONTENT type
 				@trace.restNumOfParams.push(noOfparam.to_i)

@@ -19,7 +19,7 @@ plot '.temp2.data' u 2:1 title 'Advertising' ls 1 lc rgb 'red', \
 	'.temp3.data' u 2:1 title 'Analytics' ls 1 lc rgb 'blue', \
 	'.temp4.data' u 2:1 title 'Social' ls 1 lc rgb 'green', \
 	'.temp6.data' u 2:1 title 'Beacons' ls 1 lc rgb 'brown', \
-	'.temp7.data' u 2:1 title 'Useful Content';
+	'.temp7.data' u 2:1 title 'Actual Content';
 
 set out "content2_cdf.eps"
 plot '.temp2.data' u 2:1 title 'Advertising' ls 1 lc rgb 'red', \

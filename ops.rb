@@ -102,17 +102,17 @@ class Operations
 		puts "> Plotting existing output from <"+path+">..."
 		
 		#DB-BASED
-		whatToPlot={#"priceTag" => @defines.tables['priceTable'],
-				#	"host"=> @defines.tables['priceTable'],
+		whatToPlot={"priceTag" => @defines.tables['priceTable'],
+					"host"=> @defines.tables['priceTable'],
 #					"beaconType" => @defines.tables['bcnTable'],
-				#	"thirdPartyContent" => @defines.tables['traceTable'],
+					"thirdPartyContent" => @defines.tables['traceTable'],
 					"advertising,adExtra,analytics,social,content,noAdBeacons,other" => @defines.tables['userTable'],
-				#	"advertising,adExtra,analytics,social,content,noAdBeacons,other,thirdPartySize" => @defines.tables['userTable']
+					"advertising,adExtra,analytics,social,content,noAdBeacons,other,thirdPartySize" => @defines.tables['userTable']
 					}
-		whatToPlot.each{|column, table|	plotter.plotDB(table,column)}
+	#	whatToPlot.each{|column, table|	plotter.plotDB(table,column)}
 
 		#FILE-BASED
-	#	plotter.plotFile()
+		plotter.plotFile()
 		#system("rm -f .*.data")
 	end
 

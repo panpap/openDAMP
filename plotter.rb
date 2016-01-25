@@ -3,7 +3,16 @@ class Plotter
 	def initialize(defs,database)
 		@defines=defs	
 		@db=database
-		@totalRows=@db.get("traceResults","totalRows","users",@db.count(@defines.tables['userTable']).to_s)[0]
+		@totalRows=nil
+		if @db!=nil
+			res=@db.get("traceResults","totalRows","users",@db.count(@defines.tables['userTable']).to_s)
+			if res!=nil
+				@totalRows=res[0]
+			end
+		end
+		if @totalRows==nil
+			IO.popen('wc -l '+@defines.dirs["adsDir"]+"devices.csv") { |io| @totalRows=io.gets.split(" ")[0] }
+		end
 		puts @totalRows
 	end
 
@@ -78,7 +87,7 @@ class Plotter
 			newdata=data[0][0].gsub(/([\[\]])/,"").split(",")
 			if(newdata.size==6)	# content of Req
 				adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
-				data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Content"=>newdata[3],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"Other"=>newdata[5]}
+				data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"\"3rd party Content\""=>newdata[3],"Rest"=>newdata[5]}
 				y=1
 				data.each{|key, value| f.puts (value.to_f*100/@totalRows.to_f).to_s+" "+key}
 				plotscript="plot2.gn"
@@ -102,7 +111,7 @@ class Plotter
 					total=0
 					IO.popen('wc -l '+tempFile) { |io| total=io.gets.split(" ")[0] }
 					system("awk '{print $1}' "+tempFile+" |sort -g| uniq -c | awk '{print ($1/"+total.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > .temp.data")
-					system("gnuplot -e \"x=0;y=1;xTitle=\'Percentage of detected prices\'\" plot1.gn > "+@defines.dirs['plotDir']+"pricesDSP_cdf.eps")
+					system("gnuplot -e \"x=0;y=1;xTitle=\'Percentage of reqs with prices\'\" plot1.gn > "+@defines.dirs['plotDir']+"pricesDSP_cdf.eps")
 				end
 			end
 			f.close	
@@ -216,7 +225,7 @@ class Plotter
 				binOth.push(elem[7].to_f)
 				size=elem[0].to_i.to_s
 			else
-				fw.puts line.gsub("noAdBeacons","beacons")
+				fw.puts line.gsub("noAdBeacons","beacons").gsub("other","\"actual content\"")
 			end
 		end
 		if c<3
@@ -236,7 +245,8 @@ class Plotter
 		a5=Utilities.makeStats(binBea)['avg']
 		a6=Utilities.makeStats(binOth)['avg']
 		sum= (a+a1+a2+a3+a4+a5+a6).to_s
-		fw.puts size+" "+a.to_s+" "+a1.to_s+" "+a2.to_s+" "+a3.to_s+" "+a4.to_s+" "+a5.to_s+" "+a6.to_s+" "+sum
+#		fw.puts size+" "+a.to_s+" "+a1.to_s+" "+a2.to_s+" "+a3.to_s+" "+a4.to_s+" "+a5.to_s+" "+a6.to_s+" "+sum
+		fw.puts size+" "+a.to_s+" "+a1.to_s+" "+a2.to_s+" "+a3.to_s+" "+a5.to_s+" "+(a4+a6).to_s+" "+sum
 	end
 
 	def exponential(i,b)
