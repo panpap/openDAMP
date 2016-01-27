@@ -5,7 +5,7 @@ load 'database.rb'
 
 class Core
 	attr_writer :window, :cwd
-	attr_accessor :database
+	attr_accessor :database, :trace, :rows
    	@isBeacon=false
 
 	def initialize(defs,noDump)
@@ -19,69 +19,51 @@ class Core
 		@adFilter=@filters.loadExternalFilter()
 	end
 
-	def getTrace
-		return @trace
-	end
-
-	def getRows
-		return @trace.rows
-	end
-
     def loadRows(filename)
-		makeDirsFiles()
 		puts "> Name of input file: "+filename
-        f=File.new(filename,'r')
-        line=f.gets     #get rid of headers
-        while(line=f.gets)
-			h=Format.columnsFormat(line,@defines.column_Format)
-			if h['host'].size>1 and h['host'].count('.')>0
-		        		@trace.rows.push(h)
-			end
-        end
-        f.close
+		makeDirsFiles()
+		@trace.loadTrace(filename)
         return @trace.rows
     end
 
-	def parseRequest(row,quick,browserOnly)
+	def parseRequest(row,browserOnly)
 		@curUser=row['IPport']
 		if @trace.users[@curUser]==nil		#first seen user
 			@trace.users[@curUser]=User.new	
 		end
-
-		if quick==true
-			pricesOnly(row)
-		else
-			#CHECK THE DEVICE TYPE
-			mob,dev,browser=reqOrigin(row)
-			if browserOnly and not browser
-				return -1
-			end
-			#FILTER ROW
-			filterRow(mob,dev,browser,row)
+		mob,dev,browser=reqOrigin(row)		#CHECK THE DEVICE TYPE
+		row['mob']=mob
+		row['dev']=dev
+		row['browser']=browser
+		if browserOnly and browser.eql? "unknown"
+			false
+		else		#FILTER ROW
+			filterRow(row)
+			true
 		end
-		return 1
-	end
-
-	def close
-		@fnp.close;#@fl.close
 	end
 
 	def perUserAnalysis
-		#fu=File.new(@defines.files['userFile'],'w')
-		puts "> Per user analysis..."
-		#fu.puts "ID\tAdvertising\tAdExtra\tAnalytics\tSocial\tContent\tnoAdBeacons\tOther\t3rdSize(avgPerReq)\t3rdSize(sum)\tAd-content\tNumOfPrices\tAdNumOfParams(min)\tAdNumOfParams(max)\tAdNumOfParams(avg)\tRestNumOfParams(min)\tRestNumOfParams(max)\tRestNumOfParams(avg)\tadBeacons\tImpressions"
+		puts "> Dumping to database..."
+		durStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
+		sizeStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
 		for id,user in @trace.users do
+			user.ads.each{|row| Utilities.printRowToDB(row,@database,@defines.tables['adsTable'],nil)}
+			user.publishers.each{|row| tid=Digest::SHA256.hexdigest (row['tmstp']+"|"+row['url']); @database.insert(@defines.tables['publishersTable'], [tid,row['tmstp'],row['IPport'],row['uIP'],row['url'],row['host'],row['mob'],row['dev'],row['browser']])}
 			type3rd=user.filterType
-			paramsStats=Utilities.makeStats(user.restNumOfParams)
-			adParamsStats=Utilities.makeStats(user.adNumOfParams)
-			sizeStats=Utilities.makeStats(user.sizes3rd)
-			durStats=Utilities.makeStats(user.dur3rd)
-			#fu.puts id+"\t"+user.row3rdparty['Advertising'].size.to_s+"\t"+user.row3rdparty['AdExtra'].size.to_s+"\t"+user.row3rdparty['Analytics'].size.to_s+"\t"+user.row3rdparty['Social'].size.to_s+"\t"+user.row3rdparty['Content'].size.to_s+"\t"+user.row3rdparty['Beacons'].size.to_s+"\t"+user.row3rdparty['Other'].size.to_s+"\t"+durStats['avg'].to_s+"\t"+durStats['sum'].to_s+sizeStats['avg'].to_s+"\t"+sizeStats['sum'].to_s+"\t"+user.ads.length.to_s+"\t"+user.dPrices.length.to_s+"\t"+adParamsStats['min'].to_s+"\t"+adParamsStats['max'].to_s+"\t"+adParamsStats['avg'].to_s+"\t"+paramsStats['min'].to_s+"\t"+paramsStats['max'].to_s+"\t"+paramsStats['avg'].to_s+"\t"+user.adBeacon.to_s+"\t"+user.imp.length.to_s
+			user.size3rdparty.each{|category, sizes| sizeStats[category]=Utilities.makeStats(sizes)}
+			user.dur3rd.each{|category, durations| durStats[category]=Utilities.makeStats(durations)}
 			if @database!=nil
-				@database.insert(@defines.tables['userTable'],[id,user.row3rdparty['Advertising'].size,user.row3rdparty['AdExtra'].size,user.row3rdparty['Analytics'].size,user.row3rdparty['Social'].size,user.row3rdparty['Content'].size,user.row3rdparty['Beacons'].size,user.row3rdparty['Other'].size,durStats['avg'],durStats['sum'],sizeStats['avg'],sizeStats['sum'],user.ads.length,user.dPrices.length,adParamsStats['min'],adParamsStats['max'],adParamsStats['avg'],paramsStats['min'],paramsStats['max'],paramsStats['avg'],user.adBeacon,user.imp.length])
+				avgDurPerCat="["+durStats['Advertising']['sum'].to_s+","+durStats['Analytics']['sum'].to_s+
+				","+durStats['Social']['sum'].to_s+","+durStats['Content']['sum'].to_s+","+durStats['Beacons']['sum'].to_s+
+				","+durStats['Other']['sum'].to_s+"]"
+				avgSizePerCat="["+sizeStats['Advertising']['sum'].to_s+","+sizeStats['Analytics']['sum'].to_s+
+				","+sizeStats['Social']['sum'].to_s+","+sizeStats['Content']['sum'].to_s+","+sizeStats['Beacons']['sum'].to_s+
+				","+sizeStats['Other']['sum'].to_s+"]"
+
+				@database.insert(@defines.tables['userTable'],[id,user.size3rdparty['Advertising'].size,user.size3rdparty['Analytics'].size,user.size3rdparty['Social'].size,user.size3rdparty['Content'].size,user.size3rdparty['Beacons'].size,user.size3rdparty['Other'].size,avgDurPerCat,avgSizePerCat,user.hashedPrices.length,user.numericPrices.length,user.adBeacon,user.imp.length,user.publishers.size])
 			end
 		end
-		#fu.close
 	end
 
 	def readUserAcrivity(tmlnFiles)
@@ -134,7 +116,7 @@ class Core
 			while line=fr.gets
 				r=Format.columnsFormat(line,@defines.column_Format)
 				mob,dev,browser=reqOrigin(r)
-				if browser
+				if browser!=nil
 					if firstTime==-1
 						fw=File.new(timeline_path+tmln+"_per"+@window.to_s+"msec",'w')
 						firstTime=r['tmstp'].to_i
@@ -143,7 +125,7 @@ class Core
 					nbucket=applyTimeWindow(firstTime,r,fw)
 					if bucket!=nbucket						
 						fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
-						fw.puts Utilities.results_toString(@trace,@database,nil)+"\n"
+						fw.puts @trace.results_toString(@database,nil,nil)+"\n"
 						bucket=nbucket
 						@trace=Trace.new(@defines)
 						startBucket=r['tmstp']
@@ -161,7 +143,7 @@ class Core
 			end
 			if startBucket!=-1 && endBucket!=-1
 				fw.puts "\n"+startBucket.to_s+" : "+endBucket.to_s+"-> BUCKET "+bucket.to_s
-				fw.puts Utilities.results_toString(@trace,@database,nil)+"\n"
+				fw.puts @trace.results_toString(@database,nil,nil)+"\n"
 			end
 			@trace=Trace.new(@defines)
 			fr.close
@@ -176,82 +158,69 @@ class Core
 		diff=row['tmstp'].to_i-firstTime
 		wnum=diff.to_f/@window.to_i
 		return wnum.to_i
-	end
-
-	def pricesOnly(row)
-		url=row['url'].split("?")
-		if (url[1]==nil)
-     		return 0,false
-    	end
-        fields=url[1].split('&')
-        for field in fields do
-            keyVal=field.split("=")
-            if(not @filters.is_GarbageOrEmpty?(keyVal))
-				if(detectPrice(row['tmstp'],keyVal,row['host']))
-					Utilities.printRow(row,File.new(@defines.dirs['rootDir']+"PriceAds.out",'a'))
-				end
-			end
-		end
 	end	
 
 	def reqOrigin(row)
 		#CHECK IF ITS MOBILE USER
 		mob,dev=@filters.is_MobileType?(row)   # check the device type of the request
-		if mob
+		if mob==1
 			@trace.mobDev+=1
 		end
 		#CHECK IF ITS ORIGINATED FROM BROWSER
-		browser=@filters.is_Browser?(row,dev)
-		if browser
-			@trace.fromBrowser.push(row)
+		browser=@filters.is_Browser?(row)
+		if not browser.eql? "unknown"
+			@trace.fromBrowser+=1
 		end
         @trace.devs.push(dev)
 		return mob,dev,browser
 	end		
 
-	def filterRow(mob,dev,browser,row)
+	def filterRow(row)
 		url=row['url'].split("?")
 		host=row['host']
 		isPorI,noOfparam=beaconImprParamCkeck(url,row)
-		@trace.totalParamNum.push(noOfparam)
+	#	@trace.totalParamNum.push(noOfparam)
 		iaAdinURL=false
 		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
 		if type3rd!=nil	#	3rd PARTY CONTENT
-			@trace.users[@curUser].row3rdparty[type3rd].push(row)
+		#	@trace.users[@curUser].row3rdparty[type3rd].push(row)
+			@trace.users[@curUser].size3rdparty[type3rd].push(row['length'].to_i)
+			@trace.users[@curUser].dur3rd[type3rd].push(row['dur'].to_i)
 			@trace.party3rd[type3rd]+=1
 			if not type3rd.eql? "Content"
 				if	type3rd.eql? "Advertising"
-					ad_detected(row,noOfparam,mob,dev,url)
+					ad_detected(row,noOfparam,url)
 				else # SOCIAL or ANALYTICS or OTHER type
 					@trace.restNumOfParams.push(noOfparam.to_i)
-					@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
 				end
 				#CALCULATE SIZE
 				sz=row['length']
-				@trace.users[@curUser].sizes3rd.push(sz.to_i)
-				@trace.users[@curUser].dur3rd.push(row['dur'].to_i)
+				#@trace.users[@curUser].dur3rd[type3rd].push(row['dur'].to_i)
 				@trace.sizes.push(sz.to_i)
 			else	#CONTENT type
 				@trace.restNumOfParams.push(noOfparam.to_i)
-				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
+		#		@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
 			end
 		else
 			if @isBeacon 	#Beacon NOT ad-related
-				@trace.users[@curUser].row3rdparty["Beacons"].push(row)
+			#	@trace.users[@curUser].row3rdparty["Beacons"].push(row)
+				@trace.users[@curUser].size3rdparty["Beacons"].push(row['length'].to_i)
+				@trace.users[@curUser].dur3rd["Beacons"].push(row['dur'].to_i)
 				@trace.restNumOfParams.push(noOfparam.to_i)
-				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
 			elsif isPorI>0	# Impression or ad in param
-				@trace.users[@curUser].row3rdparty["AdExtra"].push(row)
+			#	@trace.users[@curUser].row3rdparty["Advertising"].push(row)
+				@trace.users[@curUser].size3rdparty["Advertising"].push(row['length'].to_i)
+				@trace.users[@curUser].dur3rd["Advertising"].push(row['dur'].to_i)
 				ad_detected(row,noOfparam,mob,dev,url)
 				@trace.party3rd["Advertising"]+=1
 			elsif isPorI<1	# Rest
 				@trace.restNumOfParams.push(noOfparam.to_i)
-				@trace.users[@curUser].row3rdparty["Other"].push(row)
+			#	@trace.users[@curUser].row3rdparty["Other"].push(row)
+				@trace.users[@curUser].size3rdparty["Other"].push(row['length'].to_i)
+				@trace.users[@curUser].dur3rd["Other"].push(row['dur'].to_i)
 				@trace.party3rd["Other"]+=1
-				@trace.users[@curUser].restNumOfParams.push(noOfparam.to_i)
-				if (browser)
-					@trace.publishers.push(row['url'])
-					Utilities.printRowToDB(row,@database,@defines.tables['publishersTable'],nil)
+				if (row['browser']!="unknown")
+					@trace.users[@curUser].publishers.push(row)
 				end
 				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
@@ -266,25 +235,16 @@ class Core
 			Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
 			Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
 			Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
-			print "database tables..."
+			puts "and database tables..."
 			@database=Database.new(@defines.dirs['rootDir']+@defines.resultsDB,@defines)
-			@database.create(@defines.tables['publishersTable'],  'id VARCHAR PRIMARY KEY, timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR , Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
-			@database.create(@defines.tables['impTable'], 'id VARCHAR PRIMARY KEY,timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
-			@database.create(@defines.tables['adsTable'], 'id VARCHAR PRIMARY KEY, timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
-			@database.create(@defines.tables['bcnTable'], 'id VARCHAR PRIMARY KEY, timestamp BIGINT, ip_port VARCHAR, userIP VARCHAR, url VARCHAR, host VARCHAR, 	userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER, beaconType VARCHAR')
-			@database.create(@defines.tables['priceTable'], 'timestamp BIGINT, host VARCHAR, priceTag VARCHAR, priceValue VARCHAR')
-			@database.create(@defines.tables['userTable'], 'id VARCHAR PRIMARY KEY, advertising INTEGER, adExtra INTEGER, analytics INTEGER, social INTEGER, content INTEGER, noAdBeacons INTEGER, other INTEGER, duration3rd_avgPerReq FLOAT, duration3rd INTEGER, thirdPartySize_avgPerReq FLOAT, thirdPartySize INTEGER, adcontent INTEGER, numOfPrices INTEGER, adNumOfParams_min INTEGER, adNumOfParams_max INTEGER, adNumOfParams_avg FLOAT, restNumOfParams_min INTEGER, restNumOfParams_max INTEGER, restNumOfParams_avg FLOAT, adBeacons INTEGER, impressions INTEGER')
-			@database.create(@defines.tables['traceTable'], 'users INTEGER, totalMobileTraffic VARCHAR, browserReqs INTEGER, browserPrices INTEGER, thirdPartyContent VARCHAR, thirdPartySize_total FLOAT, thirdPartySize_avg FLOAT, totalRows INTEGER, adRelatedReqs VARCHAR, adTraffic_mobile VARCHAR, numParams_max INTEGER, numParams_min INTEGER, numParams_avg FLOAT, numAdParams_max INTEGER, numAdParams_min INTEGER, numAdParams_avg FLOAT,numRestParams_max INTEGER, numRestParams_min INTEGER, numRestParams_avg FLOAT,detectedPrices INTEGER, numericPrices VARCHAR, avgPrice FLOAT, beacons INTEGER, adRelatedBeacons VARCHAR, numImpressions INTEGER, numPublishers INTEGER')
-			puts "and files..."
-		    #@fi=File.new(@defines.files['impFile'],'w')
-		    #@fa=File.new(@defines.files['adfile'],'w')
-		    #@fl=File.new(@defines.files['leftovers'],'w')
-		    #@fp=File.new(@defines.files['prices'],'w')
-			#@fpub=File.new(@defines.files['publishers'],'w')
-		    #@fb=File.new(@defines.files['bcnFile'],'w')
-		    #@fd2=File.new(@defines.files['adDevices'],'w')
-		    #@fbt=File.new(@defines.files['beaconT'],'w')
-			@fnp=File.new(@defines.files['priceTagsFile'],'w')
+			@database.create(@defines.tables['publishersTable'], 'id VARCHAR PRIMARY KEY, timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR , Host VARCHAR, mobile VARCHAR, device INTEGER, browser INTEGER')
+			#@database.create(@defines.tables['impTable'], 'id VARCHAR PRIMARY KEY,timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
+			@database.create(@defines.tables['adsTable'], 'id VARCHAR PRIMARY KEY, timestamp BIGINT, ip_Port VARCHAR, userIP VARCHAR, url VARCHAR, host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER,mob INTEGER,device VARCHAR,browser VARCHAR')
+			@database.create(@defines.tables['bcnTable'], 'id VARCHAR PRIMARY KEY, timestamp BIGINT, ip_port VARCHAR, userIP VARCHAR, url VARCHAR, beaconType VARCHAR, mob INTEGER,device VARCHAR,browser VARCHAR')
+			@database.create(@defines.tables['priceTable'], 'timestamp BIGINT PRIMARY KEY, host VARCHAR, priceTag VARCHAR, priceValue VARCHAR')
+			@database.create(@defines.tables['userTable'], 'id VARCHAR PRIMARY KEY, advertising INTEGER, analytics INTEGER, social INTEGER, content INTEGER, noAdBeacons INTEGER, other INTEGER, avgDurationPerCategory VARCHAR, avgSizePerCategory VARCHAR, hashedPrices INTEGER, numericPrices INTEGER,adBeacons INTEGER, impressions INTEGER, publishersVisited INTEGER')
+			@database.create(@defines.tables['traceTable'], 'id VARCHAR PRIMARY KEY, totalRows BIGINT, users INTEGER, advertising INTEGER, analytics INTEGER, social INTEGER, content INTEGER, Beacons INTEGER, other INTEGER, thirdPartySize_total INTEGER, totalMobileReqs INTEGER, browserReqs INTEGER,mobileAdReqs VARCHAR, hashedPrices INTEGER, numericPrices INTEGER, adRelatedBeacons VARCHAR, numImpressions INTEGER')
+			#@fnp=File.new(@defines.files['priceTagsFile'],'w')
 		end
 	end
 
@@ -297,24 +257,27 @@ class Core
 			if @database!=nil
 				@database.insert(@defines.tables['priceTable'], [tmstp,host,priceTag,priceVal])
 			end
-			if (Utilities.is_numeric?(keyVal[1]) and @fnp!=nil)
-				@fnp.puts host+"\t"+keyVal[0].downcase
+			
+			if Utilities.is_Float(keyVal[1])
+				@trace.users[@curUser].numericPrices.push(keyVal[1])
+				@trace.numericPrices+=1
+			else
+				@trace.users[@curUser].hashedPrices.push(keyVal[1])
+				@trace.hashedPrices+=1
 			end
-			@trace.users[@curUser].dPrices.push(keyVal[1])
-			@trace.detectedPrices.push(keyVal[1])
-			return true
+			true
 		end
-		return false
+		false
     end
 
     def detectImpressions(url,row)     	#Impression term in path
         if @filters.is_Impression?(url[0])
-			Utilities.printRowToDB(row,@database,@defines.tables['impTable'],nil)
+#			Utilities.printRowToDB(row,@database,@defines.tables['impTable'],nil)
 			@trace.totalImps+=1
 		    @trace.users[@curUser].imp.push(row)
-			return true
+			true
         end
-		return false
+		false
     end
 
 	def checkParams(row,url)
@@ -330,7 +293,7 @@ class Core
 					beaconSave(url[0],row)
 				end
 				if(detectPrice(row['tmstp'],keyVal,row['host']))
-					if @trace.fromBrowser.include? row					
+					if row['browser']!=nil					
 						@trace.browserPrices+=1
 					end
 				#	Utilities.printRow(row,File.new(@defines.dirs['rootDir']+"PriceAds.out",'a'))
@@ -359,7 +322,10 @@ class Core
         	type=last
 		end
 		@trace.party3rd["totalBeacons"]+=1
-		Utilities.printRowToDB(row,@database,@defines.tables['bcnTable'],type)
+		tmpstp=row['tmstp'];u=row['url']
+		id=Digest::SHA256.hexdigest (tmpstp+"|"+u);
+		@trace.beacons.push([id,tmpstp,row['IPport'],row['userIP'],u,type,row['mob'],row['dev'],row['browser']])
+		#Utilities.printRowToDB(row,@database,@defines.tables['bcnTable'],type)
 	end
 
 	def beaconImprParamCkeck(url,row) 
@@ -369,26 +335,26 @@ class Core
             isAd=0
             beaconSave(url[0],row)
         end
-        paramNum, result=checkParams(row,url)             #find ads
+        paramNum, result=checkParams(row,url)             #check in URL params
         if(result==true or detectImpressions(url,row))
             isAd=1
 		end
 		return isAd,paramNum
 	end
 
-	def ad_detected (row,noOfparam,mob,dev,url)
+	def ad_detected (row,noOfparam,url)
         @trace.users[@curUser].ads.push(row)
-        @trace.users[@curUser].adNumOfParams.push(noOfparam.to_i)
+   #     @trace.users[@curUser].adNumOfParams.push(noOfparam.to_i)
 		@trace.adNumOfParams.push(noOfparam.to_i)
 		if (@isBeacon)			#is it ad-related Beacon?
 			@trace.users[@curUser].adBeacon+=1
 			@trace.totalAdBeacons+=1
 			@isBeacon=false
 		end
-		if(mob)
+		if(row['mob'])
 			@trace.numOfMobileAds+=1
 		end
 	#	@fd2.puts(dev)	#adRelated Devices
-        Utilities.printRowToDB(row,@database,@defines.tables['adsTable'],nil)
+    #    Utilities.printRowToDB(row,@database,@defines.tables['adsTable'],nil,mob,dev,browser)
 	end
 end

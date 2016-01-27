@@ -5,13 +5,13 @@ module Utilities
 		return (sorted[(len - 1) / 2] + sorted[len / 2]) / 2.0
 	end
 
-        def Utilities.is_float?(object)
-            if (not object.include? "." or object.downcase.include? "e") #out of range check
-                return false
-            else
-                return Utilities.is_numeric?(object)
-            end
+    def Utilities.is_float?(object)
+        if (not object.include? "." or object.downcase.include? "e") #out of range check
+            return false
+        else
+            return Utilities.is_numeric?(object)
         end
+    end
 
 	def Utilities.perUserEventSeparation(defines)
 		fr=File.new(defines.dirs['dataDir']+"IPport_uniq")
@@ -32,29 +32,11 @@ module Utilities
 	def Utilities.separateTimelineEvents(row,writeTo,dataset)
 		fp=File.new(writeTo,'a')
 		if dataset==1
-			fp.puts(row['IPport']+"\t"+
-				row['uIP'].to_s+"\t"+
-				row['url']+"\t"+
-				row['ua']+"\t"+
-				row['host']+"\t"+
-				row['tmstp']+"\t"+
-				row['status']+"\t"+
-				row['length']+"\t"+
-				row['dataSz']+"\t"+
-				row['dur'])
+			fp.puts(row['IPport']+"\t"+row['uIP'].to_s+"\t"+row['url']+"\t"+row['ua']+"\t"+row['host']+"\t"+row['tmstp']+"\t"+
+				row['status']+"\t"+row['length']+"\t"+row['dataSz']+"\t"+row['dur'])
 		elsif dataset==2
-			fp.puts("\t-\t"+
-			row['uIP']+"\t"+
-            row['tmstp']+"\t"+
-            row['status']+"\t"+
-            row['length']+"\t"+
-            row['dataSz']+"\t"+
-            row['dur']+"\t-\t"+
-			row['IPport']+"\t"+
-			row['verb']+"\t-\t"+
-			row['url']+"\t-\t"+
-            row['ua']+"\t"+
-			row['host'])
+			fp.puts("\t-\t"+row['uIP']+"\t"+row['tmstp']+"\t"+row['status']+"\t"+row['length']+"\t"+row['dataSz']+"\t"+
+            row['dur']+"\t-\t"+row['IPport']+"\t"+row['verb']+"\t-\t"+row['url']+"\t-\t"+row['ua']+"\t"+row['host'])
 		else
 			abort("Error: Wrong column format... Check input!")
 		end
@@ -97,92 +79,15 @@ module Utilities
 			url=row['url']
 			tmstp=row['tmstp']
 			id=Digest::SHA256.hexdigest (tmstp+"|"+url)
-			isthere=db.get(table,"timestamp","id",id)		
-			if isthere==nil
-				ua=row['ua']
-				uip=row['uIP']			
-				status=row['status']
-				length=row['length']
-				dataSz=row['dataSz']
-				dur=row['dur']
-				ipport=row['IPport']
-				host=row['host']
-				params=[tmstp,ipport,uip,url,host,ua,status,length,dataSz,dur]
+			#isthere=db.get(table,"timestamp","id",id)		
+			#if isthere==nil
+				params=[tmstp,row['IPport'],row['uIP'],url,row['host'],row['ua'],row['status'],row['length'],row['dataSz'],
+										row['dur'],row['mob'],row['dev'],row['browser']]
 				if extra!=nil
 					params.push(extra)
 				end
 				db.insertRow(table,params)
-			end
-		end
-	end
-
-	def Utilities.results_toString(trace,db,table)
-		numericPrices=Array.new
-		prices=trace.detectedPrices
-        for p in prices do
-            if Utilities.is_float?(p)
-                numericPrices.push(p.to_f)
-            end
-        end
-		totalNumofRows=trace.rows.size
-		pricesStats=Utilities.makeStats(numericPrices)
-		paramsStats,adParamsStats,restParamsStats,sizeStats=trace.analyzeTotalAds
-		#PRINTING RESULTS
-		if table!=nil
-			s="> Printing Results...\nTRACE STATS\n------------\n"+"Total users in trace: "+trace.users.size.to_s+"\n"+"Traffic from  mobile devices: "+
-			trace.mobDev.to_s+"/"+totalNumofRows.to_s+"\n"+"Traffic originated from Browser: "+trace.fromBrowser.size.to_s+"\n Browser-prices: "+trace.browserPrices.to_s+"\n"+"3rd Party content detected:"+"\n"+"Advertising => "+trace.party3rd['Advertising'].to_s+
-			" Analytics => "+trace.party3rd['Analytics'].to_s+" Social => "+trace.party3rd['Social'].to_s+" Content => "+trace.party3rd['Content'].to_s+
-			" Beacons => "+trace.party3rd['totalBeacons'].to_s+" Other => "+trace.party3rd['Other'].to_s+"\n"+
-			"\nSize of the unnecessary 3rd Party content (i.e. Adverising+Analytics+Social)\nTotal: "+sizeStats['sum'].to_s+" Bytes - Average: "+
-			sizeStats['avg'].to_s+" Bytes"+"\n"+"Total Number of rows = "+(trace.party3rd['Advertising']+trace.party3rd['Analytics']+trace.party3rd['Social']+
-			trace.party3rd['totalBeacons']+trace.party3rd['Content']+trace.party3rd['Other']-trace.totalAdBeacons).to_s+"\n"+"Total Ads-related requests found: "+
-			trace.party3rd['Advertising'].to_s+"/"+totalNumofRows.to_s+"\n"+"Ad-related traffic using mobile devices: "+trace.numOfMobileAds.to_s+"/"+
-			trace.party3rd['Advertising'].to_s+"\n"+"Number of parameters:\nmax => "+paramsStats['max'].to_s+" min=>"+paramsStats['min'].to_s+" avg=>"+
-			paramsStats['avg'].to_s+"\n"+"Number of ad-related parameters:\nmax => "+adParamsStats['max'].to_s+" min=>"+adParamsStats['min'].to_s+" avg=>"+
-			adParamsStats['avg'].to_s+"\n"+"Number of rest parameters:\nmax => "+restParamsStats['max'].to_s+" min=>"+restParamsStats['min'].to_s+" avg=>"+
-			restParamsStats['avg'].to_s+"\n"+"Price tags found: "+prices.length.to_s+"\n"+numericPrices.size.to_s+"/"+prices.size.to_s+
-			" are actually numeric values"+"\n"+"Average price "+pricesStats['avg'].to_s+"\n"+"Beacons found: "+trace.party3rd['totalBeacons'].to_s+
-			"\nAds-related beacons: "+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+"\n"+"Impressions detected "+trace.totalImps.to_s+"\nPublishers Found: "+trace.publishers.size.to_s+"\n"
-	#        puts "Average latency "+avgL.to_s
-			if db!=nil
-				db.insert(table,[trace.users.size,trace.mobDev.to_s+"/"+totalNumofRows.to_s,trace.fromBrowser.size,trace.browserPrices,
-				"["+trace.party3rd['Advertising'].to_s+","+trace.party3rd['Analytics'].to_s+","+trace.party3rd['Social'].to_s+","+
-				trace.party3rd['Content'].to_s+","+trace.party3rd['totalBeacons'].to_s+","+trace.party3rd['Other'].to_s+"]",
-				sizeStats['sum'],sizeStats['avg'],(trace.party3rd['Advertising']+trace.party3rd['Analytics']+trace.party3rd['Social']+
-				trace.party3rd['totalBeacons']+trace.party3rd['Content']+trace.party3rd['Other']-trace.totalAdBeacons),
-				trace.party3rd['Advertising'].to_s+"/"+totalNumofRows.to_s,trace.numOfMobileAds.to_s+"/"+
-				trace.party3rd['Advertising'].to_s,paramsStats['max'],paramsStats['min'],paramsStats['avg'],adParamsStats['max'],
-				adParamsStats['min'],adParamsStats['avg'],restParamsStats['max'],restParamsStats['min'],
-				restParamsStats['avg'],prices.length,numericPrices.size.to_s+"/"+prices.size.to_s,pricesStats['avg'],trace.party3rd['totalBeacons'],
-				trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s,trace.totalImps,trace.publishers.size])
-			end
-			return s
-		else
-			header="Total users in trace;Traffic from mobile devices;Traffic originated from Browser;Browser-prices;"+
-			"3rd Party content detected: [Advertising,Analytics,Social,Content,Beacons,Other];"+
-			"3rd Party content size: [Total,Average];Total Number of rows;Total Ads-related requests found;Ad-related traffic using mobile devices;"+
-			"Number of parameters:[max,min,avg];Number of adParameters:[max,min,avg];Number of restParameters:[max,min,avg];Price tags found;numeric values;"+
-			"Average price;Beacons found;Ads-related beacons;Impressions detected;noOfPublishers;Publishers;\n"
-			s=trace.users.size.to_s+";"+
-			trace.mobDev.to_s+"/"+totalNumofRows.to_s+";"+trace.fromBrowser.size.to_s+";"+trace.browserPrices.to_s+";["+trace.party3rd['Advertising'].to_s+
-			","+trace.party3rd['Analytics'].to_s+","+trace.party3rd['Social'].to_s+","+trace.party3rd['Content'].to_s+
-			","+trace.party3rd['totalBeacons'].to_s+","+trace.party3rd['Other'].to_s+"];["+sizeStats['sum'].to_s+","+
-			sizeStats['avg'].to_s+"];"+(trace.party3rd['Advertising']+trace.party3rd['Analytics']+trace.party3rd['Social']+
-			trace.party3rd['totalBeacons']+trace.party3rd['Content']+trace.party3rd['Other']-trace.totalAdBeacons).to_s+";"+
-			trace.party3rd['Advertising'].to_s+"/"+totalNumofRows.to_s+";"+trace.numOfMobileAds.to_s+"/"+
-			trace.party3rd['Advertising'].to_s+";["+paramsStats['max'].to_s+","+paramsStats['min'].to_s+","+
-			paramsStats['avg'].to_s+"];"+";["+adParamsStats['max'].to_s+","+adParamsStats['min'].to_s+","+
-			adParamsStats['avg'].to_s+"];"+";["+restParamsStats['max'].to_s+","+restParamsStats['min'].to_s+","+
-			restParamsStats['avg'].to_s+"];"+prices.length.to_s+";"+numericPrices.size.to_s+"/"+prices.size.to_s+
-			";"+pricesStats['avg'].to_s+";"+trace.party3rd['totalBeacons'].to_s+
-			";"+trace.totalAdBeacons.to_s+"/"+trace.party3rd['totalBeacons'].to_s+";"+trace.totalImps.to_s+";"+trace.publishers.size.to_s+"\n"
-			if trace.publishers.size>0 
-				str="["
-				trace.publishers.each{ |pubs| str=str+" | "+pubs}
-				return header+s+str+"]\n"
-			else
-				return header+s+"\n"
-			end
+			#end
 		end
 	end
 

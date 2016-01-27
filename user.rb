@@ -1,17 +1,20 @@
 
 class User
-	attr_accessor :dur3rd, :dPrices, :row3rdparty, :adNumOfParams, :sizes3rd, :imp, :latency, :ads, :adBeacon, :filterType, :adsType, :restNumOfParams
+	attr_accessor :dur3rd, :publishers, :numericPrices, :hashedPrices, :size3rdparty, :sizes3rd, :imp, :latency, :ads, :adBeacon, :filterType, :adsType
 
 	def initialize
-		@dPrices=Array.new
+		@hashedPrices=Array.new
+		@numericPrices=Array.new
 		@ads=Array.new
-		@rows=Array.new
+	#	@rows=Array.new
 		@imp=Array.new
+	#	@beacons=Array.new
 		@adBeacon=0
-		@restNumOfParams=Array.new
-		@adNumOfParams=Array.new
-		@sizes3rd=Array.new
-		@dur3rd=Array.new
-		@row3rdparty={"Advertising"=>[],"AdExtra"=>[],"Beacons"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"Other"=>[]}
+	#	@restNumOfParams=Array.new
+	#	@adNumOfParams=Array.new
+		@publishers=Array.new
+	#	@row3rdparty={"Advertising"=>[],"Beacons"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"Other"=>[]}
+		@size3rdparty={"Advertising"=>[],"Beacons"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"Other"=>[]}
+		@dur3rd={"Advertising"=>[],"Beacons"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"Other"=>[]}
 	end
 end

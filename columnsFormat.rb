@@ -8,7 +8,7 @@ module Format
 		h=Hash.new(-1)
 		if dataset==1
 			#IP_Port	UserIP	URL	UserAgent	Host	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss
-			h['IPport']=part[0]
+			h['IPport']=part[0].split(":")[1]
 		    h['uIP']=part[1]
 		    h['url']=part[2]
 		    h['ua']=part[3]
@@ -18,6 +18,9 @@ module Format
 		    h['length']=part[7]
 		    h['dataSz']=part[8]
 		    h['dur']=part[9]
+			h['mob']=nil
+			h['browser']=-1
+			h['device']=nil
 		elsif dataset==2
 			#id	NodeIP	UserIP	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss	PortNumber	HTTP_Verb	ToCrawl	Path	HTTPReferer	UserAgent	Host	Cookie	OrigReq	ToCrawl_v2	ContentType
 			h['uIP']=part[2]
@@ -29,7 +32,9 @@ module Format
 			h['IPport']=part[9]
 			h['verb']=part[10]
 			h['host']=part[15]
-
+			h['mob']=nil
+			h['browser']=-1
+			h['device']=nil
 			if (["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})
 				h['url']=h['host']+part[12]	#host+path
 			elsif h['verb'].downcase=="connect" 

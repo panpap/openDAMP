@@ -6,6 +6,7 @@ class Database
 	def initialize(path,defs)
 		@db=SQLite3::Database.open path
 		@defines=defs
+		@alerts=Hash.new(0)
 	end
 
 	def insertRow(table, params)
@@ -97,14 +98,20 @@ private
 	def execute(command,params)
 		begin
 			@db.execute command+"("+params+")"
-			return true
+			true
 		rescue SQLite3::Exception => e 
 			if e.to_s.include? "no such table" 
 				# DO NOTHING
+			elsif e.to_s.include? "UNIQUE constraint failed"
+					table=e.to_s.split(":")[1].split(".")[0]
+					if @alerts[table]==nil or @alerts[table]==0
+						puts "Warning: UNIQUE constraint failed: "+table
+						@alerts[table]=1
+					end
 			else
-				puts "SQLite Exception "+command+"! "+e.to_s+"\n"+params
+				puts "SQLite Exception: "+command+" "+e.to_s+"\n"+params
 			end
-			return false
+			false
 		end
 	end
 end

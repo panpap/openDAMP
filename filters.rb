@@ -3,10 +3,38 @@ require 'rubygems'
 require 'json'
 
 class Filters
+		@@beacon_key=["beacon","pxl","pixel","adimppixel","data.gif","px.gif","pxlctl"]
 
-    def getLatency
-        return @latency
-    end
+		@@imps=["impression","_imp","/imp","imp_"]
+
+		@@keywords=["price","pp","pr","bidprice","bid_price","bp","winprice", "computedprice", "pricefloor",
+		               "win_price","wp","chargeprice","charge_price","cp","extcost","tt_bidprice","bdrct",
+		               "ext_cost","cost","rtbwinprice","rtb_win_price","rtbwp","bidfloor","seatbid"]
+
+		@@inria={ "rfihub.net" => "ep","invitemedia.com" => "cost",#,"scorecardresearch.com" => "uid" 
+				"ru4.com" => "_pp","tubemogul.com" => "x_price", "invitemedia.com" => "cost", 
+			"tubemogul.com" => "price", #"bluekai.com" => "phint", 
+			"adsrvr.org" => "wp",  
+			"pardot.com" => "title","tubemogul.com" => "price","mathtag.com" => "price",
+			"adsvana.com" => "_p", "doubleclick.net" => "pr", "ib.adnxs.com" => "add_code", 
+			"turn.com" => "acp", "ams1.adnxs.com" => "pp",  "mathtag.com" => "price",
+			"youtube.com" => "description1", "quantcount.com" => "p","rfihub.com" => "ep",
+			"w55c.net" => "wp_exchange", "adnxs.com" => "pp", "gwallet.com" => "win_price",
+			"criteo.com" => "z"}
+
+		# ENHANCED BY ADBLOCK EASYLIST
+		@@subStrings=["/Ad/","pagead","/adv/","/ad/","ads",".ad","rtb-","adwords","admonitoring","adinteraction",
+					"adrum","adstat","adviewtrack","adtrk","/Ad","bidwon","/rtb"] #"market"]	
+
+		@@rtbCompanies=["adkmob","green.erne.co","bidstalk","openrtb","eyeota","ad-x.co.uk",
+				"qservz","hastrk","api-","clix2pix.net","exoclick"," clickadu","waiads.com","taptica.com","mediasmart.es"]
+
+		@@adInParam=["ad_","ad_id","adv_id","bid_id","adpos","adtagid","rtb","adslot","adspace","adUrl", "ads_creative_id", 
+				"creative_id","adposition","bidid","adsnumber","bidder","auction","ads_",
+				"adunit", "adgroup", "creativity","bid_","bidder_"]
+
+		@@browsers=['dolphin', 'gecko', 'opera','webkit','mozilla','gecko','browser','chrome','safari']
+
 
 	def initialize(defs)
 		@defines=defs
@@ -34,7 +62,7 @@ class Filters
     end
 
 	def is_inInria_PriceTagList? (domain,keyVal)
-		temp=@defines.inria[domain]
+		temp=@@inria[domain]
 		if temp!=nil and temp.downcase.eql? keyVal[0]
 			return true
 		end
@@ -42,56 +70,52 @@ class Filters
 	end
 
     def is_Beacon_param?(params)
-        return (@defines.beacon_key.any? {|word| params[0].downcase.include?(word)})
+        return (@@beacon_key.any? {|word| params[0].downcase.include?(word)})
     end
 
     def is_Beacon?(url)
 		if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)}
 		    if is_1pixel_image?(url)
-				return true
-		    elsif(@defines.beacon_key.any? { |word| url.include?(word)})
-		        return true
+				true
+		    elsif(@@beacon_key.any? { |word| url.include?(word)})
+		        true
 		    end
 		end
-		return false
+		false
     end
 
-	def is_Browser?(row,type)
+	def is_Browser?(row)
+		browser="unknown"			# IS APP... DO NOTHING
 		ua=row['ua'].downcase
-		if (type=="Macintosh" or type=="Windows" or type=="Linux" or type=="BSD") # IS DESKTOP?
-	       return true
-		elsif (@defines.browsers.any? { |word| ua.include?(word)})     # IS BROWSER?
-	       return true
-		else                                                    # IS APP... DO NOTHING
-	       return false
-		end
+		@@browsers.any? { |word| browser=word if ua.include?(word) }     # IS BROWSER?   
+	    return browser
 	end
 
     def is_MobileType?(row)
         ua=row["ua"].downcase
         # Crossed-checked with https://fingerbank.inverse.ca
         if (ua.include? "android" or ua.include? "dalvik" or ua.include? "play.google" or ua.include? "agoo-sdk" or ua.include? "okhttp")
-            return true, "Android"
+            return 1, "Android"
         elsif ua.include? "iphone"
-            return true, "iPhone"
+            return 1, "iPhone"
         elsif ua.include? "ipad"
-            return true,"iPad"
+            return 1,"iPad"
         elsif ua.include? "windows"
             if ua.include? "arm" or ua.include? "nokia"
-                return true, "Windows_Mobile"
+                return 1, "Windows_Mobile"
             else
-                return false,"Windows"
+          		return 0,"Windows"
             end
         elsif ua.include? "macintosh"
-            return false,"Macintosh"
+            return 0,"Macintosh"
         elsif (ua.include? "linux" or ua.include? "ubuntu")
-            return false,"Linux"
+            return 0,"Linux"
         elsif (ua.include? "darwin" or ua.include? "ios" or ua.include? "CFNetwork" or ua.include? "apple.mobile" or ua.include? "com.apple.Map")
-            return true,"Apple_Mobile"
+            return 1,"Apple_Mobile"
         elsif (ua.include? "freebsd" or ua.include? "openbsd")
-            return false,"BSD"
+            return 0,"BSD"
         else
-        	return false,"other"
+        	return 0,"other"
         end
     end
 
@@ -99,7 +123,7 @@ class Filters
         if (url.include? "impl") #junk
             return false
         end
-        return (@defines.imps.any? { |word| url.downcase.include?(word)})
+        return (@@imps.any? { |word| url.downcase.include?(word)})
     end
 
 
@@ -115,7 +139,7 @@ class Filters
  #           fa.puts param[1]
  #           fa.close
  #      end
-       return (@defines.keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
+       return (@@keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
     end
 
 	def is_Ad?(url,host,filter)
@@ -139,7 +163,7 @@ class Filters
                 urlParts[1,urlParts.size].each{ |p| t+=p+"/" ""}
                 url=s+t
             end
-            if (@defines.subStrings.any? { |word| url.include?(word)} or @defines.rtbCompanies.any? { |word| url.downcase.include?(word)})
+            if (@@subStrings.any? { |word| url.include?(word)} or @@rtbCompanies.any? { |word| url.downcase.include?(word)})
                 return "Advertising"
             end
             return nil
@@ -150,7 +174,7 @@ class Filters
         if (params[0].downcase.eql? "type" and params[1].include? "ad")
             return true
         else
-            return (@defines.adInParam.any? {|word| params[0].downcase.include?(word)})
+            return (@@adInParam.any? {|word| params[0].downcase.include?(word)})
         end
     end
 

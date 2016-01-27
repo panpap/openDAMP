@@ -70,3 +70,4 @@ OptionParser.new { |opts|
 }.parse!
 finish = Time.now
 puts "Total Elapsed time "+(finish - start).to_s+" seconds"
+

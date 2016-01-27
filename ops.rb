@@ -61,10 +61,9 @@ class Operations
   	def analysis      
 		puts "> Stripping parameters, detecting and classifying Third-Party content..."
 		for r in @@loadedRows do
-			@func.parseRequest(r,false,false)
+			@func.parseRequest(r,false)
 		end
-		trace=@func.getTrace
-		analysisResults(trace)
+		analysisResults(@func.trace)
 	end
 
 	def findStrInRows(str,printable)
@@ -105,15 +104,15 @@ class Operations
 		whatToPlot={"priceTag" => @defines.tables['priceTable'],
 					"host"=> @defines.tables['priceTable'],
 #					"beaconType" => @defines.tables['bcnTable'],
-					"thirdPartyContent" => @defines.tables['traceTable'],
-					"advertising,adExtra,analytics,social,content,noAdBeacons,other" => @defines.tables['userTable'],
-					"advertising,adExtra,analytics,social,content,noAdBeacons,other,thirdPartySize" => @defines.tables['userTable']
+				#	"thirdPartyContent" => @defines.tables['traceTable'],
+				#	"advertising,adExtra,analytics,social,content,noAdBeacons,other" => @defines.tables['userTable'],
+				#	"advertising,adExtra,analytics,social,content,noAdBeacons,other,thirdPartySize" => @defines.tables['userTable']
 					}
-	#	whatToPlot.each{|column, table|	plotter.plotDB(table,column)}
+		whatToPlot.each{|column, table|	plotter.plotDB(table,column)}
 
 		#FILE-BASED
 		plotter.plotFile()
-		#system("rm -f .*.data")
+		system("rm -f .*.data")
 	end
 
 #------------------------------------------------------------------------
@@ -122,10 +121,9 @@ class Operations
 	private
 
 	def analysisResults(trace)
-		@func.close
 		fw=nil
 		if @dump
-			fw=File.new(@defines.files['parseResults'],'w')		
+			puts "> Dumping to files..."
 			fd=File.new(@defines.files['devices'],'w')
 			trace.devs.each{|dev| fd.puts dev}
 			fd.close
@@ -142,17 +140,12 @@ class Operations
 		puts "> Calculating Statistics about detected ads..."
 		#LATENCY
 	#	lat=@func.getLatency
-	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.size
+	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.sizeclos
 	#	Utilities.makeDistrib_LaPr(@@adsDir)
-		system("sort "+@defines.files['priceTagsFile']+" | uniq >"+@defines.files['priceTagsFile']+".csv")
-		system("rm -f "+@defines.files['priceTagsFile'])
+#		system("sort "+@defines.files['priceTagsFile']+" | uniq >"+@defines.files['priceTagsFile']+".csv")
+#		system("rm -f "+@defines.files['priceTagsFile'])
+		puts @func.trace.results_toString(@func.database,@defines.tables['traceTable'],@defines.tables['bcnTable'])
 		@func.perUserAnalysis()
-		toPrinter=Utilities.results_toString(trace,@func.database,@defines.tables['traceTable'])
-		if fw!=nil
-			fw.puts toPrinter
-			puts toPrinter
-			fw.close
-		end
 	end
 end
 
