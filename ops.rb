@@ -11,10 +11,10 @@ class Operations
 		@func=Core.new(@defines,@options)
 	end
 
-	def countDuplicates(excludeCol)
+	def countDuplicates(@options)
 		total1=""
 		total2=""
-		if excludeCol!=nil
+		if @options['excludeCol']!=nil
 			IO.popen("awk '{$"+excludeCol+"=\"\"; print $0}' "+@defines.traceFile+" | sort | uniq | wc -l") { |io| total1=io.gets.split(" ")[0] }
 		else
 			IO.popen("sort "+@defines.traceFile+" | uniq | wc -l") { |io| total1=io.gets.split(" ")[0] }			
@@ -28,7 +28,7 @@ class Operations
 	def dispatcher(function,str)	
 		if function==0
 			Utilities.error "TODO"
-			countDuplicates()
+			countDuplicates(@options)
 			return
 		end
 		@func.makeDirsFiles

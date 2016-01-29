@@ -164,12 +164,12 @@ module Utilities
 		File.foreach(configFile) {|line|
 			puts line
 		}
-		return {'file'=>1,'detail'=>1}#options
+		return {'file'=>1,'detail'=>1, 'excludeCol'=>1}#options
 	end
 
 	def Utilities.produceConfigFile(configFile)
 		puts "TODO"
-		options={'file'=>1,'detail'=>1}
+		options={'file'=>1,'detail'=>1, 'excludeCol'=>1}
 		fw=File.new(configFile,"w")
 		fw.puts options
 		fw.close

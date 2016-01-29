@@ -67,7 +67,7 @@ OptionParser.new { |opts|
 		ops.makeTimelines(sec,folder)
 	end
 
-	opts.on('-d', '--dublicates [COLLUMN(optional)]', 'Count possible duplicate rows in dataset.') do
+	opts.on('-d', '--dublicates', 'Count possible duplicate rows in dataset.') do		
 		ops=Operations.new(ARGV[0])
 		puts "Counting possible duplicates..."
 		ops.countDuplicates
