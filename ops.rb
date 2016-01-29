@@ -15,9 +15,11 @@ class Operations
 		uniq=""
 		total=""
 		if @options['excludeCol']!=nil
-			IO.popen("awk '{$"+@options['excludeCol'].to_s+"=\"\"; print $0}' "+@defines.traceFile+" | sort | uniq | wc -l") { |io| uniq=io.gets.split(" ")[0] }
+			IO.popen("awk '{$"+@options['excludeCol'].to_s+"=\"\"; print $0}' "+@defines.traceFile+" | sort -u | wc -l") { |io| uniq=io.gets.split(" ")[0] }
+			#awk 'NR == 1; NR > 1 {print $0 | "sort -uk2"}' trace > Sorted_trace
 		else
-			IO.popen("sort "+@defines.traceFile+" | uniq | wc -l") { |io| uniq=io.gets.split(" ")[0] }			
+			IO.popen("sort -u "+@defines.traceFile+" | wc -l") { |io| uniq=io.gets.split(" ")[0] }			
+			#awk 'NR == 1; NR > 1 {print $0 | "sort -u"}' trace > Sorted_trace
 		end
 		IO.popen("wc -l "+@defines.traceFile) { |io| total=io.gets.split(" ")[0] }
 		if (total.to_i-uniq.to_i)>0
@@ -51,13 +53,13 @@ class Operations
 			end
 			count+=1
         }
+		puts "\t"+count.to_s+" rows have been loaded successfully!"
 		if function==1 or function==0
 			atts.each{|a| f[a].close if f[a]!=nil; Utilities.countInstances(@defines.dirs['dataDir']+a); }
 		end
 		if function==2 or function==0
 			@func.analysis
 		end
-        puts "\t"+count.to_s+" rows have been loaded successfully!"
 		@func.database.close
 	end
 
