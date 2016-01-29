@@ -12,22 +12,23 @@ set style data lines
 set style line 1 lt 1  lw 2.5 lc rgb '#0060ad'
 set style line 2 lt 1  lw 2.5 lc rgb 'red'
 
-if (y){
-	set log x
-	set format x "%g %%"
-}
-if (x>0){
-	set key right bottom; 
-	if (t1 eq 'rest'){
-			st1=2; 
-			st2=1;
-	}else{
-			st1=1; 
-			st2=2; 
-	plot '.temp2.data' u 2:1 title t1 ls st2, \
-		'.temp.data' u 2:1 title t2 ls st1;
-	}
-}else{
-	set nokey; \
-	plot '.temp.data' u 2:1 lt 1 lc rgb '#0060ad' lw 2.5
-}
+set log x
+set format x "%g %%"
+
+#if (x>0){
+#	set key right bottom; 
+#	if (t1 eq 'rest'){
+#			st1=2; 
+#			st2=1;
+#	}else{
+#			st1=1; 
+#			st2=2; 
+#	plot '.temp2.data' u 2:1 title t1 ls st2, \
+#		'.temp.data' u 2:1 title t2 ls st1;
+#	}
+#}else{
+
+
+set nokey
+plot fromFile u 2:1 lt 1 lc rgb '#0060ad' lw 2.5
+

@@ -2,7 +2,10 @@ require 'optparse'
 load 'utilities.rb'
 load 'ops.rb'
 
-def	 folderAsInput(arg)	
+def	 folderAsInput(arg)
+	if arg==nil
+		abort ("Error: Wrong arguments given. Please give folder to load...")
+	end
 	path=arg.split("results_")[1]
 	if path==nil
 		abort ("Error: Wrong arguments given. Please give folder to load...")
@@ -23,41 +26,38 @@ def	 folderAsInput(arg)
 		s=parts[1].gsub(lastChar,"")
 		s=parts[0]+"_"+s
 	end
-	return Operations.new(s,false),folder
+	return Operations.new(s),folder
 end
 
 start = Time.now
 
-
 OptionParser.new { |opts|
-  opts.banner = "Usage: #{File.basename($0)} [-p -s -a -h] [-f <Search_string>] [-t <time_window>] [filename (optional)]"
+  opts.banner = "Usage: #{File.basename($0)} [-p -s -a -h -l] [-f <Search_string>] [-t <time_window>] [filename (optional)]"
 
   opts.on( '-s', '--separate', 'Separate fields to files. Produced files are stored in ./data/ folder') do
-	ops=Operations.new(ARGV[0],true)
-    ops.loadFile()
-    ops.separate
+	ops=Operations.new(ARGV[0])
+	puts "> Separating HTTP fields..."
+    ops.dispatcher(1,nil)
   end
 
-  opts.on('-p', '--parse', 'Parse and analyze dataset.') do
-	ops=Operations.new(ARGV[0],true)
-    ops.loadFile()
-    ops.analysis
+  opts.on('-o', '--analysis', 'Parse and analyze dataset.') do
+	ops=Operations.new(ARGV[0])
+	puts "> Parsing and analyzing dataset..."
+    ops.dispatcher(2,nil)
   end	
 	
   opts.on('-f', '--find STRING', 'Search particular string in the dataset.') do |str|
-	ops=Operations.new(ARGV[0],false)
-    ops.loadFile()
-    ops.findStrInRows(str,true)
+	ops=Operations.new(ARGV[0])
+	puts "> Searching String..."
+    ops.dispatcher(3,str)
   end
 
   opts.on('-a', '--all', 'Load dataset, separate parameters, detect ads') do
-	ops=Operations.new(ARGV[0],true)
-    ops.loadFile()
-    ops.separate
-    ops.stripURL
+	ops=Operations.new(ARGV[0])
+    ops.dispatcher(0,nil)
   end
 
-  opts.on('-l', '--plot', 'Plot CDFs using Gnuplot') do
+  opts.on('-p', '--plot', 'Plot CDFs using Gnuplot') do
 	ops,folder=folderAsInput(ARGV[0])
     ops.plot(folder)
   end

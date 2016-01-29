@@ -1,4 +1,13 @@
 module Utilities
+
+	def Utilities.loadOptions(configFile)
+		if File.exists? (configFile)
+			return Utilities.readConfigFile(configFile)
+		else	# DEFAULT
+			return Utilities.produceConfigFile(configFile)
+		end
+	end	
+
 	def Utilities.median(array)
   		sorted = array.sort
   		len = sorted.length
@@ -78,11 +87,13 @@ module Utilities
 		if db!=nil
 			url=row['url']
 			tmstp=row['tmstp']
-			id=Digest::SHA256.hexdigest (tmstp+"|"+url)
+			dur=row['dur']
+			size=row['dataSz']
+			id=Digest::SHA256.hexdigest (tmstp+"|"+url+"|"+dur+"|"+size)
 			#isthere=db.get(table,"timestamp","id",id)		
 			#if isthere==nil
-				params=[tmstp,row['IPport'],row['uIP'],url,row['host'],row['ua'],row['status'],row['length'],row['dataSz'],
-										row['dur'],row['mob'],row['dev'],row['browser']]
+				params=[tmstp,row['IPport'],row['uIP'],url,row['host'],row['ua'],row['status'],row['length'],size,
+										dur,row['mob'],row['dev'],row['browser']]
 				if extra!=nil
 					params.push(extra)
 				end
@@ -135,7 +146,25 @@ module Utilities
 
 	def Utilities.countInstances(file)
 		if (file!=nil and File.exists?(file))
-        	system('sort -n '+file+' | uniq -c | sort -n  |tac > '+file+"_cnt") #calculate distribution
+        	system('sort -g '+file+' | uniq -c | sort -rg  > '+file+"_cnt") #calculate distribution
 		end	
+	end
+
+	def Utilities.readConfigFile(configFile)
+		options=Hash.new
+		puts "TODO"
+		File.foreach(configFile) {|line|
+			puts line
+		}
+		return {'file'=>1,'detail'=>1}#options
+	end
+
+	def Utilities.produceConfigFile(configFile)
+		puts "TODO"
+		options={'file'=>1,'detail'=>1}
+		fw=File.new(configFile,"w")
+		fw.puts options
+		fw.close
+		return options
 	end
 end

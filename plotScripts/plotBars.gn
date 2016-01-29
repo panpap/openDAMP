@@ -1,0 +1,22 @@
+set terminal postscript enhanced eps  defaultplex \
+   leveldefault  blacktext \
+   dashed dashlength 2.0 linewidth 3.0 butt \
+   palfuncparam 2000,0.003 \
+   "Helvetica" 24
+set auto x
+set ylabel yTitle
+set xlabel xTitle
+set grid y lt 0 lw 1 lc rgb "#B8B8B8"
+set grid x lt 0 lw 1 lc rgb "#B8B8B8"
+set format y "%g %%"
+set nokey
+
+
+set xtic rotate by -45 scale 0
+set yrange [0.005:109]
+set log y
+
+set boxwidth 0.5
+set style fill solid
+N = system("awk 'NR==1{print NF}' "+fromFile)
+plot for [i=1:N] fromFile u 1:xtic(2) w boxes

@@ -1,11 +1,11 @@
 load 'user.rb'
 
+
 class Trace
-	attr_accessor :rows, :fromBrowser, :beacons,:totalAdBeacons, :party3rd,:restNumOfParams, :adNumOfParams, :devs, :numericPrices, :mobDev, :numOfMobileAds, :totalImps, :users, :hashedPrices, :sizes, :totalParamNum
+	attr_accessor :adSize, :fromBrowser, :beacons,:totalAdBeacons, :party3rd,:restNumOfParams, :adNumOfParams, :devs, :numericPrices, :mobDev, :numOfMobileAds, :totalImps, :users, :hashedPrices, :sizes, :totalParamNum
 
 	def initialize(defs)
 		@defines=defs
-		@rows=Array.new
 		@mobDev=0
 		@users=Hash.new
 		#@totalParamNum=Array.new
@@ -20,6 +20,7 @@ class Trace
 		@adNumOfParams=Array.new
 		@restNumOfParams=Array.new
 		@totalImps=0
+@adSize=Array.new
 		@party3rd={"Advertising"=>0,"Social"=>0,"Analytics"=>0,"Content"=>0, "Other"=>0, "totalBeacons"=>0}
 	end
 
@@ -32,41 +33,28 @@ class Trace
 		return Utilities.makeStats(@sizes)
 	end
 
-	def loadTrace(filename)
-        f=File.new(filename,'r')
-        line=f.gets     #get rid of headers
-        while(line=f.gets)
-			h=Format.columnsFormat(line,@defines.column_Format)
-			if h['host'].size>1 and h['host'].count('.')>0
-		        		rows.push(h)
-			end
-        end
-        f.close
-	end
-
 	def results_toString(db,traceTable,beaconTable)
-		totalNumofRows=@rows.size
+		totalNumofRows=(@party3rd['Advertising']+@party3rd['Analytics']+@party3rd['Social']+@party3rd['totalBeacons']+@party3rd['Content']+@party3rd['Other']-@totalAdBeacons)
 		sizeStats=analyzeTotalAds
 		#PRINTING RESULTS
 		if traceTable!=nil
 			s="> Printing Results...\n\n------------\nTRACE STATS\n"+"- Total users in trace: "+@users.size.to_s+
-			"\n- Total Number of rows = "+(@party3rd['Advertising']+@party3rd['Analytics']+@party3rd['Social']+
-			@party3rd['totalBeacons']+@party3rd['Content']+@party3rd['Other']-@totalAdBeacons).to_s+"\n- Traffic from  mobile devices: "+
-			@mobDev.to_s+"/"+totalNumofRows.to_s+"\n"+"- Traffic originated from Web Browser: "+@fromBrowser.size.to_s+
+			"\n- Total Number of rows = "+totalNumofRows.to_s+"\n- Traffic from  mobile devices: "+
+			@mobDev.to_s+"/"+totalNumofRows.to_s+"\n"+"- Traffic originated from Web Browser: "+@fromBrowser.to_s+
 			"\n- 3rd Party content detected: \n\tAdvertising => "+@party3rd['Advertising'].to_s+
 			"\n\tAnalytics => "+@party3rd['Analytics'].to_s+"\n\tSocial => "+@party3rd['Social'].to_s+"\n\tContent => "+@party3rd['Content'].to_s+
 			"\n\tBeacons => "+@party3rd['totalBeacons'].to_s+"\n\tOther => "+@party3rd['Other'].to_s+
-			"\n- Size of the unnecessary 3rd Party content (i.e. Adverising+Analytics+Social)\n\tTotal: "+sizeStats['sum'].to_s+" Bytes - Average per req: "+
+			"\n- Total Size: "+sizeStats['sum'].to_s+" Bytes\n\tAverage per req: "+
 			sizeStats['avg'].to_s+" Bytes"+"\n\nADVERTISING CONTENT\n- AdRelated traffic from mobile devices: "+@numOfMobileAds.to_s+"/"+
-			@party3rd['Advertising'].to_s+"\n- Prices Detected"+(@numericPrices+@hashedPrices).to_s+"\n\tHashed Price tags found: "+@hashedPrices.to_s+"\n- Numeric Price tags found: "+@numericPrices.to_s
-			"\n- Prices tags from Browser sessions: "+
-			"\n- AdRelated beacons: "+@totalAdBeacons.to_s+"/"+@party3rd['totalBeacons'].to_s+"\n------------\n"#-Impressions detected "+@totalImps.to_s+"\n"
-	#        puts "Average latency "+avgL.to_s
+			@party3rd['Advertising'].to_s+"\n- Prices Detected "+(@numericPrices+@hashedPrices).to_s+"\n\tHashed Price tags found: "+@hashedPrices.to_s+
+			"\n\t Numeric Price tags found: "+@numericPrices.to_s+"\n- AdRelated beacons: "+@totalAdBeacons.to_s+"/"+@party3rd['totalBeacons'].to_s+
+			"\n------------\n"+#-Impressions detected "+@totalImps.to_s+"\n"
+			"\n Advertising content Total size "+(Utilities.makeStats(@adSize)["sum"]).to_s
+
 			if db!=nil
 				@beacons.each{|array| db.insert(beaconTable,array)}				
-				totalRows=(@party3rd['Advertising']+@party3rd['Analytics']+@party3rd['Social']+@party3rd['totalBeacons']+@party3rd['Content']+@party3rd['Other']-@totalAdBeacons);
-				id=Digest::SHA256.hexdigest (totalRows.to_s+"|"+@users.size.to_s)
-				db.insert(traceTable,[id,totalRows,@users.size,@party3rd['Advertising'],@party3rd['Analytics'],@party3rd['Social'],
+				id=Digest::SHA256.hexdigest (totalNumofRows.to_s+"|"+@users.size.to_s)
+				db.insert(traceTable,[id,totalNumofRows,@users.size,@party3rd['Advertising'],@party3rd['Analytics'],@party3rd['Social'],
 				@party3rd['Content'],@party3rd['totalBeacons'],@party3rd['Other'],
 				sizeStats['sum'],@mobDev,@fromBrowser.size,@numOfMobileAds.to_s+"/"+
 				@party3rd['Advertising'].to_s,@hashedPrices,@numericPrices,

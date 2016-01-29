@@ -4,29 +4,50 @@ load 'plotter.rb'
 require 'digest/sha1'
 
 class Operations
-	@@loadedRows=nil
 	
-	def initialize(filename,dump)
-		@dump=dump
+	def initialize(filename)
 		@defines=Defines.new(filename)
-		@func=Core.new(@defines,dump)
+		@options=Utilities.loadOptions(@defines.files['configFile'])
+		@func=Core.new(@defines,@options)
 	end
 
-	def loadFile()
-		puts "> Loading Trace..."
-		@@loadedRows=@func.loadRows(@defines.traceFile)
-		puts "\t"+@@loadedRows.size.to_s+" requests have been loaded successfully!"
-	end
-
-    def separate
-		atts=@@loadedRows[0].keys
+	def dispatcher(function,str)	
+if function==0
+	puts "TODO"
+	return
+end
+		@func.makeDirsFiles
+		puts "> Loading Trace... "+@defines.traceFile
+		count=0
+		atts=["IPport", "uIP", "url", "ua", "host", "tmstp", "status", "length", "dataSz", "dur"]		
 		f=Hash.new
-		atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w')}
-        for row in @@loadedRows do
-            atts.each{|att| f[att].puts row[att] if att!='url'}
-			Utilities.separateTimelineEvents(row,@defines.dirs['userDir']+row['IPport'],@defines.column_Format)
-   		end
-		atts.each{|a| Utilities.countInstances(@defines.dirs['dataDir']+a); f[a].close}
+		File.foreach(@defines.traceFile) {|line|
+			if count==0		# HEADER
+				#atts=@options['headers']
+				atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w') if (a!='url')}
+			else
+				row=Format.columnsFormat(line,@defines.column_Format,@options)
+				if row['host'].size>1 and row['host'].count('.')>0
+					if function==1 or function==0
+						atts.each{|att| (f[att].puts row[att]) if (att!='url')}
+						Utilities.separateTimelineEvents(row,@defines.dirs['userDir']+row['IPport'],@defines.column_Format)
+					elsif function==2 or function==0
+						@func.parseRequest(row,false)
+					elsif function==3
+						@func.findStrInRows(row,str)
+					end
+				end
+			end
+			count+=1
+        }
+		if function==1 or function==0
+			atts.each{|a| f[a].close if f[a]!=nil; Utilities.countInstances(@defines.dirs['dataDir']+a); }
+		end
+		if function==2 or function==0
+			@func.analysis
+		end
+        puts "\t"+count.to_s+" rows have been loaded successfully!"
+		@func.database.close
 	end
 
 	def makeTimelines(msec,path)
@@ -58,94 +79,28 @@ class Operations
 		end
 	end
 
-  	def analysis      
-		puts "> Stripping parameters, detecting and classifying Third-Party content..."
-		for r in @@loadedRows do
-			@func.parseRequest(r,false)
-		end
-		analysisResults(@func.trace)
-	end
-
-	def findStrInRows(str,printable)
-		count=0
-		found=Array.new
-		puts "Locating String..."
-		rows=@func.getRows
-		for r in rows do
-			for val in r.values do
-				if val.include? str
-					count+=1
-					if(printable)
-						url=r['url'].split('?')
-						Utilities.printRow(r,STDOUT)
-					end
-					found.push(r)					
-					break
-				end
-			end
-		end 
-		if(printable)
-			puts count.to_s+" Results were found!"
-		end
-		return found
-	end
-
 	def plot(path)
 		@defines.dirs['rootDir']=path
 		@defines.dirs['plotDir']=@defines.dirs['rootDir']+@defines.plotDir
 		Dir.mkdir @defines.dirs['plotDir'] unless File.exists?(@defines.dirs['plotDir'])
 		if @database==nil
-			@database=Database.new(@defines.dirs['rootDir']+@defines.resultsDB,@defines)
+			@database=Database.new(@defines.dirs['rootDir']+@defines.resultsDB,@defines,nil)
 		end
 		plotter=Plotter.new(@defines,@database)
 		puts "> Plotting existing output from <"+path+">..."
 		
 		#DB-BASED
-		whatToPlot={"priceTag" => @defines.tables['priceTable'],
-					"host"=> @defines.tables['priceTable'],
-#					"beaconType" => @defines.tables['bcnTable'],
-				#	"thirdPartyContent" => @defines.tables['traceTable'],
-				#	"advertising,adExtra,analytics,social,content,noAdBeacons,other" => @defines.tables['userTable'],
-				#	"advertising,adExtra,analytics,social,content,noAdBeacons,other,thirdPartySize" => @defines.tables['userTable']
+		whatToPlot={"priceTagPopularity" => ["priceTable","priceTag"],
+					"priceTagsPerDSP" => ["priceTable","host"],
+					"beaconTypesCDF" => ["bcnTable","beaconType"],
+					"categoriesTrace" => ["traceTable","advertising,analytics,social,content,beacons,other"],
+				#	"percSizeCategoryPerUser" => ["userTable","sizesPerContentPerUser"],
+				#	"categoriesPerUserCDF" => ["userTable","advertising,analytics,social,content,noAdBeacons,other"]
+				#	 => ["userTable","advertising,analytics,social,content,noAdBeacons,other,thirdPartySize"]
 					}
-		whatToPlot.each{|column, table|	plotter.plotDB(table,column)}
+		whatToPlot.each{|name, specs|	plotter.plotDB(name,specs)}
 
 		#FILE-BASED
-		plotter.plotFile()
-		system("rm -f .*.data")
-	end
-
-#------------------------------------------------------------------------
-
-
-	private
-
-	def analysisResults(trace)
-		fw=nil
-		if @dump
-			puts "> Dumping to files..."
-			fd=File.new(@defines.files['devices'],'w')
-			trace.devs.each{|dev| fd.puts dev}
-			fd.close
-			fpar=File.new(@defines.files['restParamsNum'],'w')
-			trace.restNumOfParams.each{|p| fpar.puts p}
-			fpar.close
-			fpar=File.new(@defines.files['adParamsNum'],'w')
-			trace.adNumOfParams.each{|p| fpar.puts p}
-			fpar.close
-			fsz=File.new(@defines.files['size3rdFile'],'w')
-			trace.sizes.each{|sz| fsz.puts sz}
-			fsz.close
-		end
-		puts "> Calculating Statistics about detected ads..."
-		#LATENCY
-	#	lat=@func.getLatency
-	#	avgL=lat.inject{ |sum, el| sum + el }.to_f / lat.sizeclos
-	#	Utilities.makeDistrib_LaPr(@@adsDir)
-#		system("sort "+@defines.files['priceTagsFile']+" | uniq >"+@defines.files['priceTagsFile']+".csv")
-#		system("rm -f "+@defines.files['priceTagsFile'])
-		puts @func.trace.results_toString(@func.database,@defines.tables['traceTable'],@defines.tables['bcnTable'])
-		@func.perUserAnalysis()
+	#	plotter.plotFile()
 	end
 end
-

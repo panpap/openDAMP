@@ -26,7 +26,7 @@ class Filters
 		@@subStrings=["/Ad/","pagead","/adv/","/ad/","ads",".ad","rtb-","adwords","admonitoring","adinteraction",
 					"adrum","adstat","adviewtrack","adtrk","/Ad","bidwon","/rtb"] #"market"]	
 
-		@@rtbCompanies=["adkmob","green.erne.co","bidstalk","openrtb","eyeota","ad-x.co.uk",
+		@@rtbCompanies=["adkmob","green.erne.co","bidstalk","openrtb","eyeota","ad-x.co.uk","startappexchange.com","atemda.com",
 				"qservz","hastrk","api-","clix2pix.net","exoclick"," clickadu","waiads.com","taptica.com","mediasmart.es"]
 
 		@@adInParam=["ad_","ad_id","adv_id","bid_id","adpos","adtagid","rtb","adslot","adspace","adUrl", "ads_creative_id", 
@@ -39,7 +39,7 @@ class Filters
 	def initialize(defs)
 		@defines=defs
 		@latency=Array.new
-		@db = Database.new(@defines.beaconDB,@defines)
+		@db = Database.new(@defines.beaconDB,@defines,nil)
 		@db.create(@defines.tables['beaconDBTable'],'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
 	end
 
@@ -49,7 +49,7 @@ class Filters
 	end
 
     def loadExternalFilter
-       	file = File.read(@defines.filterFile)
+       	file = File.read(@defines.files["filterFile"])
        	json = JSON.parse(file)
         cats=json['categories']
        	filter=Hash.new
@@ -73,21 +73,21 @@ class Filters
         return (@@beacon_key.any? {|word| params[0].downcase.include?(word)})
     end
 
-    def is_Beacon?(url)
+    def is_Beacon?(url)		
 		if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)}
 		    if is_1pixel_image?(url)
-				true
+				return true
 		    elsif(@@beacon_key.any? { |word| url.include?(word)})
-		        true
+		        return true
 		    end
 		end
-		false
+		return false
     end
 
 	def is_Browser?(row)
 		browser="unknown"			# IS APP... DO NOTHING
 		ua=row['ua'].downcase
-		@@browsers.any? { |word| browser=word if ua.include?(word) }     # IS BROWSER?   
+		@@browsers.any? { |word| browser=word if ua.include?(word) }     # IS BROWSER? 
 	    return browser
 	end
 

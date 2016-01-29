@@ -12,6 +12,12 @@ class Plotter
 		end
 		if @totalRows==nil
 			IO.popen('wc -l '+@defines.dirs["adsDir"]+"devices.csv") { |io| @totalRows=io.gets.split(" ")[0] }
+			if @totalRows==nil
+				IO.popen('wc -l '+@defines.traceFile) { |io| @totalRows=io.gets.split(" ")[0] }
+				if @totalRows==nil	
+					abort "Cannot estimate total rows"
+				end
+			end
 		end
 		puts @totalRows
 	end
@@ -69,63 +75,81 @@ class Plotter
 		end
 	end
 
-	def plotDB(table,column)
+	def plotDB(whatToPlot,specs)
 		y=0
-		puts column
-		tempFile='.'+column+'.data'
-		if column.include? ","	# plot more than one columns
-			multipleColumns(table,column,tempFile)
-			return
+		table=@defines.tables[specs[0]]
+		column=specs[1]
+		tempFile=".temp"
+		print whatToPlot+" "+specs.to_s+"\n"
+		outFile=@defines.dirs['plotDir']+whatToPlot+'.data'
+if column.include? ","	# plot more than one columns
+	multipleColumns(table,column,tempFile)
+	return
+end
+		data=getDBdata(table,column)
+		case whatToPlot
+		when "priceTagPopularity"
+			ft=File.open(tempFile,'w')
+			instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word[0].to_s.downcase] += 1 }
+			instances.sort.each{|word, count| ft.puts (count.to_f*100/data.size.to_f).to_s+" \""+word.gsub(/([_])/,"\\\\\\_")+"\""}
+			ft.close	
+			system("sort -rg "+tempFile+" > "+outFile+"; rm -f "+tempFile)
+			plotIt(outFile,"Price tags detected","Percentage of reqs","zoomed",whatToPlot)
+		when "priceTagsPerDSP"
+			fw=File.open(tempFile,'w')
+			instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word[0].to_s.downcase] += 1 }
+			instances.each{|word, count| fw.puts (count.to_f*100/data.size.to_f.round(2)).to_s}
+			fw.close
+			total=0
+			IO.popen('wc -l '+tempFile) { |io| total=io.gets.split(" ")[0] }
+			system("awk '{print $1}' "+tempFile+" |sort -g| uniq -c | awk '{print ($1/"+total.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > "+outFile+"; rm -r "+tempFile)
+			plotIt(outFile,"Percentage of reqs with prices", "CDN","cdf",whatToPlot)
+		when "categoriesTrace"
+				f=File.open(tempFile,'w')
+		#		newdata=data[0][0].gsub(/([\[\]])/,"").split(",")
+		#		if(newdata.size==6)	# content of Req
+					adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
+					data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"\"3rd party Content\""=>newdata[3],"Rest"=>newdata[5]}
+#					y=1
+#					data.each{|key, value| f.puts (value.to_f*100/@totalRows.to_f).to_s+" "+key}
+#					plotscript="plot2.gn"
+#				end
+#				f.close
+		else
+			abort ("Error: Uknown command to plotter")
 		end
-		data=@db.getAll(table,column,nil,nil).sort
-		if data.size==0
-			puts "Warning: No data was found in =>\ntable: <"+table+"> \ncolumn: <"+column+">"
-			return
-		elsif data.size==1	# plotting ygram
-			# Nested array
-			f=File.open(tempFile,'w')
-			newdata=data[0][0].gsub(/([\[\]])/,"").split(",")
-			if(newdata.size==6)	# content of Req
-				adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
-				data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"\"3rd party Content\""=>newdata[3],"Rest"=>newdata[5]}
-				y=1
-				data.each{|key, value| f.puts (value.to_f*100/@totalRows.to_f).to_s+" "+key}
-				plotscript="plot2.gn"
-			end
-			f.close
-		else	# ploting instances
-			f=File.open('.'+column+'2.data','w')
-			instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word] += 1 }
-			plotscript=""
-			if Utilities.is_numeric?(data[0])
-				plotscript="plot1.gn"
-				s=0
-				instances.each{|word, count| s+=count.to_f/data.size.to_f; f.puts word[0].gsub(/([_])/,'\_')+" "+s.to_s+" "+(count.to_f/data.size.to_f).to_s}	
-			else 
-				plotscript="plot2.gn"
-				instances.each{|word, count| f.puts (count.to_f*100/data.size.to_f).to_s+" \""+word[0].gsub(/([_])/,"\\\\\\_")+"\""}	
-				if column=="host" and table=="prices"
-					fw=File.open(tempFile,'w')
-					instances.each{|word, count| fw.puts (count.to_f*100/data.size.to_f.round(2)).to_s}
-					fw.close
-					total=0
-					IO.popen('wc -l '+tempFile) { |io| total=io.gets.split(" ")[0] }
-					system("awk '{print $1}' "+tempFile+" |sort -g| uniq -c | awk '{print ($1/"+total.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > .temp.data")
-					system("gnuplot -e \"x=0;y=1;xTitle=\'Percentage of reqs with prices\'\" plot1.gn > "+@defines.dirs['plotDir']+"pricesDSP_cdf.eps")
-				end
-			end
-			f.close	
-			system("sort -rg ."+column+"2.data > "+tempFile)
-		end
-		xtitle=table+"-"+column
-		system("mv "+tempFile+" .temp.data")
-		system("gnuplot -e \"x=0;y="+y.to_s+";t1='';t2='';xTitle=\'"+xtitle+"\'\" "+plotscript+" > "+@defines.dirs['plotDir']+xtitle+".eps")
-	end
 
+
+#			elsif data.size==1	# plotting ygram
+
+#			else	# ploting instances
+#				f=File.open('.'+column+'2.data','w')
+#				instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word] += 1 }
+#				plotscript=""
+#				if Utilities.is_numeric?(data[0])
+#					plotscript="plot1.gn"
+#					s=0
+#					instances.each{|word, count| s+=count.to_f/data.size.to_f; f.puts word[0].gsub(/([_])/,'\_')+" "+s.to_s+" "+(count.to_f/data.size.to_f).to_s}	
+#				end
+#		end
+	end
 
 #-------------------------------------------
 
 	private
+
+	def plotIt(fromFile,xTitle,yTitle,script,name)
+		system("gnuplot -e \"fromFile=\'"+fromFile+"\';yTitle=\'"+yTitle+"\';xTitle=\'"+xTitle+"\'\" "+
+						@defines.plotScripts[script]+" > "+@defines.dirs['plotDir']+name+".eps")
+	end
+
+	def getDBdata(table,column)
+		data=@db.getAll(table,column,nil,nil).sort
+		if data.size==0
+			abort "Error: No data was found in => table: <"+table+"> \ncolumn: <"+column+">"
+		end
+		return data
+	end
 
 	def multipleColumns(table,column,tempFile)
 		fw=File.open(tempFile,'w')

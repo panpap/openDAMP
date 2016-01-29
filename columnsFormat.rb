@@ -1,5 +1,5 @@
 module Format
-	def Format.columnsFormat(line,dataset)
+	def Format.columnsFormat(line,dataset,option)
 	begin
 		part=line.chop.split("\t") 
 	rescue 
