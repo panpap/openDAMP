@@ -40,7 +40,7 @@ class Operations
 				row=Format.columnsFormat(line,@defines.column_Format,@options)
 				if row['host'].size>1 and row['host'].count('.')>0
 					if function==1 or function==0
-						atts.each{|att| (f[att].puts row[att]) if (att!='url')}
+						atts.each{|att| (f[att].puts row[att]) if (att!='url' and att!="tmstp")}
 						Utilities.separateTimelineEvents(row,@defines.dirs['userDir']+row['IPport'],@defines.column_Format)
 					elsif function==2 or function==0
 						@func.parseRequest(row,false)
