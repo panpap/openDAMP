@@ -275,7 +275,10 @@ class Core
 		end
 	end
 
-    def detectPrice(tmstp,keyVal,domainStr,url)          	# Detect possible price in parameters and returns URL Parameters in String
+    def detectPrice(tmstp,keyVal)          	# Detect possible price in parameters and returns URL Parameters in String
+		tmstp=row['tmstp']
+		domainStr=row['host']
+		url=row['row']
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
@@ -300,7 +303,7 @@ class Core
 			if @database!=nil
 				system("echo "+tmstp+"|"+url+"|"+priceTag+"|"+priceVal+" >> ttt")
 				id=Digest::SHA256.hexdigest (tmstp+"|"+url+"|"+domainStr+"|"+priceTag+"|"+priceVal)
-				@database.insert(@defines.tables['priceTable'], [id,tmstp,domainStr,priceTag.downcase,priceVal,type,mob,device,browser])
+				@database.insert(@defines.tables['priceTable'], [id,tmstp,domainStr,priceTag.downcase,priceVal,type,row['mob'],row['dev'],row['browser']])
 			end
 			return true
 		end
@@ -329,7 +332,7 @@ class Core
 				if(@filters.is_Beacon_param?(keyVal) and not @isBeacon)
 					beaconSave(url[0],row)
 				end
-				if(detectPrice(row['tmstp'],keyVal,row['host'],row['url']))
+				if(detectPrice(row,keyVal))
 #					if row['browser']!=nil					
 #						@trace.browserPrices+=1
 #					end
