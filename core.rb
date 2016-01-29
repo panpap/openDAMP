@@ -282,13 +282,14 @@ class Core
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
-puts keyVal.to_s if numOfPrices==1
+
 			priceTag=keyVal[0]
 			priceVal=keyVal[1]
 			if priceVal.include? "startapp" or priceVal.include? "pkg"
 				return false
 			end
 			type=""
+puts keyVal.to_s if numOfPrices==1
 			if Utilities.is_float?(priceVal)
 				@trace.users[@curUser].numericPrices.push(priceVal)
 				@trace.numericPrices+=1
