@@ -44,11 +44,13 @@ class Operations
 				row=Format.columnsFormat(line,@defines.column_Format,@options)
 				if row['host'].size>1 and row['host'].count('.')>0
 					if function==1 or function==0
-						atts.each{|att| (f[att].puts row[att]) if (att!='url' and att!="tmstp")}
+						atts.each{|att| (f[att].puts row[att]) if (att!='url' and att!="tmstp") and f[att]!=nil}
 						Utilities.separateTimelineEvents(row,@defines.dirs['userDir']+row['IPport'],@defines.column_Format)
-					elsif function==2 or function==0
+					end					
+					if function==2 or function==0
 						@func.parseRequest(row,false)
-					elsif function==3
+					end
+					if function==3
 						@func.findStrInRows(row,str)
 					end
 				end

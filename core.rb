@@ -45,24 +45,24 @@ class Core
 		fw=nil
 		if @options['file']==1
 			puts "> Dumping to files..."
-			if File.size?@defines.files['devices']
+			if not File.size?@defines.files['devices']
 				fd=File.new(@defines.files['devices'],'w')
 				@trace.devs.each{|dev| fd.puts dev}
 				fd.close
 			end
-			if File.size?@defines.files['restParamsNum']
+			if not File.size?@defines.files['restParamsNum']
 				fpar=File.new(@defines.files['restParamsNum'],'w')
 				@trace.restNumOfParams.each{|p| fpar.puts p}
 				fpar.close
 			end
-			if File.size?@defines.files['adParamsNum']
+			if not File.size?@defines.files['adParamsNum']
 				fpar=File.new(@defines.files['adParamsNum'],'w')
 				@trace.adNumOfParams.each{|p| fpar.puts p}
 				fpar.close
 			end
-			if File.size?@defines.files['size3rdFile']
+			if not File.size?@defines.files['size3rdFile']
 				fsz=File.new(@defines.files['size3rdFile'],'w')
-				trace.sizes.each{|sz| fsz.puts sz}
+				@trace.sizes.each{|sz| fsz.puts sz}
 				fsz.close
 			end
 		end
