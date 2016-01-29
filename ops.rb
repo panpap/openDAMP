@@ -38,7 +38,7 @@ class Operations
 			if count==0		# HEADER
 				#atts=@options['headers']
 				if function==1 or function==0
-					atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w') if File.size?(@defines.dirs['dataDir']+a)==nil and (a!='url') and (att!="tmstp") }
+					atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w') if File.size?(@defines.dirs['dataDir']+a)==nil and (a!='url') and (a!="tmstp") }
 				end
 			else
 				row=Format.columnsFormat(line,@defines.column_Format,@options)
