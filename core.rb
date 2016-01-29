@@ -298,6 +298,7 @@ class Core
 				@trace.hashedPrices+=1
 			end
 			if @database!=nil
+				system("echo "+tmstp+"|"+url+"|"+priceTag+"|"+priceVal+" >> ttt")
 				id=Digest::SHA256.hexdigest (tmstp+"|"+url+"|"+domainStr+"|"+priceTag+"|"+priceVal)
 				@database.insert(@defines.tables['priceTable'], [id,tmstp,domainStr,priceTag.downcase,priceVal,type,mob,device,browser])
 			end
