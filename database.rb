@@ -72,7 +72,7 @@ class Database
 
 	def close
 		puts "FREED"
-		print alerts.to_s+"\n"
+		print @alerts.to_s+"\n"
 		@db.close if @db
 	end
 # -------------------------------------------
