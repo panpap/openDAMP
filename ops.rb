@@ -11,7 +11,9 @@ class Operations
 		@func=Core.new(@defines,@options)
 		total1=""
 		IO.popen("sort "+@defines.traceFile+" | uniq | wc -l") { |io| total1=io.gets.split(" ")[0] }
+puts total1
 		total2=""
+puts total2
 		IO.popen("wc -l "+@defines.traceFile) { |io| total2=io.gets.split(" ")[0] }
 		if (total2.to_i-total1.to_i)>0
 			Utilities.warning(total+" dublicates were found in the trace")  
