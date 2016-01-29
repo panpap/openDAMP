@@ -37,7 +37,9 @@ class Operations
 		File.foreach(@defines.traceFile) {|line|
 			if count==0		# HEADER
 				#atts=@options['headers']
-				atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w') if (a!='url')}
+				if function==1 or function==0
+					atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w') if File.size?(@defines.dirs['dataDir']+a)==nil and (a!='url') and (att!="tmstp") }
+				end
 			else
 				row=Format.columnsFormat(line,@defines.column_Format,@options)
 				if row['host'].size>1 and row['host'].count('.')>0
