@@ -2,7 +2,7 @@ class Defines
 	attr_accessor :tables, :plotScripts, :plotDir, :resultsDB, :traceFile, :adsDir, :beaconDB, :filterFile, :parseResults, :userDir, :dirs, :files, :dataDir, :tmln_path
 	
 	def initialize(filename)
-		@column_Format={"2monthSorted_trace"=>1,"10k_trace"=>1 ,
+		@column_Format={"2monthSorted_trace"=>1,"2m_trace"=>1 ,
 			"full_trace"=>1, 	#awazza dataset 6million reqs
 			"souneil_trace"=>2,"soun1k_trace"=>2} 	#awazza dataset 1million reqs
 
