@@ -326,17 +326,20 @@ class Core
     	end
 		isAd=false
         fields=url[1].split('&')
+		numOfPrices=0
         for field in fields do
             keyVal=field.split("=")
             if(not @filters.is_GarbageOrEmpty?(keyVal))
 				if(@filters.is_Beacon_param?(keyVal) and not @isBeacon)
 					beaconSave(url[0],row)
 				end
+				
+	puts keyVal.to_s if numOfPrices==1
 				if(detectPrice(row,keyVal))
 #					if row['browser']!=nil					
 #						@trace.browserPrices+=1
 #					end
-				#	Utilities.printRow(row,File.new(@defines.dirs['rootDir']+"PriceAds.out",'a'))
+					numOfPrices+=1
 					isAd=true
 				end
 				if(@filters.is_Ad_param?(keyVal))
