@@ -26,11 +26,7 @@ class Operations
 	end
 
 	def dispatcher(function,str)	
-		if function==0
-			Utilities.error "TODO"
-			countDuplicates(@options)
-			return
-		end
+#Utilities.error "TODO" if function==0
 		@func.makeDirsFiles
 		puts "> Loading Trace... "+@defines.traceFile
 		count=0
