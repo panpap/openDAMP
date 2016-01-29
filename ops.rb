@@ -11,7 +11,7 @@ class Operations
 		@func=Core.new(@defines,@options)
 	end
 
-	def countDuplicates(@options)
+	def countDuplicates()
 		total1=""
 		total2=""
 		if @options['excludeCol']!=nil
