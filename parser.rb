@@ -32,41 +32,46 @@ end
 start = Time.now
 
 OptionParser.new { |opts|
-  opts.banner = "Usage: #{File.basename($0)} [-p -s -a -h -l] [-f <Search_string>] [-t <time_window>] [filename (optional)]"
+  opts.banner = "Usage: #{File.basename($0)} [-p -s -d -a -h -o] [-f <SEARCH_STRING>] [-t <TIME_WINDOW>] [FILENAME]"
 
-  opts.on( '-s', '--separate', 'Separate fields to files. Produced files are stored in ./data/ folder') do
-	ops=Operations.new(ARGV[0])
-	puts "> Separating HTTP fields..."
-    ops.dispatcher(1,nil)
-  end
+	opts.on( '-s', '--separate', 'Separate fields to files. Produced files are stored in ./data/ folder') do
+		ops=Operations.new(ARGV[0])
+		puts "> Separating HTTP fields..."
+		ops.dispatcher(1,nil)
+	end
 
-  opts.on('-o', '--analysis', 'Parse and analyze dataset.') do
-	ops=Operations.new(ARGV[0])
-	puts "> Parsing and analyzing dataset..."
-    ops.dispatcher(2,nil)
-  end	
-	
-  opts.on('-f', '--find STRING', 'Search particular string in the dataset.') do |str|
-	ops=Operations.new(ARGV[0])
-	puts "> Searching String..."
-    ops.dispatcher(3,str)
-  end
+	opts.on('-o', '--analysis', 'Parse and analyze dataset.') do
+		ops=Operations.new(ARGV[0])
+		puts "> Parsing and analyzing dataset..."
+		ops.dispatcher(2,nil)
+	end	
 
-  opts.on('-a', '--all', 'Load dataset, separate parameters, detect ads') do
-	ops=Operations.new(ARGV[0])
-    ops.dispatcher(0,nil)
-  end
+	opts.on('-f', '--find STRING', 'Search particular string in the dataset.') do |str|
+		ops=Operations.new(ARGV[0])
+		puts "> Searching String..."
+		ops.dispatcher(3,str)
+	end
 
-  opts.on('-p', '--plot', 'Plot CDFs using Gnuplot') do
-	ops,folder=folderAsInput(ARGV[0])
-    ops.plot(folder)
-  end
+	opts.on('-a', '--all', 'Load dataset, separate parameters, detect ads') do
+		ops=Operations.new(ARGV[0])
+		ops.dispatcher(0,nil)
+	end
 
-  opts.on('-t', '--timelines MILLISECONDS', 'Make user Timelines per N milliseconds') do |sec|
-	ops,folder=folderAsInput(ARGV[0])
-	ops.makeTimelines(sec,folder)
-  end
+	opts.on('-p', '--plot', 'Plot CDFs using Gnuplot') do
+		ops,folder=folderAsInput(ARGV[0])
+		ops.plot(folder)
+	end
 
+	opts.on('-t', '--timelines MILLISECONDS', 'Make user Timelines per N milliseconds') do |sec|
+		ops,folder=folderAsInput(ARGV[0])
+		ops.makeTimelines(sec,folder)
+	end
+
+	opts.on('-d', '--dublicates [COLLUMN(optional)]', 'Count possible duplicate rows in dataset.') do
+		ops=Operations.new(ARGV[0])
+		puts "Counting possible duplicates..."
+		ops.countDuplicates
+	end
 }.parse!
 finish = Time.now
 puts "Total Elapsed time "+(finish - start).to_s+" seconds"

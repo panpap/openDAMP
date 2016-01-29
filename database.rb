@@ -70,8 +70,10 @@ class Database
 	end
 
 	def close
-		puts "FREED"
-		print @alerts.to_s+"\n"
+		if allerts.size>0
+			print "Dublicates detected from Database: "+@alerts.to_s+"\n"
+			Utilities.warning "Your results may be biased..."
+		end
 		@db.close if @db
 	end
 # -------------------------------------------

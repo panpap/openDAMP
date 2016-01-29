@@ -9,22 +9,28 @@ class Operations
 		@defines=Defines.new(filename)
 		@options=Utilities.loadOptions(@defines.files['configFile'])
 		@func=Core.new(@defines,@options)
+	end
+
+	def countDuplicates(excludeCol)
 		total1=""
-		IO.popen("sort "+@defines.traceFile+" | uniq | wc -l") { |io| total1=io.gets.split(" ")[0] }
-puts total1
 		total2=""
-puts total2
+		if excludeCol!=nil
+			IO.popen("awk '{$"+excludeCol+"=\"\"; print $0}' "+@defines.traceFile+" | sort | uniq | wc -l") { |io| total1=io.gets.split(" ")[0] }
+		else
+			IO.popen("sort "+@defines.traceFile+" | uniq | wc -l") { |io| total1=io.gets.split(" ")[0] }			
+		end
 		IO.popen("wc -l "+@defines.traceFile) { |io| total2=io.gets.split(" ")[0] }
 		if (total2.to_i-total1.to_i)>0
-			Utilities.error(total+" dublicates were found in the trace")  
+			puts "> "+(total2.to_i-total1.to_i).to_s+" dublicates were found in the trace"
 		end
 	end
 
 	def dispatcher(function,str)	
-if function==0
-	puts "TODO"
-	return
-end
+		if function==0
+			Utilities.error "TODO"
+			countDuplicates()
+			return
+		end
 		@func.makeDirsFiles
 		puts "> Loading Trace... "+@defines.traceFile
 		count=0
