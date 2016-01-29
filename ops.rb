@@ -16,7 +16,7 @@ puts total1
 puts total2
 		IO.popen("wc -l "+@defines.traceFile) { |io| total2=io.gets.split(" ")[0] }
 		if (total2.to_i-total1.to_i)>0
-			Utilities.warning(total+" dublicates were found in the trace")  
+			Utilities.error(total+" dublicates were found in the trace")  
 		end
 	end
 
