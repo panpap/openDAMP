@@ -117,7 +117,6 @@ private
 					if @alerts[table]==nil or @alerts[table]==0
 						Utilities.warning "not unique: "+table
 						puts command+"("+params+")"	
-abort;
 					end
 					@alerts[table]+=1
 			elsif e.to_s.include? "UNIQUE constraint failed"
