@@ -275,7 +275,7 @@ class Core
 		end
 	end
 
-    def detectPrice(tmstp,keyVal)          	# Detect possible price in parameters and returns URL Parameters in String
+    def detectPrice(row,keyVal)          	# Detect possible price in parameters and returns URL Parameters in String
 		tmstp=row['tmstp']
 		domainStr=row['host']
 		url=row['row']
