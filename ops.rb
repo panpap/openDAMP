@@ -12,16 +12,16 @@ class Operations
 	end
 
 	def countDuplicates()
-		total1=""
-		total2=""
+		uniq=""
+		total=""
 		if @options['excludeCol']!=nil
-			IO.popen("awk '{$"+@options['excludeCol'].to_s+"=\"\"; print $0}' "+@defines.traceFile+" | sort | uniq | wc -l") { |io| total1=io.gets.split(" ")[0] }
+			IO.popen("awk '{$"+@options['excludeCol'].to_s+"=\"\"; print $0}' "+@defines.traceFile+" | sort | uniq | wc -l") { |io| uniq=io.gets.split(" ")[0] }
 		else
-			IO.popen("sort "+@defines.traceFile+" | uniq | wc -l") { |io| total1=io.gets.split(" ")[0] }			
+			IO.popen("sort "+@defines.traceFile+" | uniq | wc -l") { |io| uniq=io.gets.split(" ")[0] }			
 		end
-		IO.popen("wc -l "+@defines.traceFile) { |io| total2=io.gets.split(" ")[0] }
-		if (total2.to_i-total1.to_i)>0
-			puts "> "+(total2.to_i-total1.to_i).to_s+" dublicates were found in the trace"
+		IO.popen("wc -l "+@defines.traceFile) { |io| total=io.gets.split(" ")[0] }
+		if (total.to_i-uniq.to_i)>0
+			puts "> "+(total.to_i-uniq.to_i).to_s+" ("+(uniq*100/total).to_s+") dublicates were found in the trace"
 		end
 	end
 
