@@ -15,7 +15,7 @@ class Operations
 		total1=""
 		total2=""
 		if @options['excludeCol']!=nil
-			IO.popen("awk '{$"+excludeCol+"=\"\"; print $0}' "+@defines.traceFile+" | sort | uniq | wc -l") { |io| total1=io.gets.split(" ")[0] }
+			IO.popen("awk '{$"+@options['excludeCol']+"=\"\"; print $0}' "+@defines.traceFile+" | sort | uniq | wc -l") { |io| total1=io.gets.split(" ")[0] }
 		else
 			IO.popen("sort "+@defines.traceFile+" | uniq | wc -l") { |io| total1=io.gets.split(" ")[0] }			
 		end
