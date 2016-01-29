@@ -43,24 +43,24 @@ class Core
 	def analysis
 		puts "> Stripping parameters, detecting and classifying Third-Party content..."
 		fw=nil
-		if @options['files']==1
+		if @options['file']==1
 			puts "> Dumping to files..."
-			if File.size? @defines.files['devices']==nil
+			if File.size?@defines.files['devices']
 				fd=File.new(@defines.files['devices'],'w')
 				@trace.devs.each{|dev| fd.puts dev}
 				fd.close
 			end
-			if File.size? @defines.files['restParamsNum']==nil
+			if File.size?@defines.files['restParamsNum']
 				fpar=File.new(@defines.files['restParamsNum'],'w')
 				@trace.restNumOfParams.each{|p| fpar.puts p}
 				fpar.close
 			end
-			if File.size? @defines.files['adParamsNum']==nil
+			if File.size?@defines.files['adParamsNum']
 				fpar=File.new(@defines.files['adParamsNum'],'w')
 				@trace.adNumOfParams.each{|p| fpar.puts p}
 				fpar.close
 			end
-			if File.size? @defines.files['size3rdFile']==nil
+			if File.size?@defines.files['size3rdFile']
 				fsz=File.new(@defines.files['size3rdFile'],'w')
 				trace.sizes.each{|sz| fsz.puts sz}
 				fsz.close

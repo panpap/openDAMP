@@ -71,8 +71,8 @@ class Database
 
 	def close
 		if @alerts.size>0
-			print "Dublicates detected from Database: "+@alerts.to_s+"\n"
 			Utilities.warning "Your results may be biased..."
+			puts "\tDublicates detected from Database: \n\t"+@alerts.to_s
 		end
 		@db.close if @db
 	end
