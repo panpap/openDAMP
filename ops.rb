@@ -9,6 +9,11 @@ class Operations
 		@defines=Defines.new(filename)
 		@options=Utilities.loadOptions(@defines.files['configFile'])
 		@func=Core.new(@defines,@options)
+		total=""
+		IO.popen('wc -l '+@defines.traceFile) { |io| total=io.gets.split(" ")[0] }
+		if total.to_i>0
+			Utilities.warning(total+" dublicates were found in the trace")  
+		end
 	end
 
 	def dispatcher(function,str)	
@@ -65,7 +70,7 @@ end
 			if not File.exists?(cwd)
 				puts "Dir not found"
 			else
-				puts "NEEDS REVISION"
+				Utilities.error("THIS FUNCTION NEEDS REVISION")
 	#			Dir.mkdir path unless File.exists?(path)
 	#			Dir.mkdir path+@defines.tmln_path unless File.exists?(path+@defines.tmln_path)
 	#			puts "> There is not any existing user files. Separating timeline events per user..."

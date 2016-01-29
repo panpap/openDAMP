@@ -45,8 +45,7 @@ class Database
 				return @db.get_first_row "SELECT "+what+" FROM '#{table}' WHERE "+param+"="+val
 			end
 		rescue SQLite3::Exception => e 
-			puts "SQLite Exception during GET! "+e.to_s+"\n"+table+" "+param+" "+value
-			abort
+			Utilities.error "SQLite Exception during GET! "+e.to_s+"\n"+table+" "+param+" "+value
 		end
 	end
 
@@ -114,18 +113,18 @@ private
 			elsif e.to_s.include? "is not unique"
 					table=command.split("INTO")[1].split("VALUES")[0].gsub("'","")
 					if @alerts[table]==nil or @alerts[table]==0
-						puts "Warning: not unique: "+table
+						Utilities.warning "not unique: "+table
 						puts command+"("+params+")"	
 					end
 					@alerts[table]+=1
 			elsif e.to_s.include? "UNIQUE constraint failed"
 					table=e.to_s.split(":")[1].split(".")[0]
 					if @alerts[table]==nil or @alerts[table]==0
-						puts "Warning: UNIQUE constraint failed: "+table	
+						Utilities.warning "UNIQUE constraint failed: "+table	
 					end
 					@alerts[table]+=1
 			else
-				puts "SQLite Exception: "+command+" "+e.to_s+"\n"+params
+				Utilities.error "SQLite Exception: "+command+" "+e.to_s+"\n"+params
 			end
 			return false
 		end

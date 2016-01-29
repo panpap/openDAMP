@@ -47,7 +47,7 @@ module Utilities
 			fp.puts("\t-\t"+row['uIP']+"\t"+row['tmstp']+"\t"+row['status']+"\t"+row['length']+"\t"+row['dataSz']+"\t"+
             row['dur']+"\t-\t"+row['IPport']+"\t"+row['verb']+"\t-\t"+row['url']+"\t-\t"+row['ua']+"\t"+row['host'])
 		else
-			abort("Error: Wrong column format... Check input!")
+			Utilities.error("Wrong column format... Check input!")
 		end
 		fp.close
 	end
@@ -82,6 +82,14 @@ module Utilities
         end
         true if Float(object) rescue false
     end
+
+	def Utilities.warning(str)
+		puts "---> WARNING: "+str
+	end
+
+	def Utilities.error(str)
+		abort "---> ERROR: "+str
+	end
 
 	def Utilities.printRowToDB(row,db,table,extra)
 		if db!=nil
