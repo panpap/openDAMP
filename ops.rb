@@ -21,7 +21,7 @@ class Operations
 		end
 		IO.popen("wc -l "+@defines.traceFile) { |io| total=io.gets.split(" ")[0] }
 		if (total.to_i-uniq.to_i)>0
-			puts "> "+(total.to_i-uniq.to_i).to_s+" ("+(uniq*100/total).to_s+") dublicates were found in the trace"
+			puts "> "+(total.to_i-uniq.to_i).to_s+" ("+(uniq.to_i*100/total.to_i).to_s+") dublicates were found in the trace"
 		end
 	end
 
