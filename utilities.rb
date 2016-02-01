@@ -97,8 +97,9 @@ module Utilities
 			tmstp=row['tmstp']
 			dur=row['dur']
 			size=row['dataSz']
-			id=Digest::SHA256.hexdigest (tmstp+"|"+url+"|"+dur+"|"+size)
-			params=[id,tmstp,row['IPport'],row['uIP'],url,row['host'],row['ua'],row['status'],row['length'],size,
+			host=row['host']
+			id=Digest::SHA256.hexdigest (tmstp+"|"+url+"|"+host+"|"+dur+"|"+size)
+			params=[id,tmstp,row['IPport'],row['uIP'],url,host,row['ua'],row['status'],row['length'],size,
 									dur,row['mob'],row['dev'],row['browser']]
 			if extra!=nil
 				params.push(extra)

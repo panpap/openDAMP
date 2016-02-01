@@ -82,19 +82,24 @@ class Plotter
 		tempFile=".temp"
 		print whatToPlot+" "+specs.to_s+"\n"
 		outFile=@defines.dirs['plotDir']+whatToPlot+'.data'
-if column.include? ","	# plot more than one columns
-	multipleColumns(table,column,tempFile)
-	return
-end
+		if column.include? ","	# plot more than one columns
+			multipleColumns(table,column,tempFile)
+			return
+		end
 		data=getDBdata(table,column)
 		case whatToPlot
-		when "priceTagPopularity"
+		when "priceTagPopularity", "beaconTypesCDF"
 			ft=File.open(tempFile,'w')
 			instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word[0].to_s.downcase] += 1 }
 			instances.sort.each{|word, count| ft.puts (count.to_f*100/data.size.to_f).to_s+" \""+word.gsub(/([_])/,"\\\\\\_")+"\""}
 			ft.close	
 			system("sort -rg "+tempFile+" > "+outFile+"; rm -f "+tempFile)
-			plotIt(outFile,"Price tags detected","Percentage of reqs","zoomed",whatToPlot)
+			
+			if whatToPlot=="priceTagPopularity"
+				plotIt(outFile,"Price tags detected","Percentage of reqs","zoomed",whatToPlot)
+			else
+				plotIt(outFile,"Beacon type", "Percentage of reqs","linespoints", whatToPlot)
+			end
 		when "priceTagsPerDSP"
 			fw=File.open(tempFile,'w')
 			instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word[0].to_s.downcase] += 1 }
@@ -105,16 +110,16 @@ end
 			system("awk '{print $1}' "+tempFile+" |sort -g| uniq -c | awk '{print ($1/"+total.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > "+outFile+"; rm -r "+tempFile)
 			plotIt(outFile,"Percentage of reqs with prices", "CDN","cdf",whatToPlot)
 		when "categoriesTrace"
-				f=File.open(tempFile,'w')
-		#		newdata=data[0][0].gsub(/([\[\]])/,"").split(",")
-		#		if(newdata.size==6)	# content of Req
-					adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
-					data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"\"3rd party Content\""=>newdata[3],"Rest"=>newdata[5]}
-#					y=1
-#					data.each{|key, value| f.puts (value.to_f*100/@totalRows.to_f).to_s+" "+key}
-#					plotscript="plot2.gn"
-#				end
-#				f.close
+			f=File.open(tempFile,'w')
+	#		newdata=data[0][0].gsub(/([\[\]])/,"").split(",")
+	#		if(newdata.size==6)	# content of Req
+				adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
+				data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"\"3rd party Content\""=>newdata[3],"Rest"=>newdata[5]}
+#				y=1
+#				data.each{|key, value| f.puts (value.to_f*100/@totalRows.to_f).to_s+" "+key}
+#				plotscript="plot2.gn"
+#			end
+#			f.close
 		else
 			abort ("Error: Uknown command to plotter")
 		end
@@ -156,6 +161,8 @@ end
 		data=Array.new
 		columns=column.split(",")
 		columns.each{|c| data.push(@db.getAll(table,c,nil,nil).flatten)}
+puts data.to_s
+abort
 		tdata=data.transpose
 		totals=Array.new
 		if columns.size==8

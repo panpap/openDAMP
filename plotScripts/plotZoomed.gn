@@ -6,7 +6,7 @@ set terminal postscript enhanced eps  defaultplex \
 
 set nokey
 set xtic rotate by -70 scale 0
-
+set format y "%g %%"
 set auto x
 set xlabel xTitle
 set ylabel yTitle

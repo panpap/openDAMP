@@ -17,14 +17,14 @@ class Defines
 		end
 
 		@tables={
-		"publishersTable"=>"publishers",
-		"beaconDBTable"=>"beaconURLs",
-		"impTable"=>"impressions",	
-		"bcnTable"=>"beacons",
-		"adsTable"=>"advertisements",
-		"userTable"=>"userResults",
-		"priceTable"=>"prices",
-		"traceTable"=>"traceResults"}
+			"publishersTable"=>"publishers",
+			"beaconDBTable"=>"beaconURLs",
+			"impTable"=>"impressions",	
+			"bcnTable"=>"beacons",
+			"adsTable"=>"advertisements",
+			"userTable"=>"userResults",
+			"priceTable"=>"prices",
+			"traceTable"=>"traceResults"}
 
 		@beaconDB="beaconsDB.db"
 		@resultsDB=@traceFile+"_analysis.db"
@@ -48,25 +48,25 @@ class Defines
 		#FILENAMES
 		@files={
 		#@files["parseResults"=>@dirs["rootDir"]+"results.out",
-		"priceTagsFile"=>@dirs["adsDir"]+"priceTags",
-		"devices"=>@dirs["adsDir"]+"devices.csv",
-		"size3rdFile"=>@dirs["adsDir"]+"sizes3rd.csv",
-		"adParamsNum"=>@dirs["adsDir"]+"adParamsNum.csv",
-		"restParamsNum"=>@dirs["adsDir"]+"restParamsNum.csv",
+			"priceTagsFile"=>@dirs["adsDir"]+"priceTags",
+			"devices"=>@dirs["adsDir"]+"devices.csv",
+			"size3rdFile"=>@dirs["adsDir"]+"sizes3rd.csv",
+			"adParamsNum"=>@dirs["adsDir"]+"adParamsNum.csv",
+			"restParamsNum"=>@dirs["adsDir"]+"restParamsNum.csv",
 		#@files["adDevices"=>@dirs["adsDir"]+"adDevices.csv",
 		#@files["userFile"=>@dirs["userDir"]+"userAnalysis.csv",
 		#@files["publishers"=>@dirs["adsDir"]+"publishers.csv",
 		#@files["leftovers"=>"leftovers.out",
-		"formatFile"=>"format.in",
-		"configFile"=>"config",
-		"filterFile"=>@resources+"disconnect_merged.json"}
+			"formatFile"=>"format.in",
+			"configFile"=>"config",
+			"filterFile"=>@resources+"disconnect_merged.json"}
 
 		#GNUPLOT SCRIPTS
 		@plotScriptsDir="plotScripts/"
 		@plotScripts={
-		"cdf"=>@plotScriptsDir+"plotCDF.gn",
-		"zoomed"=>@plotScriptsDir+"plotZoomed.gn"}
-		
+			"cdf"=>@plotScriptsDir+"plotCDF.gn",
+			"zoomed"=>@plotScriptsDir+"plotZoomed.gn",
+			"linespoints"=>@plotScriptsDir+"plotLinesPoints.gn"}
 	end
 
 	def column_Format()

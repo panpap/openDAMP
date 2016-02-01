@@ -16,7 +16,7 @@ class Operations
 		total=""
 		if @options['excludeCol']!=nil
 			IO.popen("awk '{$"+@options['excludeCol'].to_s+"=\"\"; print $0}' "+@defines.traceFile+" | sort -u | wc -l") { |io| uniq=io.gets.split(" ")[0] }
-			#awk 'NR == 1; NR > 1 {print $0 | "sort -uk2"}' trace > Sorted_trace
+			#awk 'NR == 1; NR > 1 {print $0 | "sort -uk1,3"}' trace > Sorted_trace
 		else
 			IO.popen("sort -u "+@defines.traceFile+" | wc -l") { |io| uniq=io.gets.split(" ")[0] }			
 			#awk 'NR == 1; NR > 1 {print $0 | "sort -u"}' trace > Sorted_trace
@@ -98,6 +98,10 @@ class Operations
 	def plot(path)
 		@defines.dirs['rootDir']=path
 		@defines.dirs['plotDir']=@defines.dirs['rootDir']+@defines.plotDir
+		if not File.exists? @defines.dirs['rootDir']
+			Utilities.error "Directory does not exists."
+			return
+		end
 		Dir.mkdir @defines.dirs['plotDir'] unless File.exists?(@defines.dirs['plotDir'])
 		if @database==nil
 			@database=Database.new(@defines,nil,nil)
