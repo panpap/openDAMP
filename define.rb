@@ -65,6 +65,7 @@ class Defines
 		@plotScriptsDir="plotScripts/"
 		@plotScripts={
 			"cdf"=>@plotScriptsDir+"plotCDF.gn",
+			"bars"=>@plotScriptsDir+"plotBars.gn",
 			"zoomed"=>@plotScriptsDir+"plotZoomed.gn",
 			"linespoints"=>@plotScriptsDir+"plotLinesPoints.gn"}
 	end

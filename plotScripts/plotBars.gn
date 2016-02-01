@@ -18,5 +18,4 @@ set log y
 
 set boxwidth 0.5
 set style fill solid
-N = system("awk 'NR==1{print NF}' "+fromFile)
-plot for [i=1:N] fromFile u 1:xtic(2) w boxes
+plot fromFile using 2:xtic(1) with boxes

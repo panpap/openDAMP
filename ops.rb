@@ -113,8 +113,8 @@ class Operations
 		whatToPlot={"priceTagPopularity" => ["priceTable","priceTag"],
 					"priceTagsPerDSP" => ["priceTable","host"],
 					"beaconTypesCDF" => ["bcnTable","beaconType"],
-					"categoriesTrace" => ["traceTable","advertising,analytics,social,content,beacons,other"],
-				#	"percSizeCategoryPerUser" => ["userTable","sizesPerContentPerUser"],
+					"categoriesTrace" => ["traceTable","advertising,analytics,social,beacons,content,other,adRelatedBeacons"],
+					"percSizeCategoryPerUser" => ["userTable","sizesPerContentPerUser"],
 				#	"categoriesPerUserCDF" => ["userTable","advertising,analytics,social,content,noAdBeacons,other"]
 				#	 => ["userTable","advertising,analytics,social,content,noAdBeacons,other,thirdPartySize"]
 					}

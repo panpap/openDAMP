@@ -43,11 +43,11 @@ class Trace
 			@mobDev.to_s+"/"+totalNumofRows.to_s+"\n"+"- Traffic originated from Web Browser: "+@fromBrowser.to_s+
 			"\n- 3rd Party content detected: \n\tAdvertising => "+@party3rd['Advertising'].to_s+
 			"\n\tAnalytics => "+@party3rd['Analytics'].to_s+"\n\tSocial => "+@party3rd['Social'].to_s+"\n\tContent => "+@party3rd['Content'].to_s+
-			"\n\tBeacons => "+@party3rd['totalBeacons'].to_s+"\n\tOther => "+@party3rd['Other'].to_s+
+			"\n\tBeacons => "+@party3rd['totalBeacons'].to_s+"\n\tOther => "+@party3rd['Other'].to_s+"\n- AdRelated beacons: "+@totalAdBeacons.to_s+"/"+@party3rd['totalBeacons'].to_s+
 			"\n- Total Size: "+sizeStats['sum'].to_s+" Bytes\n\tAverage per req: "+
 			sizeStats['avg'].to_s+" Bytes"+"\n\nADVERTISING CONTENT\n- AdRelated traffic from mobile devices: "+@numOfMobileAds.to_s+"/"+
 			@party3rd['Advertising'].to_s+"\n- Prices Detected "+(@numericPrices+@hashedPrices).to_s+"\n\tHashed Price tags found: "+@hashedPrices.to_s+
-			"\n\t Numeric Price tags found: "+@numericPrices.to_s+"\n- AdRelated beacons: "+@totalAdBeacons.to_s+"/"+@party3rd['totalBeacons'].to_s+
+			"\n\t Numeric Price tags found: "+@numericPrices.to_s+
 			"\n------------\n"+#-Impressions detected "+@totalImps.to_s+"\n"
 			"\n Advertising content Total size "+(Utilities.makeStats(@adSize)["sum"]).to_s
 

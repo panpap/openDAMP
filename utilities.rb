@@ -84,11 +84,11 @@ module Utilities
     end
 
 	def Utilities.warning(str)
-		puts "---> WARNING: "+str
+		puts "---> "+caller[0][/`([^']*)'/, 1]+": WARNING: "+str
 	end
 
 	def Utilities.error(str)
-		abort "---> ERROR: "+str
+		abort "---> "+caller[0][/`([^']*)'/, 1]+":ERROR: "+str
 	end
 
 	def Utilities.printRowToDB(row,db,table,extra)
@@ -98,7 +98,12 @@ module Utilities
 			dur=row['dur']
 			size=row['dataSz']
 			host=row['host']
-			id=Digest::SHA256.hexdigest (tmstp+"|"+url+"|"+host+"|"+dur+"|"+size)
+			id=""
+			if (h['httpRef']!=nil)
+				id=Digest::SHA256.hexdigest (tmstp+"|"+url+"|"+host+"|"+dur+"|"+size+"|"+h['httpRef'])
+			else
+				id=Digest::SHA256.hexdigest (tmstp+"|"+url+"|"+host+"|"+dur+"|"+size)
+			end
 			params=[id,tmstp,row['IPport'],row['uIP'],url,host,row['ua'],row['status'],row['length'],size,
 									dur,row['mob'],row['dev'],row['browser']]
 			if extra!=nil

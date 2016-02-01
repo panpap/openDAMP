@@ -79,38 +79,38 @@ class Plotter
 		y=0
 		table=@defines.tables[specs[0]]
 		column=specs[1]
-		tempFile=".temp"
-		print whatToPlot+" "+specs.to_s+"\n"
-		outFile=@defines.dirs['plotDir']+whatToPlot+'.data'
+		@@tempFile=".temp"
+		print whatToPlot+" "+specs.to_s+"\n"		
 		if column.include? ","	# plot more than one columns
-			multipleColumns(table,column,tempFile)
+			multipleColumns(table,column,whatToPlot)
 			return
 		end
+		outFile=@defines.dirs['plotDir']+whatToPlot+'.data'
 		data=getDBdata(table,column)
+		return if data==nil
 		case whatToPlot
 		when "priceTagPopularity", "beaconTypesCDF"
-			ft=File.open(tempFile,'w')
+			ft=File.open(@@tempFile,'w')
 			instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word[0].to_s.downcase] += 1 }
 			instances.sort.each{|word, count| ft.puts (count.to_f*100/data.size.to_f).to_s+" \""+word.gsub(/([_])/,"\\\\\\_")+"\""}
 			ft.close	
-			system("sort -rg "+tempFile+" > "+outFile+"; rm -f "+tempFile)
-			
+			system("sort -rg "+@@tempFile+" > "+outFile+"; rm -f "+@@tempFile)
 			if whatToPlot=="priceTagPopularity"
 				plotIt(outFile,"Price tags detected","Percentage of reqs","zoomed",whatToPlot)
 			else
 				plotIt(outFile,"Beacon type", "Percentage of reqs","linespoints", whatToPlot)
 			end
 		when "priceTagsPerDSP"
-			fw=File.open(tempFile,'w')
+			fw=File.open(@@tempFile,'w')
 			instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word[0].to_s.downcase] += 1 }
 			instances.each{|word, count| fw.puts (count.to_f*100/data.size.to_f.round(2)).to_s}
 			fw.close
 			total=0
-			IO.popen('wc -l '+tempFile) { |io| total=io.gets.split(" ")[0] }
-			system("awk '{print $1}' "+tempFile+" |sort -g| uniq -c | awk '{print ($1/"+total.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > "+outFile+"; rm -r "+tempFile)
+			IO.popen('wc -l '+@@tempFile) { |io| total=io.gets.split(" ")[0] }
+			system("awk '{print $1}' "+@@tempFile+" |sort -g| uniq -c | awk '{print ($1/"+total.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > "+outFile+"; rm -r "+@@tempFile)
 			plotIt(outFile,"Percentage of reqs with prices", "CDN","cdf",whatToPlot)
 		when "categoriesTrace"
-			f=File.open(tempFile,'w')
+			f=File.open(@@tempFile,'w')
 	#		newdata=data[0][0].gsub(/([\[\]])/,"").split(",")
 	#		if(newdata.size==6)	# content of Req
 				adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
@@ -151,56 +151,77 @@ class Plotter
 	def getDBdata(table,column)
 		data=@db.getAll(table,column,nil,nil).sort
 		if data.size==0
-			abort "Error: No data was found in => table: <"+table+"> \ncolumn: <"+column+">"
+			Utilities.warning "No data was found in table: <"+table+"> column: <"+column+">"
+			return nil
 		end
 		return data
 	end
 
-	def multipleColumns(table,column,tempFile)
-		fw=File.open(tempFile,'w')
-		data=Array.new
+	def multipleColumns(table,column,whatToPlot)
+		fw=File.open(@@tempFile,'w')
+		data=Hash.new(Array.new)
 		columns=column.split(",")
-		columns.each{|c| data.push(@db.getAll(table,c,nil,nil).flatten)}
-puts data.to_s
-abort
-		tdata=data.transpose
-		totals=Array.new
-		if columns.size==8
-			tdata.each{|row| total=0; row.each{|x| total+=x if x!=row.last};
-				row.each{|cell| 
-				s=nil
-				if (cell==row.last) 
-					s=cell
-				else
-					s=(cell.to_f*100/total.to_f); 
-				end 
-				fw.print s.to_s+" " }; 
-			fw.print "\n"}
+		columns.each{|c| data[c]=(@db.getAll(table,c,nil,nil).flatten)}
+	#	tdata=data.transpose
+		outFile=@defines.dirs['plotDir']+whatToPlot+'.data'
+		plotType="";xTitle="";yTitle=""
+#		totals=Array.new
+		case whatToPlot
+		when "categoriesTrace"
+			fw=File.new(outFile,'w')
+			totalRows=0;adBeacons=0
+			data.each{|key, value| (key!=columns.last)? totalRows+=value[0].to_i : adBeacons=value[0].to_i}
+			totalRows-=adBeacons
+			data.each{|key, value| 
+				if key!=columns.last
+					value=value[0].to_f
+					if key=='beacons'
+						value-=data[columns.last][0].split("/")[0].to_f
+					end					
+					fw.puts key+"\t"+(value*100/totalRows).to_s
+				end	}
+			xTitle="Categories"
+			yTitle="Percentage of reqs"
+			plotType="bars"
 			fw.close
-			tempFile2=".temp2.data"
-			system("echo "+columns[columns.size-1]+" "+columns.to_s.gsub(/([\[\]])/,"").gsub(","," ")+"> "+tempFile2)
-			system("awk '{print $8/1000\" \"$1\" \"$2\" \"$3\" \"$4\" \"$5\" \"$6\" \"$7}' "+tempFile+" | sort -gk1 >> "+tempFile2)
-			makeBins(1,tempFile2)
-		elsif columns.size==7
-			tdata.each{|row| total=(row.inject{|sum,x| sum + x }); row.each{|cell| fw.print (cell.to_f*100/total.to_f).to_i.to_s+" " }; fw.print "\n"}
-			i=2
-			fw.close
-			while i<=data.size
-				s="awk '{print $"+i.to_s+"}' "
-				if i==2
-					s="awk '{print ($1+$2)}' "
-				elsif i==5
-					s=nil
-				elsif i==7
-					s="awk '{print ($5+$7)}' "
-				end
-				if s!=nil
-					system(s+tempFile+" | sort | uniq -c | sort -gk2  | awk '{print ($1/"+data[0].size.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2}' > .temp"+i.to_s+".data")
-				end
-				i+=1
-			end
-			system("gnuplot plot3.gn; mv content*.eps "+@defines.dirs['plotDir'])
+		else
+			Utilities.error "Wrong command"
+
+#		if columns.size==8
+#			tdata.each{|row| total=0; row.each{|x| total+=x if x!=row.last};
+#				row.each{|cell| 
+#				s=nil
+#				if (cell==row.last) 
+#					s=cell
+#				else
+#					s=(cell.to_f*100/total.to_f); 
+#				end 
+#				fw.print s.to_s+" " }; 
+#			fw.print "\n"}
+#			fw.close
+#			tempFile2=".temp2.data"
+#			system("echo "+columns[columns.size-1]+" "+columns.to_s.gsub(/([\[\]])/,"").gsub(","," ")+"> "+tempFile2)
+#			system("awk '{print $8/1000\" \"$1\" \"$2\" \"$3\" \"$4\" \"$5\" \"$6\" \"$7}' "+tempFile+" | sort -gk1 >> "+tempFile2)
+#			makeBins(1,tempFile2)
+#		elsif columns.size==7
+#			tdata.each{|row| total=(row.inject{|sum,x| sum + x }); row.each{|cell| fw.print (cell.to_f*100/total.to_f).to_i.to_s+" " }; fw.print "\n"}
+#			i=2
+#			fw.close
+#			while i<=data.size
+#				s="awk '{print $"+i.to_s+"}' "
+#				if i==2
+#					s="awk '{print ($1+$2)}' "
+#				elsif i==5
+#					s=nil
+#				elsif i==7
+#					s="awk '{print ($5+$7)}' "
+#				end
+#				if s!=nil
+#					system(s+@@tempFile+" | sort | uniq -c | sort -gk2  | awk '{print ($1/"+data[0].size.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2}' > .temp"+i.to_s+".data")
+#				end
+#				i+=1
 		end
+		plotIt(outFile,xTitle,yTitle,plotType,whatToPlot)
 	end
 
 	def makeBins(c,tempFile2)
@@ -211,7 +232,7 @@ abort
 		binCon=Array.new
 		binBea=Array.new
 		binOth=Array.new
-		f=File.new(tempFile2)
+		f=File.new(@@tempFile2)
 		fw=File.new(".temp.data",'w')
 		#log
 		if c==1

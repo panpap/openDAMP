@@ -34,6 +34,7 @@ module Format
 			h['host']=part[15]
 			h['mob']=nil
 			h['browser']=-1
+			h['httpRef']=part[13]
 			h['device']=nil
 			if (["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})
 				h['url']=h['host']+part[12]	#host+path

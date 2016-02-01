@@ -267,7 +267,7 @@ class Core
 		sizeStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
 		for id,user in @trace.users do
 			user.ads.each{|row| Utilities.printRowToDB(row,@database,@defines.tables['adsTable'],nil)}
-			user.publishers.each{|row| tid=Digest::SHA256.hexdigest (row['tmstp']+"|"+row['url']+"|"+row["dur"]+"|"+row["dataSz"]); @database.insert(@defines.tables['publishersTable'], [tid,row['tmstp'],row['IPport'],row['uIP'],row['url'],row['host'],row['mob'],row['dev'],row['browser']])}
+			user.publishers.each{|row| tid=Digest::SHA256.hexdigest (row['tmstp']+"|"+row['url']+"|"+row["dur"]+"|"+row["dataSz"]+"|"+row["ua"]); @database.insert(@defines.tables['publishersTable'], [tid,row['tmstp'],row['IPport'],row['uIP'],row['url'],row['host'],row['mob'],row['dev'],row['browser']])}
 			user.size3rdparty.each{|category, sizes| sizeStats[category]=Utilities.makeStats(sizes)}
 			user.dur3rd.each{|category, durations| durStats[category]=Utilities.makeStats(durations)}
 			if @database!=nil
