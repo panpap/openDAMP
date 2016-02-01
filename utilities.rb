@@ -98,15 +98,12 @@ module Utilities
 			dur=row['dur']
 			size=row['dataSz']
 			id=Digest::SHA256.hexdigest (tmstp+"|"+url+"|"+dur+"|"+size)
-			#isthere=db.get(table,"timestamp","id",id)		
-			#if isthere==nil
-				params=[tmstp,row['IPport'],row['uIP'],url,row['host'],row['ua'],row['status'],row['length'],size,
-										dur,row['mob'],row['dev'],row['browser']]
-				if extra!=nil
-					params.push(extra)
-				end
-				db.insertRow(table,params)
-			#end
+			params=[id,tmstp,row['IPport'],row['uIP'],url,row['host'],row['ua'],row['status'],row['length'],size,
+									dur,row['mob'],row['dev'],row['browser']]
+			if extra!=nil
+				params.push(extra)
+			end
+			db.insert(table,params)
 		end
 	end
 

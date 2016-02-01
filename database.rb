@@ -3,20 +3,20 @@ require 'uri'
 
 class Database
 
-	def initialize(path,defs,options)
-		@db=SQLite3::Database.open path
+	def initialize(defs,options)		
 		@defines=defs
+		@db=SQLite3::Database.open @defines.dirs['rootDir']+@defines.resultsDB
 		@options=options
 		@alerts=Hash.new(0)
 	end
 
-	def insertRow(table, params)
-		return if blockOutput(table)
-		par=prepareStr(params)
-		id=Digest::SHA256.hexdigest (params[0]+"|"+params[3])	#timestamp|url
-		par="\""+id+"\","+par
-		return execute("INSERT INTO '#{table}' VALUES ",par)
-	end
+#	def insertRow(table, params)
+#		return if blockOutput(table)
+#		par=prepareStr(params)
+#		id=Digest::SHA256.hexdigest (par[0]+"|"+par[3]+"|"+par[3])	#timestamp|url
+#		par="\""+id+"\","+par
+#		return execute("INSERT INTO '#{table}' VALUES ",par)
+#	end
 
 	def insert(table, params)
 		return if blockOutput(table)
@@ -92,7 +92,7 @@ private
 		else
 			input.each{ |s| 
 				if s.is_a? String
-					str='"'+s+'"'
+					str='"'+s.gsub("\n","").gsub('"',"%22")+'"'
 				else
 					str=s.to_s
 				end
@@ -126,7 +126,7 @@ private
 					end
 					@alerts[table]+=1
 			else
-				Utilities.error "SQLite Exception: "+command+" "+e.to_s+"\n"+params
+				Utilities.error "SQLite Exception: "+command+" "+e.to_s+"\n"+params+"\n\n"+e.backtrace.join("\n").to_s
 			end
 			return false
 		end
