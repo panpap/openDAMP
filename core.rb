@@ -28,7 +28,7 @@ class Core
 			Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
 			Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
 			puts "and database tables..."
-			@database=Database.new(@defines,@options)
+			@database=Database.new(@defines,@options,nil)
 			@database.create(@defines.tables['publishersTable'], 'id VARCHAR PRIMARY KEY, timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR , Host VARCHAR, mobile VARCHAR, device INTEGER, browser INTEGER')
 			#@database.create(@defines.tables['impTable'], 'id VARCHAR PRIMARY KEY,timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
 			@database.create(@defines.tables['adsTable'], 'id VARCHAR PRIMARY KEY, timestamp BIGINT, ip_Port VARCHAR, userIP VARCHAR, url VARCHAR, host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER,mob INTEGER,device VARCHAR,browser VARCHAR')

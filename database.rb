@@ -3,9 +3,13 @@ require 'uri'
 
 class Database
 
-	def initialize(defs,options)		
+	def initialize(defs,options,dbName)		
 		@defines=defs
-		@db=SQLite3::Database.open @defines.dirs['rootDir']+@defines.resultsDB
+		if dbName==nil
+			@db=SQLite3::Database.open @defines.dirs['rootDir']+@defines.resultsDB
+		else
+			@db=SQLite3::Database.open dbName
+		end
 		@options=options
 		@alerts=Hash.new(0)
 	end
