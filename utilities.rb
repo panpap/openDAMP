@@ -95,9 +95,9 @@ module Utilities
 		if db!=nil
 			id=""
 			if (row['httpRef']!=nil)
-				id=Digest::SHA256.hexdigest (id=Digest::SHA256.hexdigest (row.values.join("|")+"|"+row['httpRef']))
+				id=Digest::SHA256.hexdigest (row.values.join("|")+"|"+row['httpRef'])
 			else
-				id=Digest::SHA256.hexdigest (id=Digest::SHA256.hexdigest (row.values.join("|")))
+				id=Digest::SHA256.hexdigest (row.values.join("|"))
 			end
 			params=[id,row['tmstp'],row['IPport'],row['uIP'],row['url'],row['host'],row['ua'],row['status'],row['length'],row['dataSz'],
 									row['dur'],row['mob'],row['dev'],row['browser']]
