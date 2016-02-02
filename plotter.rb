@@ -82,12 +82,17 @@ class Plotter
 		@@tempFile=".temp"
 		print whatToPlot+" "+specs.to_s+"\n"		
 		if column.include? ","	# plot more than one columns
-			multipleColumns(table,column,whatToPlot)
+			multipleColumns(table,column,whatToPlot,nil)
 			return
 		end
 		outFile=@defines.dirs['plotDir']+whatToPlot+'.data'
 		data=getDBdata(table,column)
-		return if data==nil
+		if data==nil
+			return		
+		end
+		if data[0].size>2
+			multipleColumns(table,column,whatToPlot,data)
+		end
 		case whatToPlot
 		when "priceTagPopularity", "beaconTypesCDF"
 			ft=File.open(@@tempFile,'w')
@@ -111,10 +116,10 @@ class Plotter
 			plotIt(outFile,"Percentage of reqs with prices", "CDN","cdf",whatToPlot)
 		when "categoriesTrace"
 			f=File.open(@@tempFile,'w')
-	#		newdata=data[0][0].gsub(/([\[\]])/,"").split(",")
+	#		
 	#		if(newdata.size==6)	# content of Req
-				adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
-				data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"\"3rd party Content\""=>newdata[3],"Rest"=>newdata[5]}
+			adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
+			data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"\"3rd party Content\""=>newdata[3],"Rest"=>newdata[5]}
 #				y=1
 #				data.each{|key, value| f.puts (value.to_f*100/@totalRows.to_f).to_s+" "+key}
 #				plotscript="plot2.gn"
@@ -136,7 +141,6 @@ class Plotter
 #					s=0
 #					instances.each{|word, count| s+=count.to_f/data.size.to_f; f.puts word[0].gsub(/([_])/,'\_')+" "+s.to_s+" "+(count.to_f/data.size.to_f).to_s}	
 #				end
-#		end
 	end
 
 #-------------------------------------------
@@ -157,7 +161,7 @@ class Plotter
 		return data
 	end
 
-	def multipleColumns(table,column,whatToPlot)
+	def multipleColumns(table,column,whatToPlot,data)
 		fw=File.open(@@tempFile,'w')
 		data=Hash.new(Array.new)
 		columns=column.split(",")
@@ -184,6 +188,9 @@ class Plotter
 			yTitle="Percentage of reqs"
 			plotType="bars"
 			fw.close
+		when "percSizeCategoryPerUser"
+			newdata=data[0][0].gsub(/([\[\]])/,"").split(",")
+			puts "IN"
 		else
 			Utilities.error "Wrong command"
 

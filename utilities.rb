@@ -93,19 +93,14 @@ module Utilities
 
 	def Utilities.printRowToDB(row,db,table,extra)
 		if db!=nil
-			url=row['url']
-			tmstp=row['tmstp']
-			dur=row['dur']
-			size=row['dataSz']
-			host=row['host']
 			id=""
 			if (h['httpRef']!=nil)
-				id=Digest::SHA256.hexdigest (tmstp+"|"+url+"|"+host+"|"+dur+"|"+size+"|"+h['httpRef'])
+				id=Digest::SHA256.hexdigest (id=Digest::SHA256.hexdigest (row.values.join("|"))+"|"+h['httpRef'])
 			else
-				id=Digest::SHA256.hexdigest (tmstp+"|"+url+"|"+host+"|"+dur+"|"+size)
+				id=Digest::SHA256.hexdigest (id=Digest::SHA256.hexdigest (row.values.join("|")))
 			end
-			params=[id,tmstp,row['IPport'],row['uIP'],url,host,row['ua'],row['status'],row['length'],size,
-									dur,row['mob'],row['dev'],row['browser']]
+			params=[id,row['tmstp'],row['IPport'],row['uIP'],row['url'],row['host'],row['ua'],row['status'],row['length'],row['dataSz'],
+									row['dur'],row['mob'],row['dev'],row['browser']]
 			if extra!=nil
 				params.push(extra)
 			end
