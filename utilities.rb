@@ -94,8 +94,8 @@ module Utilities
 	def Utilities.printRowToDB(row,db,table,extra)
 		if db!=nil
 			id=""
-			if (h['httpRef']!=nil)
-				id=Digest::SHA256.hexdigest (id=Digest::SHA256.hexdigest (row.values.join("|"))+"|"+h['httpRef'])
+			if (row['httpRef']!=nil)
+				id=Digest::SHA256.hexdigest (id=Digest::SHA256.hexdigest (row.values.join("|")+"|"+row['httpRef'])
 			else
 				id=Digest::SHA256.hexdigest (id=Digest::SHA256.hexdigest (row.values.join("|")))
 			end
