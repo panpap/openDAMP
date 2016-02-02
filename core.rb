@@ -284,9 +284,7 @@ class Core
 	end
 
     def detectPrice(row,keyVal,numOfPrices)     	# Detect possible price in parameters and returns URL Parameters in String
-		tmstp=row['tmstp']
 		domainStr=row['host']
-		url=row['url']
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
@@ -311,7 +309,7 @@ class Core
 			end
 			if @database!=nil
 				id=Digest::SHA256.hexdigest (row.values.join("|")+priceTag+"|"+priceVal+"|"+type)
-				@database.insert(@defines.tables['priceTable'], [id,tmstp,domainStr,priceTag.downcase,priceVal,type,row['mob'],row['dev'],row['browser'],url])
+				@database.insert(@defines.tables['priceTable'], [id,row['tmstp'],domainStr,priceTag.downcase,priceVal,type,row['mob'],row['dev'],row['browser'],row['url']])
 			end
 			return true
 		end
