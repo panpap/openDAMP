@@ -4,11 +4,11 @@ load 'ops.rb'
 
 def	 folderAsInput(arg)
 	if arg==nil
-		abort ("Error: Wrong arguments given. Please give folder to load...")
+		Utilities.error("Wrong arguments given. Please give folder to load...")
 	end
 	path=arg.split("results_")[1]
 	if path==nil
-		abort ("Error: Wrong arguments given. Please give folder to load...")
+		Utilities.error("Wrong arguments given. Please give folder to load...")
 	end
 	lastChar="";trace="",folder=""
 	if path.include? "/"

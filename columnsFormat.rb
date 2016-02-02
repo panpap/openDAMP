@@ -45,7 +45,7 @@ module Format
 			end
             h['ua']=part[14]			
 		else
-			abort("Error: Wrong column format... File cannot be read!")
+			Utilities.error("Wrong column format... File cannot be read!")
 		end
 		return h
 	end

@@ -118,16 +118,16 @@ private
 				# DO NOTHING
 			elsif e.to_s.include? "is not unique"
 					table=command.split("INTO")[1].split("VALUES")[0].gsub("'","")
-					if @alerts[table]==nil or @alerts[table]==0
+				#	if @alerts[table]==nil or @alerts[table]==0
 						Utilities.warning "not unique: "+table
 						puts command+"("+params+")"	
-					end
+				#	end
 					@alerts[table]+=1
 			elsif e.to_s.include? "UNIQUE constraint failed"
 					table=e.to_s.split(":")[1].split(".")[0]
-					if @alerts[table]==nil or @alerts[table]==0
+					#if @alerts[table]==nil or @alerts[table]==0
 						Utilities.warning "UNIQUE constraint failed: "+table	
-					end
+				#	end
 					@alerts[table]+=1
 			else
 				Utilities.error "SQLite Exception: "+command+" "+e.to_s+"\n"+params+"\n\n"+e.backtrace.join("\n").to_s

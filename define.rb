@@ -12,10 +12,6 @@ class Defines
 		else
 			@traceFile=filename
 		end
-		if not File.exist?(@traceFile)
-			abort("Error: Input file <"+filename.to_s+"> could not be found!")
-		end
-
 		@tables={
 			"publishersTable"=>"publishers",
 			"beaconDBTable"=>"beaconURLs",
@@ -44,6 +40,9 @@ class Defines
 		@dirs["timelines"]=@dirs["userDir"]+@tmln_path
 		@dirs["plotDir"]=nil
 		@resources="resources/"
+		if not File.exist?(@traceFile) and not File.exist?(@dirs["rootDir"])
+			Utilities.error("Input file <"+filename.to_s+"> could not be found!")
+		end
 
 		#FILENAMES
 		@files={

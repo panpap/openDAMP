@@ -114,7 +114,7 @@ class Operations
 					"priceTagsPerDSP" => ["priceTable","host"],
 					"beaconTypesCDF" => ["bcnTable","beaconType"],
 					"categoriesTrace" => ["traceTable","advertising,analytics,social,beacons,content,other,adRelatedBeacons"],
-					"percSizeCategoryPerUser" => ["userTable","sizesPerContentPerUser"],
+					"percSizeCategoryPerUser" => ["userTable","totalSizePerCategory"],
 				#	"categoriesPerUserCDF" => ["userTable","advertising,analytics,social,content,noAdBeacons,other"]
 				#	 => ["userTable","advertising,analytics,social,content,noAdBeacons,other,thirdPartySize"]
 					}
