@@ -88,7 +88,7 @@ module Utilities
 	end
 
 	def Utilities.error(str)
-		abort "---> "+caller[0][/`([^']*)'/, 1]+":ERROR: "+str
+		abort "---> "+caller[0][/`([^']*)'/, 1]+": ERROR: "+str
 	end
 
 	def Utilities.printRowToDB(row,db,table,extra)

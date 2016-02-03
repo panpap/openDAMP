@@ -115,8 +115,12 @@ class Operations
 					"beaconTypesCDF" => ["bcnTable","beaconType"],
 					"categoriesTrace" => ["traceTable","advertising,analytics,social,beacons,content,other,adRelatedBeacons"],
 					"percSizeCategoryPerUser" => ["userTable","totalSizePerCategory"],
-				#	"categoriesPerUserCDF" => ["userTable","advertising,analytics,social,content,noAdBeacons,other"]
-				#	 => ["userTable","advertising,analytics,social,content,noAdBeacons,other,thirdPartySize"]
+					"categoriesPerUser" => ["userTable","advertising,analytics,social,content,noAdBeacons,other"],
+					
+					
+				#	"sizesPerReqsOfUsers"=> ["userTable","advertising,analytics,social,content,noAdBeacons,other"] #stacked area
+							#boxplot price values (normalized xaxis window/avg reqs
+							#boxplot number of detected prices
 					}
 		whatToPlot.each{|name, specs|	plotter.plotDB(name,specs)}
 

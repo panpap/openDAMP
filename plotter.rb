@@ -15,7 +15,7 @@ class Plotter
 			if @totalRows==nil
 				IO.popen('wc -l '+@defines.traceFile) { |io| @totalRows=io.gets.split(" ")[0] }
 				if @totalRows==nil	
-					abort "Cannot estimate total rows"
+					Utilities.error  "Cannot estimate total rows"
 				end
 			end
 		end
@@ -90,13 +90,14 @@ class Plotter
 		if data==nil
 			return		
 		end
-		if data[0].size>2
+		if data[0][0].include? "["
 			multipleColumns(table,column,whatToPlot,data)
+			return
 		end
 		case whatToPlot
 		when "priceTagPopularity", "beaconTypesCDF"
 			ft=File.open(@@tempFile,'w')
-			instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word[0].to_s.downcase] += 1 }
+			instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word[0].to_s.downcase.split("&")[0]] += 1 }
 			instances.sort.each{|word, count| ft.puts (count.to_f*100/data.size.to_f).to_s+" \""+word.gsub(/([_])/,"\\\\\\_")+"\""}
 			ft.close	
 			system("sort -rg "+@@tempFile+" > "+outFile+"; rm -f "+@@tempFile)
@@ -114,19 +115,12 @@ class Plotter
 			IO.popen('wc -l '+@@tempFile) { |io| total=io.gets.split(" ")[0] }
 			system("awk '{print $1}' "+@@tempFile+" |sort -g| uniq -c | awk '{print ($1/"+total.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > "+outFile+"; rm -r "+@@tempFile)
 			plotIt(outFile,"Percentage of reqs with prices", "CDN","cdf",whatToPlot)
-		when "categoriesTrace"
-			f=File.open(@@tempFile,'w')
-	#		
-	#		if(newdata.size==6)	# content of Req
-			adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
-			data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"\"3rd party Content\""=>newdata[3],"Rest"=>newdata[5]}
-#				y=1
-#				data.each{|key, value| f.puts (value.to_f*100/@totalRows.to_f).to_s+" "+key}
-#				plotscript="plot2.gn"
-#			end
-#			f.close
+#		when "categoriesTrace"
+#			f=File.open(@@tempFile,'w')
+#			adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
+#			data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"\"3rd party Content\""=>newdata[3],"Rest"=>newdata[5]}
 		else
-			abort ("Error: Uknown command to plotter")
+			Utilities.error "Uknown command to plotter"
 		end
 
 
@@ -161,18 +155,31 @@ class Plotter
 		return data
 	end
 
-	def multipleColumns(table,column,whatToPlot,data)
-		fw=File.open(@@tempFile,'w')
+	def printInstances(fw,instances,total)
+		cats=Array.new(6)
+		for i in 0...instances.size
+			s=0; instances[i].sort.each{|key, value| s+=(value.to_f/total.to_f); cats[i]=Array.new if cats[i]==nil; cats[i].push(s.to_s+";"+key.to_s+";");} 
+		end
+		i=0
+		while i<cats.last.size do
+			cats.each{|cat| 
+				if (cat[i]!=nil) 
+					fw.print cat[i]; else fw.print ";;" 	end}
+			fw.puts
+			i+=1			
+		end
+	end
+
+	def multipleColumns(table,column,whatToPlot,data)				
 		data=Hash.new(Array.new)
 		columns=column.split(",")
 		columns.each{|c| data[c]=(@db.getAll(table,c,nil,nil).flatten)}
-	#	tdata=data.transpose
 		outFile=@defines.dirs['plotDir']+whatToPlot+'.data'
+		fw=File.new(outFile,'w')
 		plotType="";xTitle="";yTitle=""
-#		totals=Array.new
 		case whatToPlot
 		when "categoriesTrace"
-			fw=File.new(outFile,'w')
+			plotType="bars"; xTitle="Categories"; yTitle="Percentage of reqs"
 			totalRows=0;adBeacons=0
 			data.each{|key, value| (key!=columns.last)? totalRows+=value[0].to_i : adBeacons=value[0].to_i}
 			totalRows-=adBeacons
@@ -184,13 +191,47 @@ class Plotter
 					end					
 					fw.puts key+"\t"+(value*100/totalRows).to_s
 				end	}
-			xTitle="Categories"
-			yTitle="Percentage of reqs"
-			plotType="bars"
-			fw.close
 		when "percSizeCategoryPerUser"
-			newdata=data[0][0].gsub(/([\[\]])/,"").split(",")
-			puts "IN"
+			plotType="cdf";	xTitle="Percentage of Total Volume"; yTitle="CDF"
+			instances=Array.new()
+			data.values.each{|user| user.each{|cell| 
+				arrays=cell.gsub(/([\[\]])/,"").split(","); 
+				total=arrays.inject{|sum,x| sum.to_f + x.to_f };i=0;
+				arrays.each{|elemOfCat| 
+				if instances[i]==nil
+					instances[i]=Hash.new(0)
+				end
+				if elemOfCat.to_f==0
+					instances[i][elemOfCat.to_i]+=1
+				else
+					instances[i][(elemOfCat.to_f*100/total.to_f).to_i]+=1
+				end 
+				i+=1; } 
+			}}
+			total=instances[0].values.inject(:+)
+			printInstances(fw,instances,total)
+		when "categoriesPerUser"
+			xTitle="Percentage of reqs"; yTitle="CDF"; plotType="cdf"
+			cats=Array.new(6)
+			instances=Array.new
+			i=0
+			data.each{|key, value| cats[i]=Array.new if cats[i]==nil; cats[i].push(value.flatten);i+=1}
+			for j in 0...cats.first.first.size
+				total=0; s=''
+				for i in 0...cats.size
+					total+=cats[i][0][j].to_i
+				end
+				for i in 0...cats.size
+					instances[i]=Hash.new(0) if instances[i]==nil
+					if cats[i][0][j].to_f==0
+						instances[i][cats[i][0][j].to_i]+=1
+					else
+						temp=(cats[i][0][j].to_f*100/total.to_f).to_i
+						instances[i][temp]+=1
+					end
+				end
+			end
+			printInstances(fw,instances,cats.first.first.size)
 		else
 			Utilities.error "Wrong command"
 
@@ -228,6 +269,7 @@ class Plotter
 #				end
 #				i+=1
 		end
+		fw.close
 		plotIt(outFile,xTitle,yTitle,plotType,whatToPlot)
 	end
 

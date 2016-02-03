@@ -9,26 +9,29 @@ set grid x lt 0 lw 1 lc rgb "#B8B8B8"
 set ylabel "CDF"
 set xlabel xTitle
 set style data lines
-set style line 1 lt 1  lw 2.5 lc rgb '#0060ad'
-set style line 2 lt 1  lw 2.5 lc rgb 'red'
 
 set log x
 set format x "%g %%"
 
-#if (x>0){
-#	set key right bottom; 
-#	if (t1 eq 'rest'){
-#			st1=2; 
-#			st2=1;
-#	}else{
-#			st1=1; 
-#			st2=2; 
-#	plot '.temp2.data' u 2:1 title t1 ls st2, \
-#		'.temp.data' u 2:1 title t2 ls st1;
-#	}
-#}else{
+N = system(sprintf("awk '{print NF; exit}' %s", fromFile))
+if (N==1){
+	N = system(sprintf("awk -F ';' '{print NF; exit}' %s", fromFile));
+}
+if (N>2){
+	set yrange[0:1]
+	unset log x
+    set datafile separator ";"
+	set key below right
+	plot fromFile u 2:1 lt 1 lc rgb 'red' lw 1.5 title "Advertising",\
+		'' u 4:3 lt 1 lc rgb 'blue' lw 1.5 title "Analytics",\
+		'' u 6:5 lt 1 lc rgb 'green' lw 1.5 title "Social",\
+		'' u 10:9 lt 1 lc rgb 'brown' lw 1.5 title "Beacon",\
+		'' u 8:7 lt 1 lc rgb 'grey' lw 1.5  title "Content",\
+		'' u 12:11 lt 1 lc rgb 'black' lw 1.5 title "Others"
+}else{
+	set nokey
+	plot fromFile u 2:1 lt 1 lc rgb '#0060ad' lw 2.5
+}
 
-
-set nokey
-plot fromFile u 2:1 lt 1 lc rgb '#0060ad' lw 2.5
+	
 
