@@ -240,15 +240,15 @@ class Core
 			end
 		else
 			if @isBeacon 	#Beacon NOT ad-related
-				collector("Beacons")
+				collector("Beacons",row)
 				@trace.restNumOfParams.push(noOfparam.to_i)
 			elsif isPorI>0	# Impression or ad in param
-				collector("Advertising")
+				collector("Advertising",row)
 				ad_detected(row,noOfparam,url)
 				@trace.party3rd["Advertising"]+=1
 			elsif isPorI<1	# Rest
 				@trace.restNumOfParams.push(noOfparam.to_i)
-				collector("Other")
+				collector("Other",row)
 				@trace.party3rd["Other"]+=1
 				if (row['browser']!="unknown")
 					@trace.users[@curUser].publishers.push(row)
@@ -258,7 +258,7 @@ class Core
 		end
 	end
 
-	def collector(contenType)
+	def collector(contenType,row)
 		@trace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
 		@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)
 		if row['type']!=nil
