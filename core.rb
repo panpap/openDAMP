@@ -224,7 +224,7 @@ class Core
 		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
 		if type3rd!=nil	#	3rd PARTY CONTENT
 		#	@trace.users[@curUser].row3rdparty[type3rd].push(row)
-			collector(type3rd)
+			collector(type3rd,row)
 			@trace.party3rd[type3rd]+=1
 			if not type3rd.eql? "Content"
 				if	type3rd.eql? "Advertising"
