@@ -1,6 +1,7 @@
 root="sites-without-adblock/"
 countries=Dir.countries(root) rescue countries=Array.new
 for country in countries
+	puts "Country: "+country
 	sites=Dir.sites(root+country) rescue sites=Array.new
 	for file in sites
 		if file.include? ".out"
