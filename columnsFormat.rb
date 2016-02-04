@@ -43,9 +43,16 @@ module Format
 			else
 				puts "--------> UKNOWN HTTP VERB: "+h['verb']
 			end
-            h['ua']=part[14]			
+            h['ua']=part[14]		
 		else
-			Utilities.error("Wrong column format... File cannot be read!")
+			h['host']=part[0]
+			h['uIP']=part[1]
+			h['url']=part[2]
+			h['type']=part[3]
+			h['tmstp']=part[4]
+			h['dur']=part[5]
+			h['dataSz']=part[6]
+			#Utilities.error("Wrong column format... File cannot be read!")
 		end
 		return h
 	end

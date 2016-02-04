@@ -108,23 +108,21 @@ class Operations
 		end
 		plotter=Plotter.new(@defines,@database)
 		puts "> Plotting existing output from <"+path+">..."
-		
+
+		#FILE-BASED
+	#	plotter.plotFile()		
+
 		#DB-BASED
 		whatToPlot={"priceTagPopularity" => ["priceTable","priceTag"],
 					"priceTagsPerDSP" => ["priceTable","host"],
 					"beaconTypesCDF" => ["bcnTable","beaconType"],
 					"categoriesTrace" => ["traceTable","advertising,analytics,social,beacons,content,other,adRelatedBeacons"],
 					"percSizeCategoryPerUser" => ["userTable","totalSizePerCategory"],
-					"categoriesPerUser" => ["userTable","advertising,analytics,social,content,noAdBeacons,other"],
-					
-					
-				#	"sizesPerReqsOfUsers"=> ["userTable","advertising,analytics,social,content,noAdBeacons,other"] #stacked area
+					"categoriesPerUser" => ["userTable","advertising,analytics,social,content,noAdBeacons,other"],	
+					"sizesPerReqsOfUsers"=> ["userTable","advertising,analytics,social,content,noAdBeacons,other,totalSizePerCategory"] #stacked area
 							#boxplot price values (normalized xaxis window/avg reqs
 							#boxplot number of detected prices
 					}
 		whatToPlot.each{|name, specs|	plotter.plotDB(name,specs)}
-
-		#FILE-BASED
-	#	plotter.plotFile()
 	end
 end

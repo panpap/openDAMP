@@ -1,3 +1,5 @@
+#load 'binCreator.rb'
+
 class Plotter
 	
 	def initialize(defs,database)
@@ -62,7 +64,7 @@ class Plotter
 					system("sort -gk2 "+folder+fl+" | awk '{print ($1/"+total+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > "+tempOut)
 					plotscript="plot1.gn"
 				else
-					system("awk '{print ($1*100/"+@totalRows+")\" \"$2}' "+folder+fl+" > "+tempOut)
+					system("awk '{print ($1*100/"+@totalRows.to_s+")\" \"$2}' "+folder+fl+" > "+tempOut)
 					plotscript="plot2.gn"			
 				end
 				if not fl.include? "Params"
@@ -76,10 +78,9 @@ class Plotter
 	end
 
 	def plotDB(whatToPlot,specs)
-		y=0
 		table=@defines.tables[specs[0]]
 		column=specs[1]
-		@@tempFile=".temp"
+		tempFile=".temp"
 		print whatToPlot+" "+specs.to_s+"\n"		
 		if column.include? ","	# plot more than one columns
 			multipleColumns(table,column,whatToPlot,nil)
@@ -87,38 +88,32 @@ class Plotter
 		end
 		outFile=@defines.dirs['plotDir']+whatToPlot+'.data'
 		data=getDBdata(table,column)
-		if data==nil
-			return		
-		end
+		return if data==nil
 		if data[0][0].include? "["
 			multipleColumns(table,column,whatToPlot,data)
 			return
 		end
 		case whatToPlot
 		when "priceTagPopularity", "beaconTypesCDF"
-			ft=File.open(@@tempFile,'w')
+			ft=File.open(tempFile,'w')
 			instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word[0].to_s.downcase.split("&")[0]] += 1 }
 			instances.sort.each{|word, count| ft.puts (count.to_f*100/data.size.to_f).to_s+" \""+word.gsub(/([_])/,"\\\\\\_")+"\""}
 			ft.close	
-			system("sort -rg "+@@tempFile+" > "+outFile+"; rm -f "+@@tempFile)
+			system("sort -rg "+tempFile+" > "+outFile+"; rm -f "+tempFile)
 			if whatToPlot=="priceTagPopularity"
 				plotIt(outFile,"Price tags detected","Percentage of reqs","zoomed",whatToPlot)
 			else
 				plotIt(outFile,"Beacon type", "Percentage of reqs","linespoints", whatToPlot)
 			end
 		when "priceTagsPerDSP"
-			fw=File.open(@@tempFile,'w')
+			fw=File.open(tempFile,'w')
 			instances=data.each_with_object(Hash.new(0)) { |word, counts| counts[word[0].to_s.downcase] += 1 }
 			instances.each{|word, count| fw.puts (count.to_f*100/data.size.to_f.round(2)).to_s}
 			fw.close
 			total=0
-			IO.popen('wc -l '+@@tempFile) { |io| total=io.gets.split(" ")[0] }
-			system("awk '{print $1}' "+@@tempFile+" |sort -g| uniq -c | awk '{print ($1/"+total.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > "+outFile+"; rm -r "+@@tempFile)
+			IO.popen('wc -l '+tempFile) { |io| total=io.gets.split(" ")[0] }
+			system("awk '{print $1}' "+tempFile+" |sort -g| uniq -c | awk '{print ($1/"+total.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2;}' > "+outFile+"; rm -r "+tempFile)
 			plotIt(outFile,"Percentage of reqs with prices", "CDN","cdf",whatToPlot)
-#		when "categoriesTrace"
-#			f=File.open(@@tempFile,'w')
-#			adBeacons=@db.getAll(table,"adRelatedBeacons",nil,nil)[0][0].gsub(/([\[\]])/,"").split("/")[0]
-#			data={"Advertising"=>newdata[0],"Analytics"=>newdata[1],"Social"=>newdata[2],"Beacons"=>(newdata[4].to_i-adBeacons.to_i).to_s,"\"3rd party Content\""=>newdata[3],"Rest"=>newdata[5]}
 		else
 			Utilities.error "Uknown command to plotter"
 		end
@@ -232,6 +227,29 @@ class Plotter
 				end
 			end
 			printInstances(fw,instances,cats.first.first.size)
+		when "sizesPerReqsOfUsers"
+			plotType="stacked_area"; xTitle="Total Bytes downloaded/req"; yTitle="Percentage of reqs"
+			userSizes=Array.new(6)
+			data[columns.last].each{|user|
+				sizesRow=user.gsub(/([\[\]])/,"").split(","); 
+				total=sizesRow.inject{|sum,x| sum.to_f + x.to_f };i=0;
+				sizesRow.each{|elemOfCat| 
+					if userSizes[i]==nil
+						userSizes[i]=Array.new
+					end
+					userSizes[i].push(elemOfCat.to_i)
+				i+=1; }}
+			numOfUsers=data[columns.last].size
+			for i in 0...numOfUsers
+				data.each{|cat,reqs| 
+					c=0;
+					fw.print c.to_s+"="+userSizes[c][i].to_s+"/"+reqs[i].to_s+"\t" if cat!=data.keys.last			
+					c+=1;
+				}
+				fw.puts ;
+			end
+				
+abort
 		else
 			Utilities.error "Wrong command"
 
@@ -251,23 +269,6 @@ class Plotter
 #			system("echo "+columns[columns.size-1]+" "+columns.to_s.gsub(/([\[\]])/,"").gsub(","," ")+"> "+tempFile2)
 #			system("awk '{print $8/1000\" \"$1\" \"$2\" \"$3\" \"$4\" \"$5\" \"$6\" \"$7}' "+tempFile+" | sort -gk1 >> "+tempFile2)
 #			makeBins(1,tempFile2)
-#		elsif columns.size==7
-#			tdata.each{|row| total=(row.inject{|sum,x| sum + x }); row.each{|cell| fw.print (cell.to_f*100/total.to_f).to_i.to_s+" " }; fw.print "\n"}
-#			i=2
-#			fw.close
-#			while i<=data.size
-#				s="awk '{print $"+i.to_s+"}' "
-#				if i==2
-#					s="awk '{print ($1+$2)}' "
-#				elsif i==5
-#					s=nil
-#				elsif i==7
-#					s="awk '{print ($5+$7)}' "
-#				end
-#				if s!=nil
-#					system(s+@@tempFile+" | sort | uniq -c | sort -gk2  | awk '{print ($1/"+data[0].size.to_s+")\" \"$2}' | awk '{for(i=1;i<=NF;i++);s=s+$1;print s\" \"$2}' > .temp"+i.to_s+".data")
-#				end
-#				i+=1
 		end
 		fw.close
 		plotIt(outFile,xTitle,yTitle,plotType,whatToPlot)
@@ -281,7 +282,7 @@ class Plotter
 		binCon=Array.new
 		binBea=Array.new
 		binOth=Array.new
-		f=File.new(@@tempFile2)
+		f=File.new(tempFile2)
 		fw=File.new(".temp.data",'w')
 		#log
 		if c==1

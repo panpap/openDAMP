@@ -66,7 +66,8 @@ class Defines
 			"cdf"=>@plotScriptsDir+"plotCDF.gn",
 			"bars"=>@plotScriptsDir+"plotBars.gn",
 			"zoomed"=>@plotScriptsDir+"plotZoomed.gn",
-			"linespoints"=>@plotScriptsDir+"plotLinesPoints.gn"}
+			"linespoints"=>@plotScriptsDir+"plotLinesPoints.gn",
+			"stacked_area"=>@plotScriptsDir+"plotStacked_area.gn"}
 	end
 
 	def column_Format()

@@ -25,7 +25,7 @@ if (N>2){
 	plot fromFile u 2:1 lt 1 lc rgb 'red' lw 1.5 title "Advertising",\
 		'' u 4:3 lt 1 lc rgb 'blue' lw 1.5 title "Analytics",\
 		'' u 6:5 lt 1 lc rgb 'green' lw 1.5 title "Social",\
-		'' u 10:9 lt 1 lc rgb 'brown' lw 1.5 title "Beacon",\
+		'' u 10:9 lt 1 lc rgb 'brown' lw 1.5 title "Beacons",\
 		'' u 8:7 lt 1 lc rgb 'grey' lw 1.5  title "Content",\
 		'' u 12:11 lt 1 lc rgb 'black' lw 1.5 title "Others"
 }else{

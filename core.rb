@@ -223,8 +223,7 @@ class Core
 		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
 		if type3rd!=nil	#	3rd PARTY CONTENT
 		#	@trace.users[@curUser].row3rdparty[type3rd].push(row)
-			@trace.users[@curUser].size3rdparty[type3rd].push(row['dataSz'].to_i)
-			@trace.users[@curUser].dur3rd[type3rd].push(row['dur'].to_i)
+			collector(type3rd)
 			@trace.party3rd[type3rd]+=1
 			if not type3rd.eql? "Content"
 				if	type3rd.eql? "Advertising"
@@ -240,18 +239,15 @@ class Core
 			end
 		else
 			if @isBeacon 	#Beacon NOT ad-related
-				@trace.users[@curUser].size3rdparty["Beacons"].push(row['dataSz'].to_i)
-				@trace.users[@curUser].dur3rd["Beacons"].push(row['dur'].to_i)
+				collector("Beacons")
 				@trace.restNumOfParams.push(noOfparam.to_i)
 			elsif isPorI>0	# Impression or ad in param
-				@trace.users[@curUser].size3rdparty["Advertising"].push(row['dataSz'].to_i)
-				@trace.users[@curUser].dur3rd["Advertising"].push(row['dur'].to_i)
+				collector("Advertising")
 				ad_detected(row,noOfparam,url)
 				@trace.party3rd["Advertising"]+=1
 			elsif isPorI<1	# Rest
 				@trace.restNumOfParams.push(noOfparam.to_i)
-				@trace.users[@curUser].size3rdparty["Other"].push(row['dataSz'].to_i)
-				@trace.users[@curUser].dur3rd["Other"].push(row['dur'].to_i)
+				collector("Other")
 				@trace.party3rd["Other"]+=1
 				if (row['browser']!="unknown")
 					@trace.users[@curUser].publishers.push(row)
@@ -261,6 +257,15 @@ class Core
 		end
 	end
 
+	def collector(contenType)
+		@trace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
+		@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)
+		if row['type']!=nil
+			@trace.fileType[contenType]=Hash.new if fileType[contenType]==nil
+			@trace.fileType[contenType][row['type']]=0 if fileType[contenType][row['type']]==nil
+			@trace.fileType[contenType][row['type']]+=1
+		end
+	end
 	def perUserAnalysis
 		puts "> Dumping to database..."
 		durStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
