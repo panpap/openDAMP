@@ -12,6 +12,13 @@ class Defines
 		else
 			@traceFile=filename
 		end
+		traceName=""
+		if @traceFile.include? "/"
+			traceName=@traceFile.split("/").last
+		else
+			traceName=@traceFile
+		end		
+
 		@tables={
 			"publishersTable"=>"publishers",
 			"beaconDBTable"=>"beaconURLs",
@@ -23,7 +30,7 @@ class Defines
 			"traceTable"=>"traceResults"}
 
 		@beaconDB="beaconsDB.db"
-		@resultsDB=@traceFile+"_analysis.db"
+		@resultsDB=traceName+"_analysis.db"
 
 		#DIRECTORIES
 		@dataDir="dataset/"
@@ -33,7 +40,7 @@ class Defines
 		@tmln_path="timelines/"
 		
 		@dirs=Hash.new	
-		@dirs["rootDir"]="results_"+@traceFile+"/"
+		@dirs["rootDir"]="results_"+traceName+"/"
 		@dirs["dataDir"]=@dirs["rootDir"]+@dataDir
 		@dirs["adsDir"]=@dirs["rootDir"]+@adsDir
 		@dirs["userDir"]=@dirs["rootDir"]+@userDir
