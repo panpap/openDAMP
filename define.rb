@@ -14,7 +14,8 @@ class Defines
 		end
 		traceName=""
 		if @traceFile.include? "/" 
-			traceName=@traceFile.split("/").last
+			s=@traceFile.split("/")
+			traceName=s[s.size-2]+"_"+s.last
 		else
 			traceName=@traceFile
 		end		
