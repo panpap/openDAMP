@@ -45,6 +45,7 @@ class Defines
 		
 		@dirs=Hash.new	
 		if @traceFile.include? "/"
+			Dir.mkdir "grouppedRes/" unless File.exists?("grouppedRes/")
 			@dirs["rootDir"]="grouppedRes/results_"+traceName+"/"
 		else
 			@dirs["rootDir"]="results_"+traceName+"/"
