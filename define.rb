@@ -13,11 +13,15 @@ class Defines
 			@traceFile=filename
 		end
 		traceName=""
-		if @traceFile.include? "/"
+		if @traceFile.include? "/" 
 			traceName=@traceFile.split("/").last
 		else
 			traceName=@traceFile
 		end		
+		if traceName.include? "."
+			s=traceName.split(".")
+			traceName=s[0]
+		end
 
 		@tables={
 			"publishersTable"=>"publishers",
@@ -40,7 +44,11 @@ class Defines
 		@tmln_path="timelines/"
 		
 		@dirs=Hash.new	
-		@dirs["rootDir"]="results_"+traceName+"/"
+		if @traceFile.include? "/"
+			@dirs["rootDir"]="grouppedRes/results_"+traceName+"/"
+		else
+			@dirs["rootDir"]="results_"+traceName+"/"
+		end
 		@dirs["dataDir"]=@dirs["rootDir"]+@dataDir
 		@dirs["adsDir"]=@dirs["rootDir"]+@adsDir
 		@dirs["userDir"]=@dirs["rootDir"]+@userDir
