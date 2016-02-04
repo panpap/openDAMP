@@ -404,7 +404,7 @@ class Core
 			@trace.totalAdBeacons+=1
 			@isBeacon=false
 		end
-		if(row['mob'])
+		if(row['mob']!=-1)
 			@trace.numOfMobileAds+=1
 		end
 	end
