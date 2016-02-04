@@ -89,16 +89,17 @@ class Core
 		if @trace.users[@curUser]==nil		#first seen user
 			@trace.users[@curUser]=User.new	
 		end
-		mob,dev,browser=reqOrigin(row)		#CHECK THE DEVICE TYPE
-		row['mob']=mob
-		row['dev']=dev
-		row['browser']=browser
-		if browserOnly and browser.eql? "unknown"
-			return false
-		else		#FILTER ROW
-			filterRow(row)
-			return true
+		if row['ua']!=-1
+			mob,dev,browser=reqOrigin(row)		#CHECK THE DEVICE TYPE
+			row['mob']=mob
+			row['dev']=dev
+			row['browser']=browser
+			if browserOnly and browser.eql? "unknown"
+				return false
+			end		#FILTER ROW
 		end
+		filterRow(row)
+		return true
 	end
 
 	def readUserAcrivity(tmlnFiles)
