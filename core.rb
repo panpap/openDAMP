@@ -262,8 +262,8 @@ class Core
 		@trace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
 		@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)
 		if row['type']!=nil
-			@trace.fileType[contenType]=Hash.new if fileType[contenType]==nil
-			@trace.fileType[contenType][row['type']]=0 if fileType[contenType][row['type']]==nil
+			@trace.fileType[contenType]=Hash.new if @trace.fileType[contenType]==nil
+			@trace.fileType[contenType][row['type']]=0 if @trace.fileType[contenType][row['type']]==nil
 			@trace.fileType[contenType][row['type']]+=1
 		end
 	end
