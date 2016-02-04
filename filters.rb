@@ -27,7 +27,8 @@ class Filters
 					"adrum","adstat","adviewtrack","adtrk","/Ad","bidwon","/rtb"] #"market"]	
 
 		@@rtbCompanies=["adkmob","green.erne.co","bidstalk","openrtb","eyeota","ad-x.co.uk","startappexchange.com","atemda.com",
-				"qservz","hastrk","api-","clix2pix.net","exoclick","trafficfactory.biz","clickadu","waiads.com","taptica.com","mediasmart.es"]
+				"qservz","hastrk","api-","clix2pix.net","exoclick","adition.com","yieldlab","trafficfactory.biz","clickadu",
+				"waiads.com","taptica.com","mediasmart.es"]
 
 		@@adInParam=["ad_","ad_id","adv_id","bid_id","adpos","adtagid","rtb","adslot","adspace","adUrl", "ads_creative_id", 
 				"creative_id","adposition","bidid","adsnumber","bidder","auction","ads_",

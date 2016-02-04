@@ -1,5 +1,5 @@
 class Defines
-	attr_accessor :tables, :plotScripts, :plotDir, :resultsDB, :traceFile, :adsDir, :beaconDB, :filterFile, :parseResults, :userDir, :dirs, :files, :dataDir, :tmln_path
+	attr_accessor :tables, :groupDir, :plotScripts, :plotDir, :resultsDB, :traceFile, :adsDir, :beaconDB, :filterFile, :parseResults, :userDir, :dirs, :files, :dataDir, :tmln_path
 	
 	def initialize(filename)
 		@column_Format={"2monthSorted_trace"=>1,"10k_trace"=>1 ,
@@ -40,9 +40,10 @@ class Defines
 		@tmln_path="timelines/"
 		
 		@dirs=Hash.new	
+		@groupDir="grouppedRes/"
 		if @traceFile.include? "/"
-			Dir.mkdir "grouppedRes/" unless File.exists?("grouppedRes/")
-			@dirs["rootDir"]="grouppedRes/results_"+traceName+"/"
+			Dir.mkdir groupDir unless File.exists?(groupDir)
+			@dirs["rootDir"]=groupDir+"results_"+traceName+"/"
 		else
 			@dirs["rootDir"]="results_"+traceName+"/"
 		end
