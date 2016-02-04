@@ -18,10 +18,6 @@ class Defines
 		else
 			traceName=@traceFile
 		end		
-		if traceName.include? "."
-			s=traceName.split(".")
-			traceName=s[0]
-		end
 
 		@tables={
 			"publishersTable"=>"publishers",
