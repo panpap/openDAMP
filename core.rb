@@ -263,8 +263,8 @@ class Core
 		@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)
 		if row['type']!=nil
 			@trace.fileTypes[contenType]=Hash.new if @trace.fileTypes[contenType]==nil
-			@trace.fileTypes[contenType][row['type']]=0 if @trace.fileTypes[contenType][row['type']]==nil
-			@trace.fileTypes[contenType][row['type']]+=1
+			@trace.fileTypes[contenType][row['type']]=Array.new if @trace.fileTypes[contenType][row['type']]==nil
+			@trace.fileTypes[contenType][row['type']].push(row['dataSz'].to_i)
 		end
 	end
 	def perUserAnalysis
@@ -283,9 +283,17 @@ class Core
 				sumSizePerCat="["+sizeStats['Advertising']['sum'].to_s+","+sizeStats['Analytics']['sum'].to_s+
 				","+sizeStats['Social']['sum'].to_s+","+sizeStats['Content']['sum'].to_s+","+sizeStats['Beacons']['sum'].to_s+
 				","+sizeStats['Other']['sum'].to_s+"]"
-
 				@database.insert(@defines.tables['userTable'],[id,user.size3rdparty['Advertising'].size,user.size3rdparty['Analytics'].size,user.size3rdparty['Social'].size,user.size3rdparty['Content'].size,user.size3rdparty['Beacons'].size,user.size3rdparty['Other'].size,avgDurPerCat,sumSizePerCat,user.hashedPrices.length,user.numericPrices.length,user.adBeacon,user.imp.length,user.publishers.size])
 			end
+fw=File.new("~/sites.csv","a")
+fw.print @defines.traceFile+";"+user.size3rdparty['Advertising'].size+";"+user.size3rdparty['Analytics'].size+";"+user.size3rdparty['Social'].size+";"+user.size3rdparty['Content'].size+";"+user.size3rdparty['Beacons'].size+";"+user.size3rdparty['Other'].size+";"+avgDurPerCat+";"+sumSizePerCat+";"+user.hashedPrices.length+";"+user.numericPrices.length+";[" 
+@trace.fileTypes['Advertising'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+","}}) fw.print "];"
+@trace.fileTypes['Analytics'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+";"}}) fw.print "];"
+@trace.fileTypes['Social'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+";"}}) fw.print "];"
+@trace.fileTypes['Beacons'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+";"}}) fw.print "];"
+@trace.fileTypes['Content'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+";"}}) fw.print "];"
+@trace.fileTypes['Other'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+";"}}) fw.print "];"
+fw.close
 		end
 	end
 

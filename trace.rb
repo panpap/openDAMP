@@ -58,7 +58,7 @@ class Trace
 				"\n\tAnalytics => "+@fileTypes['Analytics'].to_s+"\n\tSocial => "+@fileTypes['Social'].to_s+"\n\tContent => "+@fileTypes['Content'].to_s+
 				"\n\tBeacons => "+@fileTypes['totalBeacons'].to_s+"\n\tOther => "+@fileTypes['Other'].to_s
 				fw=File.new(@defines.dirs['adsDir']+"fileTypes","w")
-					@fileTypes.each{|cat, types| fputs cat; types.each{|type, value| fw.puts type+"-> "+value.to_s}}
+					@fileTypes.each{|cat, types| fputs cat; types.each{|type, value| fw.puts type.size.to_s+"-> "+value.to_s}}
 				fw.close
 			end
 

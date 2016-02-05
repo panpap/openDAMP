@@ -10,11 +10,10 @@ for country in countries
                         puts "Processing "+file+" from "+country
                         name=country+"_"+file.split(".")[0]
                         system("ruby parser.rb -o "+root+country+"/"+file+" > outsDir/"+name+"_outFile")
-                #	system("ruby parser.rb -p "+root+country+"/"+file+" > outsDir/"+name+"_outFile")
                 end
         end
 	puts sites.size.to_s+" sites were processed"
 end
 puts countries.size.to_s+" country folders were parsed"
-system("mv -r outsDir/ groupDir/")
+system("mv outsDir/ groupDir/")
 
