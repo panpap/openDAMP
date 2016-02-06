@@ -5,12 +5,12 @@ load 'columnsFormat.rb'
 
 class Core
 	attr_writer :window, :cwd
-	attr_accessor :database
+	attr_accessor :database,:filters
    	@isBeacon=false
 
-	def initialize(defs,options)
+	def initialize(defs)
 		@defines=defs
-		@options=options
+		@options=@defines.options
 		@filters=Filters.new(@defines)		
 		@trace=Trace.new(@defines)
 		@window=-1
@@ -20,54 +20,43 @@ class Core
 	end
 	
 	def makeDirsFiles()
-		print "> Creating Directories..., "
+		@defines.print "> Creating Directories..., "
 		Dir.mkdir @defines.dirs['rootDir'] unless File.exists?(@defines.dirs['rootDir'])
-		if @options['detail']
-			Dir.mkdir @defines.dirs['dataDir'] unless File.exists?(@defines.dirs['dataDir'])
-			Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
-			Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
-			Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
-			puts "and database tables..."
-			@database=Database.new(@defines,@options,nil)
-			@database.create(@defines.tables['publishersTable'], 'id VARCHAR PRIMARY KEY, timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR , Host VARCHAR, mobile VARCHAR, device INTEGER, browser INTEGER')
-			#@database.create(@defines.tables['impTable'], 'id VARCHAR PRIMARY KEY,timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER')
-			@database.create(@defines.tables['adsTable'], 'id VARCHAR PRIMARY KEY, timestamp BIGINT, ip_Port VARCHAR, userIP VARCHAR, url VARCHAR, host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER,mob INTEGER,device VARCHAR,browser VARCHAR')
-			@database.create(@defines.tables['bcnTable'], 'id VARCHAR PRIMARY KEY, timestamp BIGINT, ip_port VARCHAR, userIP VARCHAR, url VARCHAR, beaconType VARCHAR, mob INTEGER,device VARCHAR,browser VARCHAR')
-			@database.create(@defines.tables['priceTable'], 'id VARCHAR PRIMARY KEY,timestamp BIGINT, host VARCHAR, priceTag VARCHAR, priceValue VARCHAR,type VARCHAR, mob INTEGER, device VARCHAR, browser VARCHAR, url VARCHAR')
-			@database.create(@defines.tables['userTable'], 'id VARCHAR PRIMARY KEY, advertising INTEGER, analytics INTEGER, social INTEGER, content INTEGER, noAdBeacons INTEGER, other INTEGER, avgDurationPerCategory VARCHAR, totalSizePerCategory VARCHAR, hashedPrices INTEGER, numericPrices INTEGER,adBeacons INTEGER, impressions INTEGER, publishersVisited INTEGER')
-			@database.create(@defines.tables['traceTable'], 'id VARCHAR PRIMARY KEY, totalRows BIGINT, users INTEGER, advertising INTEGER, analytics INTEGER, social INTEGER, content INTEGER, beacons INTEGER, other INTEGER, thirdPartySize_total INTEGER, totalMobileReqs INTEGER, browserReqs INTEGER,mobileAdReqs VARCHAR, hashedPrices INTEGER, numericPrices INTEGER, adRelatedBeacons VARCHAR, numImpressions INTEGER')
-			#@fnp=File.new(@defines.files['priceTagsFile'],'w')
-		end
+		Dir.mkdir @defines.dirs['dataDir'] unless File.exists?(@defines.dirs['dataDir'])
+		Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
+		Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
+		Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
+		@defines.puts "and database tables..."
+		@database=Database.new(@defines,nil)
+		@defines.tables.values.each{|fields| @database.create(fields.keys[0],fields.values[0])}
 	end
 
 	def analysis
-		puts "> Stripping parameters, detecting and classifying Third-Party content..."
+		@defines.puts "> Stripping parameters, detecting and classifying Third-Party content..."
 		fw=nil
-		if @options['file']==1
-			puts "> Dumping to files..."
-			if not File.size?@defines.files['devices']
-				fd=File.new(@defines.files['devices'],'w')
-				@trace.devs.each{|dev| fd.puts dev}
-				fd.close
-			end
-			if not File.size?@defines.files['restParamsNum']
-				fpar=File.new(@defines.files['restParamsNum'],'w')
-				@trace.restNumOfParams.each{|p| fpar.puts p}
-				fpar.close
-			end
-			if not File.size?@defines.files['adParamsNum']
-				fpar=File.new(@defines.files['adParamsNum'],'w')
-				@trace.adNumOfParams.each{|p| fpar.puts p}
-				fpar.close
-			end
-			if not File.size?@defines.files['size3rdFile']
-				fsz=File.new(@defines.files['size3rdFile'],'w')
-				@trace.sizes.each{|sz| fsz.puts sz}
-				fsz.close
-			end
+		@defines.puts "> Dumping to files..."
+		if @defines.options[@defines.files['devices']] and not File.size?@defines.files['devices']
+			fd=File.new(@defines.files['devices'],'w')
+			@trace.devs.each{|dev| fd.puts dev}
+			fd.close
 		end
-		puts "> Calculating Statistics about detected ads..."
-		puts @trace.results_toString(@database,@defines.tables['traceTable'],@defines.tables['bcnTable'])
+		if @defines.options[@defines.files['restParamsNum']] and not File.size?@defines.files['restParamsNum']
+			fpar=File.new(@defines.files['restParamsNum'],'w')
+			@trace.restNumOfParams.each{|p| fpar.puts p}
+			fpar.close
+		end
+		if @defines.options[@defines.files['adParamsNum']] and not File.size?@defines.files['adParamsNum']
+			fpar=File.new(@defines.files['adParamsNum'],'w')
+			@trace.adNumOfParams.each{|p| fpar.puts p}
+			fpar.close
+		end
+		if @defines.options[@defines.files['size3rdFile']] and not File.size?@defines.files['size3rdFile']
+			fsz=File.new(@defines.files['size3rdFile'],'w')
+			@trace.sizes.each{|sz| fsz.puts sz}
+			fsz.close
+		end
+		@defines.puts "> Calculating Statistics about detected ads..."
+		@defines.puts @trace.results_toString(@database,@defines.tables['traceTable'],@defines.tables['bcnTable'])
 		perUserAnalysis()
 	end
 
@@ -103,7 +92,7 @@ class Core
 	end
 
 	def readUserAcrivity(tmlnFiles)
-		puts "> Loading "+tmlnFiles.size.to_s+" User Activity files..."
+		@defines.puts "> Loading "+tmlnFiles.size.to_s+" User Activity files..."
 		user_path=@cwd+@defines.userDir
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		for tmln in tmlnFiles do
@@ -112,7 +101,7 @@ class Core
 	end
 
 	def createTimelines()
-		puts "> Contructing User Timelines..."
+		@defines.puts "> Contructing User Timelines..."
 		user_path=@cwd+@defines.userDir
 		timeline_path=@cwd+@defines.userDir+@defines.tmln_path
 		fr=File.new(@cwd+@defines.dataDir+"IPport_uniq",'r')
@@ -261,19 +250,23 @@ class Core
 	def collector(contenType,row)
 		@trace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
 		@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)
-		if row['type']!=nil
-			@trace.fileTypes[contenType]=Hash.new if @trace.fileTypes[contenType]==nil
-			@trace.fileTypes[contenType][row['type']]=Array.new if @trace.fileTypes[contenType][row['type']]==nil
-			@trace.fileTypes[contenType][row['type']].push(row['dataSz'].to_i)
+		if row['type']!=-1
+			if @trace.fileTypes[contenType]==nil
+				@trace.fileTypes[contenType]={"data"=>Array.new, "gif"=>Array.new,"html"=>Array.new,"image"=>Array.new,"other"=>Array.new,"script"=>Array.new,"styling"=>Array.new,"text"=>Array.new,"video"=>Array.new} 
+			end
+			type=row['type']
+			@trace.fileTypes[contenType][type].push(row['dataSz'].to_i)
 		end
 	end
 	def perUserAnalysis
-		puts "> Dumping to database..."
+		@defines.puts "> Dumping to database..."
 		durStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
 		sizeStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
 		for id,user in @trace.users do
 			user.ads.each{|row| Utilities.printRowToDB(row,@database,@defines.tables['adsTable'],nil)}
-			user.publishers.each{|row| tid=Digest::SHA256.hexdigest (row.values.join("|")); @database.insert(@defines.tables['publishersTable'], [tid,row['tmstp'],row['IPport'],row['uIP'],row['url'],row['host'],row['mob'],row['dev'],row['browser']])}
+			user.publishers.each{|row| 
+				tid=Digest::SHA256.hexdigest (row.values.join("|")); 
+				@database.insert(@defines.tables['publishersTable'], [tid,row['tmstp'],row['IPport'],row['uIP'],row['url'],row['host'],row['mob'],row['dev'],row['browser']])}
 			user.size3rdparty.each{|category, sizes| sizeStats[category]=Utilities.makeStats(sizes)}
 			user.dur3rd.each{|category, durations| durStats[category]=Utilities.makeStats(durations)}
 			if @database!=nil
@@ -284,16 +277,11 @@ class Core
 				","+sizeStats['Social']['sum'].to_s+","+sizeStats['Content']['sum'].to_s+","+sizeStats['Beacons']['sum'].to_s+
 				","+sizeStats['Other']['sum'].to_s+"]"
 				@database.insert(@defines.tables['userTable'],[id,user.size3rdparty['Advertising'].size,user.size3rdparty['Analytics'].size,user.size3rdparty['Social'].size,user.size3rdparty['Content'].size,user.size3rdparty['Beacons'].size,user.size3rdparty['Other'].size,avgDurPerCat,sumSizePerCat,user.hashedPrices.length,user.numericPrices.length,user.adBeacon,user.imp.length,user.publishers.size])
-			end
-fw=File.new("~/sites.csv","a")
-fw.print @defines.traceFile+";"+user.size3rdparty['Advertising'].size+";"+user.size3rdparty['Analytics'].size+";"+user.size3rdparty['Social'].size+";"+user.size3rdparty['Content'].size+";"+user.size3rdparty['Beacons'].size+";"+user.size3rdparty['Other'].size+";"+avgDurPerCat+";"+sumSizePerCat+";"+user.hashedPrices.length+";"+user.numericPrices.length+";[" 
-@trace.fileTypes['Advertising'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+","}}) fw.print "];"
-@trace.fileTypes['Analytics'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+";"}}) fw.print "];"
-@trace.fileTypes['Social'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+";"}}) fw.print "];"
-@trace.fileTypes['Beacons'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+";"}}) fw.print "];"
-@trace.fileTypes['Content'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+";"}}) fw.print "];"
-@trace.fileTypes['Other'].each(|type, bytes| res=Utilities.makeStats(bytes) fw.print type.to_s+"-> "+res['sum'].to_s+";"}}) fw.print "];"
-fw.close
+			end	
+			Utilities.individualSites(@defines.traceFile,user,sumSizePerCat,avgDurPerCat,@trace)		
+		end
+		if @trace.users.values.first!=nil
+	#			Utilities.individualSites(@defines.traceFile,@trace.users.values.first,sumSizePerCat,avgDurPerCat,@trace)
 		end
 	end
 
@@ -302,7 +290,6 @@ fw.close
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
-
 			priceTag=keyVal[0]
 			priceVal=keyVal[1]
 			if priceVal.include? "startapp" or priceVal.include? "pkg"
@@ -332,7 +319,7 @@ fw.close
 
     def detectImpressions(url,row)     	#Impression term in path
         if @filters.is_Impression?(url[0])
-#			Utilities.printRowToDB(row,@database,@defines.tables['impTable'],nil)
+			Utilities.printRowToDB(row,@database,@defines.tables['impTable'],nil)
 			@trace.totalImps+=1
 		    @trace.users[@curUser].imp.push(row)
 			return true
@@ -354,9 +341,6 @@ fw.close
 					beaconSave(url[0],row)
 				end
 				if(detectPrice(row,keyVal,numOfPrices))
-#					if row['browser']!=nil					
-#						@trace.browserPrices+=1
-#					end
 					numOfPrices+=1
 					isAd=true
 				end

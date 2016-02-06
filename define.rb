@@ -1,7 +1,8 @@
 class Defines
-	attr_accessor :tables, :groupDir, :plotScripts, :plotDir, :resultsDB, :traceFile, :adsDir, :beaconDB, :filterFile, :parseResults, :userDir, :dirs, :files, :dataDir, :tmln_path
-	
+	attr_accessor :tables, :beaconDBTable, :options, :groupDir, :plotScripts, :plotDir, :resultsDB, :traceFile, :adsDir, :beaconDB, :userDir, :dirs, :files, :dataDir, :tmln_path
+
 	def initialize(filename)
+		@beaconDBTable="beaconURLs"
 		@column_Format={"2monthSorted_trace"=>1,"10k_trace"=>1 ,
 			"full_trace"=>1, 	#awazza dataset 6million reqs
 			"souneil_trace"=>2,"souneilSorted_trace"=>2} 	#awazza dataset 1million reqs
@@ -19,19 +20,16 @@ class Defines
 		else
 			traceName=@traceFile
 		end		
-
-		@tables={
-			"publishersTable"=>"publishers",
-			"beaconDBTable"=>"beaconURLs",
-			"impTable"=>"impressions",	
-			"bcnTable"=>"beacons",
-			"adsTable"=>"advertisements",
-			"userTable"=>"userResults",
-			"priceTable"=>"prices",
-			"traceTable"=>"traceResults"}
-
 		@beaconDB="beaconsDB.db"
 		@resultsDB=traceName+"_analysis.db"
+		@tables={"publishersTable"=>{"publishers"=>'id VARCHAR PRIMARY KEY, timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR , Host VARCHAR, mobile VARCHAR, device INTEGER, browser INTEGER'},
+			"impTable"=>{"impressions"=>'id VARCHAR PRIMARY KEY,timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER'},
+			"bcnTable"=>{"beacons"=>'id VARCHAR PRIMARY KEY, timestamp BIGINT, ip_port VARCHAR, userIP VARCHAR, url VARCHAR, beaconType VARCHAR, mob INTEGER,device VARCHAR,browser VARCHAR'},
+			"adsTable"=>{"advertisements"=>'id VARCHAR PRIMARY KEY, timestamp BIGINT, ip_Port VARCHAR, userIP VARCHAR, url VARCHAR, host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER,mob INTEGER,device VARCHAR,browser VARCHAR'},
+			"userTable"=>{"userResults"=>'id VARCHAR PRIMARY KEY, advertising INTEGER, analytics INTEGER, social INTEGER, content INTEGER, noAdBeacons INTEGER, other INTEGER, avgDurationPerCategory VARCHAR, totalSizePerCategory VARCHAR, hashedPrices INTEGER, numericPrices INTEGER,adBeacons INTEGER, impressions INTEGER, publishersVisited INTEGER'},
+			"priceTable"=>{"prices"=>'id VARCHAR PRIMARY KEY,timestamp BIGINT, host VARCHAR, priceTag VARCHAR, priceValue VARCHAR,type VARCHAR, mob INTEGER, device VARCHAR, browser VARCHAR, url VARCHAR'},
+			"traceTable"=>{"traceResults"=>'id VARCHAR PRIMARY KEY, totalRows BIGINT, users INTEGER, advertising INTEGER, analytics INTEGER, social INTEGER, content INTEGER, beacons INTEGER, other INTEGER, thirdPartySize_total INTEGER, totalMobileReqs INTEGER, browserReqs INTEGER,mobileAdReqs VARCHAR, hashedPrices INTEGER, numericPrices INTEGER, adRelatedBeacons VARCHAR, numImpressions INTEGER'}
+		}
 
 		#DIRECTORIES
 		@dataDir="dataset/"
@@ -55,24 +53,26 @@ class Defines
 		@dirs["plotDir"]=nil
 		@resources="resources/"
 		if not File.exist?(@traceFile) and not File.exist?(@dirs["rootDir"])
-			Utilities.error("Input file <"+filename.to_s+"> could not be found!")
+			Utilities.error "Input file <"+filename.to_s+"> could not be found!"
 		end
 
 		#FILENAMES
 		@files={
-		#@files["parseResults"=>@dirs["rootDir"]+"results.out",
-			"priceTagsFile"=>@dirs["adsDir"]+"priceTags",
 			"devices"=>@dirs["adsDir"]+"devices.csv",
 			"size3rdFile"=>@dirs["adsDir"]+"sizes3rd.csv",
 			"adParamsNum"=>@dirs["adsDir"]+"adParamsNum.csv",
 			"restParamsNum"=>@dirs["adsDir"]+"restParamsNum.csv",
-		#@files["adDevices"=>@dirs["adsDir"]+"adDevices.csv",
-		#@files["userFile"=>@dirs["userDir"]+"userAnalysis.csv",
-		#@files["publishers"=>@dirs["adsDir"]+"publishers.csv",
-		#@files["leftovers"=>"leftovers.out",
 			"formatFile"=>"format.in",
 			"configFile"=>"config",
 			"filterFile"=>@resources+"disconnect_merged.json"}
+
+		#LOAD OPTIONS
+		@options=Utilities.loadOptions(@files["configFile"],@files,@tables)
+		if @options["printToSTDOUT"]
+			@fw=STDOUT
+		else
+			@fw=nil
+		end
 
 		#GNUPLOT SCRIPTS
 		@plotScriptsDir="plotScripts/"
@@ -82,6 +82,20 @@ class Defines
 			"zoomed"=>@plotScriptsDir+"plotZoomed.gn",
 			"linespoints"=>@plotScriptsDir+"plotLinesPoints.gn",
 			"stacked_area"=>@plotScriptsDir+"plotStacked_area.gn"}
+	end
+
+	def puts(str)
+		print str+"\n"
+	end
+
+	def print (str)
+		if @fw!=nil
+			@fw.print str
+		end
+	end
+
+	def close
+		@fw.close
 	end
 
 	def column_Format()

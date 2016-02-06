@@ -7,14 +7,13 @@ class Operations
 	
 	def initialize(filename)
 		@defines=Defines.new(filename)
-		@options=Utilities.loadOptions(@defines.files['configFile'])
-		@func=Core.new(@defines,@options)
+		@func=Core.new(@defines)
 	end
 
 	def countDuplicates()
 		uniq=""
 		total=""
-		if @options['excludeCol']!=nil
+		if @defines.options['excludeCol']!=nil
 			IO.popen("awk '{$"+@options['excludeCol'].to_s+"=\"\"; print $0}' "+@defines.traceFile+" | sort -u | wc -l") { |io| uniq=io.gets.split(" ")[0] }
 			#awk 'NR == 1; NR > 1 {print $0 | "sort -uk1,3"}' trace > Sorted_trace
 		else
@@ -29,18 +28,19 @@ class Operations
 
 	def dispatcher(function,str)	
 		@func.makeDirsFiles
-		puts "> Loading Trace... "+@defines.traceFile
-		count=0
+		@defines.puts "> Loading Trace... "+@defines.traceFile
+#		count=0
+count=1
 		atts=["IPport", "uIP", "url", "ua", "host", "tmstp", "status", "length", "dataSz", "dur"]		
 		f=Hash.new
 		File.foreach(@defines.traceFile) {|line|
-			if count==0		# HEADER
+			if count==0		# options consume HEADER
 				#atts=@options['headers']
 				if function==1 or function==0
 					atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w') if File.size?(@defines.dirs['dataDir']+a)==nil and (a!='url') and (a!="tmstp") }
 				end
 			else
-				row=Format.columnsFormat(line,@defines.column_Format,@options)
+				row=Format.columnsFormat(line,@defines.column_Format,@defines.options,@func.filters)
 				if row['host'].size>1 and row['host'].count('.')>0
 					if function==1 or function==0
 						atts.each{|att| (f[att].puts row[att]) if (att!='url' and att!="tmstp") and f[att]!=nil}
@@ -56,7 +56,7 @@ class Operations
 			end
 			count+=1
         }
-		puts "\t"+count.to_s+" rows have been loaded successfully!"
+	#	puts "\t"+count.to_s+" rows have been loaded successfully!"
 		if function==1 or function==0
 			atts.each{|a| f[a].close if f[a]!=nil; Utilities.countInstances(@defines.dirs['dataDir']+a); }
 		end

@@ -47,20 +47,11 @@ class Trace
 			"\n\tBeacons => "+@party3rd['totalBeacons'].to_s+"\n\tOther => "+@party3rd['Other'].to_s+
 			"\n- AdRelated beacons: "+@totalAdBeacons.to_s+"/"+@party3rd['totalBeacons'].to_s+
 			"\n- Total Size: "+sizeStats['sum'].to_s+" Bytes\n\tAverage per req: "+
-			sizeStats['avg'].to_s+" Bytes"+"\n\nADVERTISING CONTENT\n- AdRelated traffic from mobile devices: "+@numOfMobileAds.to_s+"/"+
+			sizeStats['avg'].to_s+" Bytes"+"\n\nADVERTISING STATS\n- AdRelated traffic from mobile devices: "+@numOfMobileAds.to_s+"/"+
 			@party3rd['Advertising'].to_s+"\n- Prices Detected "+(@numericPrices+@hashedPrices).to_s+"\n\tHashed Price tags found: "+@hashedPrices.to_s+
-			"\n\t Numeric Price tags found: "+@numericPrices.to_s+
-			"\n------------\n"+#-Impressions detected "+@totalImps.to_s+"\n"
-			"\n Advertising content Total size "+(Utilities.makeStats(@adSize)["sum"]).to_s
-			
-			if @fileTypes["Other"]=nil
-				"\n-Filetypes per category: \n\tAdvertising => "+@fileTypes['Advertising'].to_s+
-				"\n\tAnalytics => "+@fileTypes['Analytics'].to_s+"\n\tSocial => "+@fileTypes['Social'].to_s+"\n\tContent => "+@fileTypes['Content'].to_s+
-				"\n\tBeacons => "+@fileTypes['totalBeacons'].to_s+"\n\tOther => "+@fileTypes['Other'].to_s
-				fw=File.new(@defines.dirs['adsDir']+"fileTypes","w")
-					@fileTypes.each{|cat, types| fputs cat; types.each{|type, value| fw.puts type.size.to_s+"-> "+value.to_s}}
-				fw.close
-			end
+			"\n\tNumeric Price tags found: "+@numericPrices.to_s+"\n- Advertising content Total size "+(Utilities.makeStats(@adSize)["sum"]).to_s+
+			"\n------------\n"#-Impressions detected "+@totalImps.to_s+"\n"
+
 
 			if db!=nil
 				@beacons.each{|array| db.insert(beaconTable,array)}				

@@ -3,50 +3,76 @@ require 'rubygems'
 require 'json'
 
 class Filters
-		@@beacon_key=["beacon","pxl","pixel","adimppixel","data.gif","px.gif","pxlctl"]
+	@@beacon_key=["beacon","pxl","pixel","adimppixel","data.gif","px.gif","pxlctl"]
 
-		@@imps=["impression","_imp","/imp","imp_"]
+	@@types={"*" => "other", "none" => "other" ,"application/x-woff" => "styling", "application/font-woff" => "styling", 
+		"application/font-woff2" => "styling", "application/javascript" => "script", "application/json" => "data", 
+		"application/octet-stream" => "video", "application/vnd.ms-fontobject" => "styling" ,"application/x-font-ttf" => "styling", 
+		"application/x-font-woff" => "styling", "application/x-javascript" => "script" , "video/mp4" => "video",
+		"application/x-shockwave-flash" => "video" ,"application/x-www-form-urlencoded" => "html", "font/ttf" => "styling", 
+		"font/woff2" => "styling", "image/bmp" => "image", "image/gif" => "gif", "video/webm" => "video",
+		"text/plaincharset=utf-8"  => "text", "text/xml"=>"data", "font/opentype"  => "styling", "font/woff" => "styling" ,
+		"no-cache" => "other", "application/x-font-opentype"  => "styling", "image/jpeg" => "image", "image/jpg" => "image" ,
+		"application/xml" => "data", "application/font-ttf" => "styling", "application/hal+json"=>"data", 
+		"application/x-font-truetype" => "styling", "application/x-gzip"=>"video", "application/xml"=>"data",
+		"application/x-mpegurl"  => "video", "binary/octet-stream"  => "video", "content/unknown"=>"other", "video/x-msvideo"=>"video",
+		"application/zlib"=>"video", "font/truetype"  => "styling", "image/" => "image", "text/x-js"=>"script", "video/mpeg"  => "video", 
+		"image/pjpeg" => "image", "image/png" => "image" ,"image/svg+xml" => "image", "application/vnd.apple.mpegurl" =>"video",
+		"image/webp" => "image", "text/css" => "styling", "text/css;" => "styling", "application/x-javascript"  => "script" ,
+		"text/html" => "html", "application/ecmascript"  => "script", "font/x-woff"  => "styling", "text/css"  => "styling" ,
+		"*/*"  => "other", "multipart/mixed" => "other", "text/html-by-ajax" => "html", "application/x-font-otf"  => "styling" ,
+		"text/javascript" => "script", "text/json" => "data", "text/plain" => "text", "text/x-json" => "data"}
 
-		@@keywords=["price","pp","pr","bidprice","bid_price","bp","winprice", "computedprice", "pricefloor",
-		               "win_price","wp","chargeprice","charge_price","cp","extcost","tt_bidprice","bdrct",
-		               "ext_cost","cost","rtbwinprice","rtb_win_price","rtbwp","bidfloor","seatbid"]
+	@@imps=["impression","_imp","/imp","imp_"]
 
-		@@inria={ "rfihub.net" => "ep","invitemedia.com" => "cost",#,"scorecardresearch.com" => "uid" 
-				"ru4.com" => "_pp","tubemogul.com" => "x_price", "invitemedia.com" => "cost", 
-			"tubemogul.com" => "price", #"bluekai.com" => "phint", 
-			"adsrvr.org" => "wp",  
-			"pardot.com" => "title","tubemogul.com" => "price","mathtag.com" => "price",
-			"adsvana.com" => "_p", "doubleclick.net" => "pr", "ib.adnxs.com" => "add_code", 
-			"turn.com" => "acp", "ams1.adnxs.com" => "pp",  "mathtag.com" => "price",
-			"youtube.com" => "description1", "quantcount.com" => "p","rfihub.com" => "ep",
-			"w55c.net" => "wp_exchange", "adnxs.com" => "pp", "gwallet.com" => "win_price",
-			"criteo.com" => "z"}
+	@@keywords=["price","pp","pr","bidprice","bid_price","bp","winprice", "computedprice", "pricefloor",
+	               "win_price","wp","chargeprice","charge_price","cp","extcost","tt_bidprice","bdrct",
+	               "ext_cost","cost","rtbwinprice","rtb_win_price","rtbwp","bidfloor","seatbid"]
 
-		# ENHANCED BY ADBLOCK EASYLIST
-		@@subStrings=["/Ad/","pagead","/adv/","/ad/","ads",".ad","rtb-","adwords","admonitoring","adinteraction",
-					"adrum","adstat","adviewtrack","adtrk","/Ad","bidwon","/rtb"] #"market"]	
+	@@inria={ "rfihub.net" => "ep","invitemedia.com" => "cost",#,"scorecardresearch.com" => "uid" 
+			"ru4.com" => "_pp","tubemogul.com" => "x_price", "invitemedia.com" => "cost", 
+		"tubemogul.com" => "price", #"bluekai.com" => "phint", 
+		"adsrvr.org" => "wp",  
+		"pardot.com" => "title","tubemogul.com" => "price","mathtag.com" => "price",
+		"adsvana.com" => "_p", "doubleclick.net" => "pr", "ib.adnxs.com" => "add_code", 
+		"turn.com" => "acp", "ams1.adnxs.com" => "pp",  "mathtag.com" => "price",
+		"youtube.com" => "description1", "quantcount.com" => "p","rfihub.com" => "ep",
+		"w55c.net" => "wp_exchange", "adnxs.com" => "pp", "gwallet.com" => "win_price",
+		"criteo.com" => "z"}
 
-		@@rtbCompanies=["adkmob","green.erne.co","bidstalk","openrtb","eyeota","ad-x.co.uk","startappexchange.com","atemda.com",
-				"qservz","hastrk","api-","clix2pix.net","exoclick","adition.com","yieldlab","trafficfactory.biz","clickadu",
-				"waiads.com","taptica.com","mediasmart.es"]
+	# ENHANCED BY ADBLOCK EASYLIST
+	@@subStrings=["/Ad/","pagead","/adv/","/ad/","ads",".ad","rtb-","adwords","admonitoring","adinteraction",
+				"adrum","adstat","adviewtrack","adtrk","/Ad","bidwon","/rtb"] #"market"]	
 
-		@@adInParam=["ad_","ad_id","adv_id","bid_id","adpos","adtagid","rtb","adslot","adspace","adUrl", "ads_creative_id", 
-				"creative_id","adposition","bidid","adsnumber","bidder","auction","ads_",
-				"adunit", "adgroup", "creativity","bid_","bidder_"]
+	@@rtbCompanies=["adkmob","green.erne.co","bidstalk","openrtb","eyeota","ad-x.co.uk","startappexchange.com","atemda.com",
+			"qservz","hastrk","api-","clix2pix.net","exoclick","adition.com","yieldlab","trafficfactory.biz","clickadu",
+			"waiads.com","taptica.com","mediasmart.es"]
 
-		@@browsers=['dolphin', 'gecko', 'opera','webkit','mozilla','gecko','browser','chrome','safari']
+	@@adInParam=["ad_","ad_id","adv_id","bid_id","adpos","adtagid","rtb","adslot","adspace","adUrl", "ads_creative_id", 
+			"creative_id","adposition","bidid","adsnumber","bidder","auction","ads_",
+			"adunit", "adgroup", "creativity","bid_","bidder_"]
+
+	@@browsers=['dolphin', 'gecko', 'opera','webkit','mozilla','gecko','browser','chrome','safari']
 
 
 	def initialize(defs)
 		@defines=defs
 		@latency=Array.new
-		@db = Database.new(@defines,nil,@defines.beaconDB)
-		@db.create(@defines.tables['beaconDBTable'],'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
+		@db = Database.new(@defines,@defines.beaconDB)
+		@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
 	end
 
 	def close
 		puts "CLOSING BEACON DB..."
 		@db.close if db
+	end
+
+	def translateHTMLContent(str)
+Utilities.error "pwwwwwww "+line if str==nil
+			t1=str.split(";")[0]
+			type=t1.split(":")[0].gsub(" ","").downcase
+Utilities.error "EEEEEEEEEEE "+type+" |"+@@types[type].to_s+"| "+h['url'] if h['type']=="" or h['type']==nil
+			return @@types[type]
 	end
 
     def loadExternalFilter
@@ -185,24 +211,23 @@ private
 
     def is_1pixel_image?(url)
         if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)} #IS IMAGE?
-			isthere=@db.get(@defines.tables['beaconDBTable'],"singlePixel","url",url)
+			isthere=@db.get(@defines.beaconDBTable,"singlePixel","url",url)
 			if isthere!=nil		# I've already seen that url 
 				return isthere == 1
 			else	# no... wget it
 				begin
 					pixels=FastImage.size("http://"+url)
 				    if pixels==[1,1]         # 1x1 pixel
-						@db.insert(@defines.tables['beaconDBTable'],[url,1])
+						@db.insert(@defines.beaconDBTable,[url,1])
 				        return true
 					else
-						@db.insert(@defines.tables['beaconDBTable'],[url,0])
+						@db.insert(@defines.beaconDBTable,[url,0])
 				        return false
 				   	end
 				rescue Exception => e  
 					if not e.message.include? "Network is unreachable"
-						puts "is_1pixel_image: "+e.message
-						puts url  
-						@db.insert(@defines.tables['beaconDBTable'],[url,0])
+						Utilities.warning "is_1pixel_image: "+e.message+"\n"+url  
+						@db.insert(@defines.beaconDBTable,[url,0])
 					end
 				end				
 			end			

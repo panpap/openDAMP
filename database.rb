@@ -3,41 +3,37 @@ require 'uri'
 
 class Database
 
-	def initialize(defs,options,dbName)		
+	def initialize(defs,dbName)		
 		@defines=defs
 		if dbName==nil
 			@db=SQLite3::Database.open @defines.dirs['rootDir']+@defines.resultsDB
 		else
 			@db=SQLite3::Database.open dbName
 		end
-		@options=options
+		@options=@defines.options
 		@alerts=Hash.new(0)
 	end
 
-#	def insertRow(table, params)
-#		return if blockOutput(table)
-#		par=prepareStr(params)
-#		id=Digest::SHA256.hexdigest (par[0]+"|"+par[3]+"|"+par[3])	#timestamp|url
-#		par="\""+id+"\","+par
-#		return execute("INSERT INTO '#{table}' VALUES ",par)
-#	end
-
-	def insert(table, params)
+	def insert(tbl, params)
+		table=arrayCase(tbl)
 		return if blockOutput(table)
 		par=prepareStr(params)
 		return execute("INSERT INTO '#{table}' VALUES ",par)
 	end
 
-	def create(table,params)
+	def create(tbl,params)
+		table=arrayCase(tbl)
 		return if blockOutput(table)
 		return execute("CREATE TABLE IF NOT EXISTS '#{table}' ",params) 
 	end
 
-	def count(table)
+	def count(tbl)
+		table=arrayCase(tbl)
 		return @db.get_first_value("select count(*) from "+table)
 	end
 
-	def get(table,what,param,value)
+	def get(tbl,what,param,value)
+		table=arrayCase(tbl)
 		if table==nil or param==nil or value==nil
 			return
 		end
@@ -53,7 +49,8 @@ class Database
 		end
 	end
 
-	def getAll(table,what,param,value)
+	def getAll(tbl,what,param,value)
+		table=arrayCase(tbl)
 		if table==nil
 			return
 		end
@@ -84,9 +81,11 @@ class Database
 
 private
 
-	def blockOutput(table)
-		return false #true if table.eql? @defines.tables["bcnTable"] or table.eql? @defines.tables["priceTable"] or table.eql? @defines.tables["adsTable"] or table.eql? @defines.tables["publishersTable"]
-		#options
+	def blockOutput(tbl)
+		table=arrayCase(tbl)
+		blockOptions=@defines.options['tablesDB']
+		return false if blockOptions[table]==nil
+		return (not blockOptions[table])
 	end
 
 	def prepareStr(input)
@@ -132,6 +131,14 @@ private
 				Utilities.error "SQLite Exception: "+command+" "+e.to_s+"\n"+params+"\n\n"+e.backtrace.join("\n").to_s
 			end
 			return false
+		end
+	end
+	
+	def arrayCase(tbl)
+		if tbl.kind_of?(Array)	
+			return tbl.keys[0] 
+		else		#beaconsURL
+			return tbl
 		end
 	end
 end

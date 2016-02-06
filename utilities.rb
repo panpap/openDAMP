@@ -1,10 +1,10 @@
 module Utilities
 
-	def Utilities.loadOptions(configFile)
+	def Utilities.loadOptions(configFile,files,tables)
 		if File.exists? (configFile)
 			return Utilities.readConfigFile(configFile)
 		else	# DEFAULT
-			return Utilities.produceConfigFile(configFile)
+			return Utilities.produceConfigFile(configFile,files,tables)
 		end
 	end	
 
@@ -21,6 +21,67 @@ module Utilities
             return Utilities.is_numeric?(object)
         end
     end
+
+	def Utilities.printCat(fw,cat,c,trace)
+		if trace.fileTypes[cat]==nil
+			for i in 0...9 do
+				fw.print "0\t"
+			end
+			return;
+		end
+		if trace.fileTypes[cat].size!=0
+			trace.fileTypes[cat].each{|type, bytes|
+				if bytes==nil or bytes.size==0
+					fw.print "0\t"
+				else			
+					res=Utilities.makeStats(bytes); 
+					if c==1 
+						fw.print res['sum'].to_s+"\t"
+					else
+						fw.print bytes.size.to_s+"\t"
+					end
+				end };
+		else
+			for i in 0...9 do
+				fw.print "0\t"
+			end
+		end
+	end
+
+
+	def Utilities.individualSites(traceFile,user,sumSizePerCat,avgDurPerCat,trace)
+		if not File.exist? "./sites.csv"
+			fw=File.new("./sites.csv","a")
+			fw.puts "site\tReqs:Advertising\tReqs:Analytics\tReqs:Social\tReqs:Content\tReqs:Beacons\tReqs:Other\t"+
+					"AvgTimePerReq:Advertising\tAvgTimePerReq:Analytics\tAvgTimePerReq:Social\tAvgTimePerReq:Content\tAvgTimePerReq:Beacons\tAvgTimePerReq:Other\t"+
+					"TotalBytes:Advertising\tTotalBytes:Analytics\tTotalBytes:Social\tTotalBytes:Content\tTotalBytes:Beacons\tTotalBytes:Other\t"+
+					"Reqs:Advertising:data\tReqs:Advertising:gif\tReqs:Advertising:html\tReqs:Advertising:image\tReqs:Advertising:other\tReqs:Advertising:script\tReqs:Advertising:styling\tReqs:Advertising:text\tReqs:Advertising:video\t"+
+		"Reqs:Analytics:data\tReqs:Analytics:gif\tReqs:Analytics:html\tReqs:Analytics:image\tReqs:Analytics:other\tReqs:Analytics:script\tReqs:Analytics:styling\tReqs:Analytics:text\tReqs:Analytics:video\t"+
+		"Reqs:Social:data\tReqs:Social:gif\tReqs:Social:html\tReqs:Social:image\tReqs:Social:other\tReqs:Social:script\tReqs:Social:styling\tReqs:Social:text\tReqs:Social:video\t"+
+		"Reqs:Content:data\tReqs:Content:gif\tReqs:Content:html\tReqs:Content:image\tReqs:Content:other\tReqs:Content:script\tReqs:Content:styling\tReqs:Content:text\tReqs:Content:video\t"+
+		"Reqs:Beacons:data\tReqs:Beacons:gif\tReqs:Beacons:html\tReqs:Beacons:image\tReqs:Beacons:other\tReqs:Beacons:script\tReqs:Beacons:styling\tReqs:Beacons:text\tReqs:Beacons:video\t"+
+		"Reqs:Other:data\tReqs:Other:gif\tReqs:Other:html\tReqs:Other:image\tReqs:Other:other\tReqs:Other:script\tReqs:Other:styling\tReqs:Other:text\tReqs:Other:video\t"+
+		"TotalBytes:Advertising:data\tTotalBytes:Advertising:gif\tTotalBytes:Advertising:html\tTotalBytes:Advertising:image\tTotalBytes:Advertising:other\tTotalBytes:Advertising:script\tTotalBytes:Advertising:styling\tTotalBytes:Advertising:text\tTotalBytes:Advertising:video\t"+
+		"TotalBytes:Analytics:data\tTotalBytes:Analytics:gif\tTotalBytes:Analytics:html\tTotalBytes:Analytics:image\tTotalBytes:Analytics:other\tTotalBytes:Analytics:script\tTotalBytes:Analytics:styling\tTotalBytes:Analytics:text\tTotalBytes:Analytics:video\t"+
+		"TotalBytes:Social:data\tTotalBytes:Social:gif\tTotalBytes:Social:html\tTotalBytes:Social:image\tTotalBytes:Social:other\tTotalBytes:Social:script\tTotalBytes:Social:styling\tTotalBytes:Social:text\tTotalBytes:Social:video\t"+
+		"TotalBytes:Content:data\tTotalBytes:Content:gif\tTotalBytes:Content:html\tTotalBytes:Content:image\tTotalBytes:Content:other\tTotalBytes:Content:script\tTotalBytes:Content:styling\tTotalBytes:Content:text\tTotalBytes:Content:video\t"+
+		"TotalBytes:Beacons:data\tTotalBytes:Beacons:gif\tTotalBytes:Beacons:html\tTotalBytes:Beacons:image\tTotalBytes:Beacons:other\tTotalBytes:Beacons:script\tTotalBytes:Beacons:styling\tTotalBytes:Beacons:text\tTotalBytes:Beacons:video\t"+
+		"TotalBytes:Other:data\tTotalBytes:Other:gif\tTotalBytes:Other:html\tTotalBytes:Other:image\tTotalBytes:Other:other\tTotalBytes:Other:script\tTotalBytes:Other:styling\tTotalBytes:Other:text\tTotalBytes:Other:video\t"
+		else
+			fw=File.new("./sites.csv","a")
+		end
+		fw.print traceFile+"\t"+user.size3rdparty['Advertising'].size.to_s+"\t"+user.size3rdparty['Analytics'].size.to_s+"\t"+user.size3rdparty['Social'].size.to_s+"\t"+user.size3rdparty['Content'].size.to_s+"\t"+user.size3rdparty['Beacons'].size.to_s+"\t"+user.size3rdparty['Other'].size.to_s+"\t"+avgDurPerCat.gsub(",","\t").gsub("[","").gsub("]","")+"\t"+sumSizePerCat.gsub(",","\t").gsub("[","").gsub("]","").to_s+"\t" 
+
+		user.size3rdparty.keys.each{|cat| 
+			Utilities.printCat(fw,cat,0,trace)
+		}
+		user.size3rdparty.keys.each{|cat| 
+			Utilities.printCat(fw,cat,1,trace)
+		}
+		fw.puts ;
+		fw.close
+	end
+
 
 	def Utilities.perUserEventSeparation(defines)
 		fr=File.new(defines.dirs['dataDir']+"IPport_uniq")
@@ -157,20 +218,22 @@ module Utilities
 	end
 
 	def Utilities.readConfigFile(configFile)
-		options=Hash.new
-		puts "TODO"
-		File.foreach(configFile) {|line|
-			puts line
-		}
-		return {'file'=>1,'detail'=>1, 'excludeCol'=>1}#options
+       	file = File.read(configFile)
+       	options = JSON.parse(file)
+		return options
 	end
 
-	def Utilities.produceConfigFile(configFile)
-		puts "TODO"
-		options={'file'=>1,'detail'=>1, 'excludeCol'=>1}
-		fw=File.new(configFile,"w")
-		fw.puts options
-		fw.close
-		return options
+	def Utilities.produceConfigFile(configFile,files,tables)
+		defaultOptions={"printToSTDOUT"=>true, 'resultToFiles'=>
+			{files['devices'].split("/").last=>true, files['size3rdFile'].split("/").last=>true,
+			files['adParamsNum'].split("/").last=>true, files['restParamsNum'].split("/").last=>true},
+			'tablesDB'=>{tables["publishersTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
+			tables["impTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
+			tables["adsTable"].keys[0]=>true, tables["userTable"].keys[0]=>true,
+			tables["priceTable"].keys[0]=>true,	tables["traceTable"].keys[0]=>true}}
+		File.open(configFile,"w") do |f|
+		  f.write(JSON.pretty_generate(defaultOptions, :indent => "\t"))
+		end
+		return defaultOptions
 	end
 end

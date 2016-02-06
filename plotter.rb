@@ -249,7 +249,6 @@ class Plotter
 				fw.puts ;
 			end
 				
-abort
 		else
 			Utilities.error "Wrong command"
 

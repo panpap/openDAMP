@@ -9,7 +9,7 @@ for country in countries
                 if file.include? ".out"
                         puts "Processing "+file+" from "+country
                         name=country+"_"+file.split(".")[0]
-                        system("ruby parser.rb -o "+root+country+"/"+file+" > outsDir/"+name+"_outFile")
+                        system("ruby parser.rb -o "+root+country+"/"+file)
                 end
         end
 	puts sites.size.to_s+" sites were processed"

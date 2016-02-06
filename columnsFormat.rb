@@ -1,5 +1,6 @@
 module Format
-	def Format.columnsFormat(line,dataset,option)
+
+	def Format.columnsFormat(line,dataset,option,filter)
 	begin
 		part=line.chop.split("\t") 
 	rescue 
@@ -45,10 +46,12 @@ module Format
 			end
             h['ua']=part[14]		
 		else
+
+
 			h['host']=part[0]
 			h['uIP']=part[1]
 			h['url']=part[2]
-			h['type']=part[3]
+			h['type']=filter.translateHTMLContent(part[3])
 			h['tmstp']=part[4]
 			h['dur']=part[5]
 			h['dataSz']=part[6]

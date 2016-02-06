@@ -1,1 +1,18 @@
-{"file"=>1}
+{
+	"printToSTDOUT": true,
+	"resultToFiles": {
+		"devices.csv": true,
+		"sizes3rd.csv": true,
+		"adParamsNum.csv": true,
+		"restParamsNum.csv": true
+	},
+	"tablesDB": {
+		"publishers": false,
+		"beacons": true,
+		"impressions": false,
+		"advertisements": true,
+		"userResults": true,
+		"prices": true,
+		"traceResults": true
+	}
+}
