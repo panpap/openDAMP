@@ -1,7 +1,6 @@
 load 'define.rb'
 load 'core.rb'
 load 'plotter.rb'
-load 'keywordsLists.rb'
 require 'digest/sha1'
 
 class Operations

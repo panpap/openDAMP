@@ -1,6 +1,7 @@
 require 'fastimage'
 require 'rubygems'
 require 'json'
+load 'keywordsLists.rb'
 
 class Filters
 

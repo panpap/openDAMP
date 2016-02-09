@@ -32,8 +32,7 @@ class Defines
 				"traceTable"=>{"traceResults"=>'id VARCHAR PRIMARY KEY, totalRows BIGINT, users INTEGER, advertising INTEGER, analytics INTEGER, social INTEGER, content INTEGER, beacons INTEGER, other INTEGER, thirdPartySize_total INTEGER, totalMobileReqs INTEGER, browserReqs INTEGER,mobileAdReqs VARCHAR, hashedPrices INTEGER, numericPrices INTEGER, adRelatedBeacons VARCHAR, numImpressions INTEGER'}
 		}
 	
-		if File.exist?(@traceFile) and File.exist?(@dirs["rootDir"])
-			
+		if File.exist?(@traceFile)
 			@resultsDB=traceName+"_analysis.db"
 			#DIRECTORIES
 			@dataDir="dataset/"
@@ -76,9 +75,12 @@ class Defines
 			"linespoints"=>@plotScriptsDir+"plotLinesPoints.gn",
 			"stacked_area"=>@plotScriptsDir+"plotStacked_area.gn"}		
 		end
-		configFile="config"
+		
 		#LOAD OPTIONS
+		configFile="config"
 		@options,str=Utilities.loadOptions(configFile,filenames,@tables)
+		
+		#OUTPUT
 		if @options["printToSTDOUT"]
 			@fw=STDOUT
 		else
