@@ -2,9 +2,9 @@ module Utilities
 
 	def Utilities.loadOptions(configFile,files,tables)
 		if File.exists? (configFile)
-			return Utilities.readConfigFile(configFile)
+			return Utilities.readConfigFile(configFile),"> Config file was read..."
 		else	# DEFAULT
-			return Utilities.produceConfigFile(configFile,files,tables)
+			return Utilities.produceConfigFile(configFile,files,tables),"> No config file found... Default options are used..."
 		end
 	end	
 
@@ -72,10 +72,11 @@ module Utilities
 		end
 		fw.print traceFile+"\t"+user.size3rdparty['Advertising'].size.to_s+"\t"+user.size3rdparty['Analytics'].size.to_s+"\t"+user.size3rdparty['Social'].size.to_s+"\t"+user.size3rdparty['Content'].size.to_s+"\t"+user.size3rdparty['Beacons'].size.to_s+"\t"+user.size3rdparty['Other'].size.to_s+"\t"+avgDurPerCat.gsub(",","\t").gsub("[","").gsub("]","")+"\t"+sumSizePerCat.gsub(",","\t").gsub("[","").gsub("]","").to_s+"\t" 
 
-		user.size3rdparty.keys.each{|cat| 
+		cats=['Advertising','Analytics','Social','Content','Beacons','Other']
+		cats.each{|cat| 
 			Utilities.printCat(fw,cat,0,trace)
 		}
-		user.size3rdparty.keys.each{|cat| 
+		cats.each{|cat| 
 			Utilities.printCat(fw,cat,1,trace)
 		}
 		fw.puts ;
@@ -113,9 +114,20 @@ module Utilities
 		fp.close
 	end
 
+	def Utilities.calculateHost(url)
+		temp=url.split("?").first.split("/").first.split(".")
+		if Utilities.is_numeric?(temp[temp.size-2]) and Utilities.is_numeric?(temp[temp.size-1])
+			return url
+		elsif (url.include? 'co.jp' or url.include? 'co.uk' or url.include? 'co.in' or url.include? 'com.br' or url.include? 'com.au' or url.include? 'org.br' )
+			return temp[temp.size-3]+"."+temp[temp.size-2]+"."+temp[temp.size-1]
+		else
+			return temp[temp.size-2]+"."+temp[temp.size-1]
+		end
+	end
+
 	def Utilities.tokenizeHost(host)
 		parts=host.split(".")
-		if (host.include? 'co.jp' or host.include? 'co.uk' or host.include? 'co.in')
+		if (host.include? 'co.jp' or host.include? 'co.uk' or host.include? 'co.in' or host.include? 'com.br' or host.include? 'com.au' or host.include? 'org.br' )
 			tld=parts[parts.size-2]+"."+parts[parts.size-1]
             domain=parts[parts.size-3]
 		else
@@ -224,9 +236,9 @@ module Utilities
 	end
 
 	def Utilities.produceConfigFile(configFile,files,tables)
-		defaultOptions={"printToSTDOUT"=>true, 'resultToFiles'=>
-			{files['devices'].split("/").last=>true, files['size3rdFile'].split("/").last=>true,
-			files['adParamsNum'].split("/").last=>true, files['restParamsNum'].split("/").last=>true},
+		defaultOptions={"header"=>true,"printToSTDOUT"=>true, 'resultToFiles'=>
+			{files[0]=>true, files[1]=>true,
+			files[2]=>true, files[3]=>true},
 			'tablesDB'=>{tables["publishersTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
 			tables["impTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
 			tables["adsTable"].keys[0]=>true, tables["userTable"].keys[0]=>true,

@@ -47,10 +47,14 @@ module Format
             h['ua']=part[14]		
 		else
 
-
-			h['host']=part[0]
 			h['uIP']=part[1]
 			h['url']=part[2]
+			if part[2].include? "http"
+				h['url']=part[2].split("://").last
+			end
+
+			h['host']=Utilities.calculateHost(h['url'])
+		
 			h['type']=filter.translateHTMLContent(part[3])
 			h['tmstp']=part[4]
 			h['dur']=part[5]

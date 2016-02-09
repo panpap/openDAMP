@@ -32,7 +32,7 @@ end
 start = Time.now
 
 OptionParser.new { |opts|
-  opts.banner = "Usage: #{File.basename($0)} [-p -s -d -a -h -o] [-f <SEARCH_STRING>] [-t <TIME_WINDOW>] [FILENAME]"
+  opts.banner = "Usage: #{File.basename($0)} [-p -c -s -d -a -h -o] [-f <SEARCH_STRING>] [-t <TIME_WINDOW>] [FILENAME]"
 
 	opts.on( '-s', '--separate', 'Separate fields to files. Produced files are stored in ./data/ folder') do
 		ops=Operations.new(ARGV[0])
@@ -60,6 +60,10 @@ OptionParser.new { |opts|
 	opts.on('-p', '--plot', 'Plot CDFs using Gnuplot') do
 		ops,folder=folderAsInput(ARGV[0])
 		ops.plot(folder)
+	end
+
+	opts.on('-c', '--config', 'Config') do
+		ops=Operations.new(ARGV[0])
 	end
 
 	opts.on('-t', '--timelines MILLISECONDS', 'Make user Timelines per N milliseconds') do |sec|

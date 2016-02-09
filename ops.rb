@@ -1,46 +1,36 @@
 load 'define.rb'
 load 'core.rb'
 load 'plotter.rb'
+load 'keywordsLists.rb'
 require 'digest/sha1'
 
 class Operations
 	
 	def initialize(filename)
 		@defines=Defines.new(filename)
-		@func=Core.new(@defines)
-	end
-
-	def countDuplicates()
-		uniq=""
-		total=""
-		if @defines.options['excludeCol']!=nil
-			IO.popen("awk '{$"+@options['excludeCol'].to_s+"=\"\"; print $0}' "+@defines.traceFile+" | sort -u | wc -l") { |io| uniq=io.gets.split(" ")[0] }
-			#awk 'NR == 1; NR > 1 {print $0 | "sort -uk1,3"}' trace > Sorted_trace
+		if @defines.traceFile==""
+			@filters=Filters.new(@defines)
+			@func=Core.new(@defines,@filters)
 		else
-			IO.popen("sort -u "+@defines.traceFile+" | wc -l") { |io| uniq=io.gets.split(" ")[0] }			
-			#awk 'NR == 1; NR > 1 {print $0 | "sort -u"}' trace > Sorted_trace
-		end
-		IO.popen("wc -l "+@defines.traceFile) { |io| total=io.gets.split(" ")[0] }
-		if (total.to_i-uniq.to_i)>0
-			puts "> "+(total.to_i-uniq.to_i).to_s+" ("+(100-(uniq.to_f*100/total.to_f)).round(2).to_s+"%) dublicates were found in the trace"
+			@defines.puts "Done..."
 		end
 	end
 
 	def dispatcher(function,str)	
 		@func.makeDirsFiles
 		@defines.puts "> Loading Trace... "+@defines.traceFile
-#		count=0
-count=1
+		count=0
+		count=1 if @defines.options['header']
+		#atts=@options['headers']
 		atts=["IPport", "uIP", "url", "ua", "host", "tmstp", "status", "length", "dataSz", "dur"]		
 		f=Hash.new
 		File.foreach(@defines.traceFile) {|line|
 			if count==0		# options consume HEADER
-				#atts=@options['headers']
 				if function==1 or function==0
 					atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w') if File.size?(@defines.dirs['dataDir']+a)==nil and (a!='url') and (a!="tmstp") }
 				end
 			else
-				row=Format.columnsFormat(line,@defines.column_Format,@defines.options,@func.filters)
+				row=Format.columnsFormat(line,@defines.column_Format,@defines.options,@filters)
 				if row['host'].size>1 and row['host'].count('.')>0
 					if function==1 or function==0
 						atts.each{|att| (f[att].puts row[att]) if (att!='url' and att!="tmstp") and f[att]!=nil}
@@ -56,7 +46,7 @@ count=1
 			end
 			count+=1
         }
-	#	puts "\t"+count.to_s+" rows have been loaded successfully!"
+		@defines.puts "\t"+count.to_s+" rows have been loaded successfully!"
 		if function==1 or function==0
 			atts.each{|a| f[a].close if f[a]!=nil; Utilities.countInstances(@defines.dirs['dataDir']+a); }
 		end
@@ -64,6 +54,22 @@ count=1
 			@func.analysis
 		end
 		@func.database.close
+	end
+
+	def countDuplicates()
+		uniq=""
+		total=""
+		if @defines.options['excludeCol']!=nil
+			IO.popen("awk '{$"+@options['excludeCol'].to_s+"=\"\"; print $0}' "+@defines.traceFile+" | sort -u | wc -l") { |io| uniq=io.gets.split(" ")[0] }
+			#awk 'NR == 1; NR > 1 {print $0 | "sort -uk1,3"}' trace > Sorted_trace
+		else
+			IO.popen("sort -u "+@defines.traceFile+" | wc -l") { |io| uniq=io.gets.split(" ")[0] }			
+			#awk 'NR == 1; NR > 1 {print $0 | "sort -u"}' trace > Sorted_trace
+		end
+		IO.popen("wc -l "+@defines.traceFile) { |io| total=io.gets.split(" ")[0] }
+		if (total.to_i-uniq.to_i)>0
+			@defines.puts "> "+(total.to_i-uniq.to_i).to_s+" ("+(100-(uniq.to_f*100/total.to_f)).round(2).to_s+"%) dublicates were found in the trace"
+		end
 	end
 
 	def makeTimelines(msec,path)

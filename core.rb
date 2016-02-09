@@ -5,18 +5,17 @@ load 'columnsFormat.rb'
 
 class Core
 	attr_writer :window, :cwd
-	attr_accessor :database,:filters
+	attr_accessor :database
    	@isBeacon=false
 
-	def initialize(defs)
+	def initialize(defs,filters)
 		@defines=defs
 		@options=@defines.options
-		@filters=Filters.new(@defines)		
+		@filters=filters	
 		@trace=Trace.new(@defines)
 		@window=-1
 		@cwd=nil
 		@database=nil
-		@adFilter=@filters.loadExternalFilter()
 	end
 	
 	def makeDirsFiles()
@@ -210,7 +209,7 @@ class Core
 	#	@trace.totalParamNum.push(noOfparam)
 		iaAdinURL=false
 		@trace.sizes.push(row['dataSz'].to_i)
-		type3rd=@filters.is_Ad?(url[0],host,@adFilter)
+		type3rd=@filters.is_Ad?(url,host,@curUser)
 		if type3rd!=nil	#	3rd PARTY CONTENT
 		#	@trace.users[@curUser].row3rdparty[type3rd].push(row)
 			collector(type3rd,row)
@@ -229,21 +228,29 @@ class Core
 			end
 		else
 			if @isBeacon 	#Beacon NOT ad-related
-				collector("Beacons",row)
+				type3rd="Beacons"
 				@trace.restNumOfParams.push(noOfparam.to_i)
 			elsif isPorI>0	# Impression or ad in param
-				collector("Advertising",row)
+				type3rd="Advertising"
 				ad_detected(row,noOfparam,url)
-				@trace.party3rd["Advertising"]+=1
-			elsif isPorI<1	# Rest
+				@trace.party3rd[type3rd]+=1
+			elsif isPorI<1	
 				@trace.restNumOfParams.push(noOfparam.to_i)
-				collector("Other",row)
-				@trace.party3rd["Other"]+=1
-				if (row['browser']!="unknown")
-					@trace.users[@curUser].publishers.push(row)
+				if @filters.is_Beacon?(row['url'],row['type'],true)	#Beacon NOT ad-related2
+					type3rd="Beacons"
+					@isBeacon=true
+					beaconSave(url[0],row)
+				else	# Rest
+					type3rd="Other"
+					@trace.party3rd[type3rd]+=1
+					if (row['browser']!="unknown")
+						@trace.users[@curUser].publishers.push(row)
+					end	
+					system("echo '"+host+"\t"+@defines.traceFile+"\t"+row['url']+"' >> noCats.out")
 				end
 				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
+			collector(type3rd,row)
 		end
 	end
 
@@ -375,7 +382,7 @@ class Core
 	def beaconImprParamCkeck(url,row) 
         @isBeacon=false
 		isAd=-1
-        if (@filters.is_Beacon?(url[0]))  		#findBeacon in URL
+        if @filters.is_Beacon?(row['url'],row['type'],false) 		#findBeacon in URL
             isAd=0
             beaconSave(url[0],row)
         end

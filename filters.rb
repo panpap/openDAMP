@@ -3,62 +3,14 @@ require 'rubygems'
 require 'json'
 
 class Filters
-	@@beacon_key=["beacon","pxl","pixel","adimppixel","data.gif","px.gif","pxlctl"]
-
-	@@types={"*" => "other", "none" => "other" ,"application/x-woff" => "styling", "application/font-woff" => "styling", 
-		"application/font-woff2" => "styling", "application/javascript" => "script", "application/json" => "data", 
-		"application/octet-stream" => "video", "application/vnd.ms-fontobject" => "styling" ,"application/x-font-ttf" => "styling", 
-		"application/x-font-woff" => "styling", "application/x-javascript" => "script" , "video/mp4" => "video",
-		"application/x-shockwave-flash" => "video" ,"application/x-www-form-urlencoded" => "html", "font/ttf" => "styling", 
-		"font/woff2" => "styling", "image/bmp" => "image", "image/gif" => "gif", "video/webm" => "video",
-		"text/plaincharset=utf-8"  => "text", "text/xml"=>"data", "font/opentype"  => "styling", "font/woff" => "styling" ,
-		"no-cache" => "other", "application/x-font-opentype"  => "styling", "image/jpeg" => "image", "image/jpg" => "image" ,
-		"application/xml" => "data", "application/font-ttf" => "styling", "application/hal+json"=>"data", 
-		"application/x-font-truetype" => "styling", "application/x-gzip"=>"video", "application/xml"=>"data",
-		"application/x-mpegurl"  => "video", "binary/octet-stream"  => "video", "content/unknown"=>"other", "video/x-msvideo"=>"video",
-		"application/zlib"=>"video", "font/truetype"  => "styling", "image/" => "image", "text/x-js"=>"script", "video/mpeg"  => "video", 
-		"image/pjpeg" => "image", "image/png" => "image" ,"image/svg+xml" => "image", "application/vnd.apple.mpegurl" =>"video",
-		"image/webp" => "image", "text/css" => "styling", "text/css;" => "styling", "application/x-javascript"  => "script" ,
-		"text/html" => "html", "application/ecmascript"  => "script", "font/x-woff"  => "styling", "text/css"  => "styling" ,
-		"*/*"  => "other", "multipart/mixed" => "other", "text/html-by-ajax" => "html", "application/x-font-otf"  => "styling" ,
-		"text/javascript" => "script", "text/json" => "data", "text/plain" => "text", "text/x-json" => "data"}
-
-	@@imps=["impression","_imp","/imp","imp_"]
-
-	@@keywords=["price","pp","pr","bidprice","bid_price","bp","winprice", "computedprice", "pricefloor",
-	               "win_price","wp","chargeprice","charge_price","cp","extcost","tt_bidprice","bdrct",
-	               "ext_cost","cost","rtbwinprice","rtb_win_price","rtbwp","bidfloor","seatbid"]
-
-	@@inria={ "rfihub.net" => "ep","invitemedia.com" => "cost",#,"scorecardresearch.com" => "uid" 
-			"ru4.com" => "_pp","tubemogul.com" => "x_price", "invitemedia.com" => "cost", 
-		"tubemogul.com" => "price", #"bluekai.com" => "phint", 
-		"adsrvr.org" => "wp",  
-		"pardot.com" => "title","tubemogul.com" => "price","mathtag.com" => "price",
-		"adsvana.com" => "_p", "doubleclick.net" => "pr", "ib.adnxs.com" => "add_code", 
-		"turn.com" => "acp", "ams1.adnxs.com" => "pp",  "mathtag.com" => "price",
-		"youtube.com" => "description1", "quantcount.com" => "p","rfihub.com" => "ep",
-		"w55c.net" => "wp_exchange", "adnxs.com" => "pp", "gwallet.com" => "win_price",
-		"criteo.com" => "z"}
-
-	# ENHANCED BY ADBLOCK EASYLIST
-	@@subStrings=["/Ad/","pagead","/adv/","/ad/","ads",".ad","rtb-","adwords","admonitoring","adinteraction",
-				"adrum","adstat","adviewtrack","adtrk","/Ad","bidwon","/rtb"] #"market"]	
-
-	@@rtbCompanies=["adkmob","green.erne.co","bidstalk","openrtb","eyeota","ad-x.co.uk","startappexchange.com","atemda.com",
-			"qservz","hastrk","api-","clix2pix.net","exoclick","adition.com","yieldlab","trafficfactory.biz","clickadu",
-			"waiads.com","taptica.com","mediasmart.es"]
-
-	@@adInParam=["ad_","ad_id","adv_id","bid_id","adpos","adtagid","rtb","adslot","adspace","adUrl", "ads_creative_id", 
-			"creative_id","adposition","bidid","adsnumber","bidder","auction","ads_",
-			"adunit", "adgroup", "creativity","bid_","bidder_"]
-
-	@@browsers=['dolphin', 'gecko', 'opera','webkit','mozilla','gecko','browser','chrome','safari']
-
 
 	def initialize(defs)
 		@defines=defs
+		@publishers=Hash.new(nil)
 		@latency=Array.new
+		@lists=KeywordsLists.new(@defines.files["filterFile"])
 		@db = Database.new(@defines,@defines.beaconDB)
+		@lastPub=Hash.new(nil)
 		@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
 	end
 
@@ -69,27 +21,13 @@ class Filters
 
 	def translateHTMLContent(str)
 Utilities.error "pwwwwwww "+line if str==nil
-			t1=str.split(";")[0]
-			type=t1.split(":")[0].gsub(" ","").downcase
-Utilities.error "EEEEEEEEEEE "+type+" |"+@@types[type].to_s+"| "+h['url'] if h['type']=="" or h['type']==nil
-			return @@types[type]
+		t1=str.split(";")[0]
+		type=t1.split(":")[0].gsub(" ","").downcase
+		return @lists.types[type]
 	end
 
-    def loadExternalFilter
-       	file = File.read(@defines.files["filterFile"])
-       	json = JSON.parse(file)
-        cats=json['categories']
-       	filter=Hash.new
-        for cat in cats.keys do
-                cats[cat].each{ |subCats| subCats.each {|key,values|
-                        values.each { |val| val.each{ |doms| (doms.each{|k| filter[k]=cat+"#"+key}) if not doms.is_a?(String)}}}}
-        end
-#       filter.each {|key,value| puts key+" "+value.to_s}
-        return filter
-    end
-
 	def is_inInria_PriceTagList? (domain,keyVal)
-		temp=@@inria[domain]
+		temp=@lists.inria[domain]
 		if temp!=nil and temp.downcase.eql? keyVal[0]
 			return true
 		end
@@ -97,24 +35,23 @@ Utilities.error "EEEEEEEEEEE "+type+" |"+@@types[type].to_s+"| "+h['url'] if h['
 	end
 
     def is_Beacon_param?(params)
-        return (@@beacon_key.any? {|word| params[0].downcase.include?(word)})
+        return (@lists.beacon_key.any? {|word| params[0].downcase.include?(word)})
     end
 
-    def is_Beacon?(url)		
-		if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)}
-		    if is_1pixel_image?(url)
-				return true
-		    elsif(@@beacon_key.any? { |word| url.include?(word)})
-		        return true
-		    end
+    def is_Beacon?(url,type,force)
+		if (@lists.beacon_key.any? { |word| url.include?(word)})
+			return true
+		elsif ([".jpeg", ".gif", ".png" ,".bmp"].any? {|word| url.downcase.include?(word)}) or type=="image" or force
+		    return is_1pixel_image?(url)
+		else
+			return false
 		end
-		return false
     end
 
 	def is_Browser?(row)
 		browser="unknown"			# IS APP... DO NOTHING
 		ua=row['ua'].downcase
-		@@browsers.any? { |word| browser=word if ua.include?(word) }     # IS BROWSER? 
+		@lists.browsers.any? { |word| browser=word if ua.include?(word) }     # IS BROWSER? 
 	    return browser
 	end
 
@@ -150,7 +87,7 @@ Utilities.error "EEEEEEEEEEE "+type+" |"+@@types[type].to_s+"| "+h['url'] if h['
         if (url.include? "impl") #junk
             return false
         end
-        return (@@imps.any? { |word| url.downcase.include?(word)})
+        return (@lists.imps.any? { |word| url.downcase.include?(word)})
     end
 
 
@@ -160,29 +97,35 @@ Utilities.error "EEEEEEEEEEE "+type+" |"+@@types[type].to_s+"| "+h['url'] if h['
     end
 
     def has_PriceKeyword?(param)            # Check if there is a price-related keyword and return the price
- #      if param[0].eql? "latency"
- #           @latency.push(param[1].to_f)
- #           fa=File.new('./latency.out','a')
- #           fa.puts param[1]
- #           fa.close
- #      end
-       return (@@keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
+       return (@lists.keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
     end
 
-	def is_Ad?(url,host,filter)
+	def is_Ad?(urlAll,host,user)
+		url=urlAll[0]
+		rootUrl=url.gsub("/","")
+		if rootUrl.count('.')==2
+			tmp=rootUrl.split(".")
+			rootUrl=tmp[tmp.size-2]+"."+tmp[tmp.size-1]
+		end
+		if urlAll[1]==nil and rootUrl==host
+			@publishers[host]=user
+			@lastPub[user]=host
+			return "Other" #Publisher
+		end
+		value=@publishers[host]
+		if value==user
+			return "Other"
+		end
         str=url
         urlParts=url.split("/")
         parts=host.split(".")
-# FIND TLD AND DOMAIN
+		# FIND TLD AND DOMAIN
 		domain,tld=Utilities.tokenizeHost(host)
-
-# FILTER USING DISCONNECT
-        if result=filter[host]                                  # APPLY FILTER
-            return result.split("#")[0]
-        elsif (host.count('.')>1 && result=filter[domain+"."+tld])      # APPLY FILTER NOT IN SUBDOMAIN
-            return result.split("#")[0]
+		# FILTER USING DISCONNECT
+        if cat=findCategory(host,domain,tld,@lastPub[user])
+			return cat
         else           
- # FILTER USING KEYWORDS
+			 # FILTER USING KEYWORDS
             if (tld=="ad") # TLD check REMOVE ".ad" TLDs
                 parts.delete_at(parts.size-1)
                 s="";t="/";
@@ -190,9 +133,13 @@ Utilities.error "EEEEEEEEEEE "+type+" |"+@@types[type].to_s+"| "+h['url'] if h['
                 urlParts[1,urlParts.size].each{ |p| t+=p+"/" ""}
                 url=s+t
             end
-            if (@@subStrings.any? { |word| url.include?(word)} or @@rtbCompanies.any? { |word| url.downcase.include?(word)})
+            if (@lists.subStrings.any? { |word| url.include?(word)})
+				return "Advertising"
+			elsif (@lists.rtbCompanies.any? { |word| url.downcase.include?(word)})
                 return "Advertising"
-            end
+			elsif @lists.manualCats[host]!=nil
+				return @lists.manualCats[host]
+			end
             return nil
         end
     end
@@ -201,7 +148,7 @@ Utilities.error "EEEEEEEEEEE "+type+" |"+@@types[type].to_s+"| "+h['url'] if h['
         if (params[0].downcase.eql? "type" and params[1].include? "ad")
             return true
         else
-            return (@@adInParam.any? {|word| params[0].downcase.include?(word)})
+            return (@lists.adInParam.any? {|word| params[0].downcase.include?(word)})
         end
     end
 
@@ -209,29 +156,44 @@ Utilities.error "EEEEEEEEEEE "+type+" |"+@@types[type].to_s+"| "+h['url'] if h['
 
 private
 
+	def findCategory(host,domain,tld,lastPublisher)
+		cat=nil
+        if result=@lists.disconnect[host]                # APPLY FILTER
+            cat=result.split("#")[0]
+        elsif (host.count('.')>1 && result=@lists.disconnect[domain+"."+tld])      # APPLY FILTER NOT IN SUBDOMAIN
+			host=domain+"."+tld
+            cat=result.split("#")[0]
+		end
+		if @lists.sameParty[host]!=nil and @lists.sameParty[lastPublisher]!=nil
+			if cat=="Content" and @lists.sameParty[host]==@lists.sameParty[lastPublisher]	#whitelist same parties
+				return "Other"	
+			end
+		end
+		return cat
+	end
+
     def is_1pixel_image?(url)
-        if [".jpeg", ".gif", ".png" ,"bmp"].any? {|word| url.downcase.include?(word)} #IS IMAGE?
-			isthere=@db.get(@defines.beaconDBTable,"singlePixel","url",url)
-			if isthere!=nil		# I've already seen that url 
-				return isthere == 1
-			else	# no... wget it
-				begin
-					pixels=FastImage.size("http://"+url)
-				    if pixels==[1,1]         # 1x1 pixel
-						@db.insert(@defines.beaconDBTable,[url,1])
-				        return true
-					else
-						@db.insert(@defines.beaconDBTable,[url,0])
-				        return false
-				   	end
-				rescue Exception => e  
-					if not e.message.include? "Network is unreachable"
-						Utilities.warning "is_1pixel_image: "+e.message+"\n"+url  
-						@db.insert(@defines.beaconDBTable,[url,0])
-					end
-				end				
-			end			
-        end		
+		isthere=@db.get(@defines.beaconDBTable,"singlePixel","url",url)
+		if isthere!=nil		# I've already seen that url 
+			return (isthere.first.to_s == "1") if isthere.kind_of?(Array)
+			return (isthere.to_s == "1")
+		else	# no... wget it
+			begin
+				pixels=FastImage.size("http://"+url)
+			    if pixels==[1,1]         # 1x1 pixel
+					@db.insert(@defines.beaconDBTable,[url,1])
+			        return true
+				else
+					@db.insert(@defines.beaconDBTable,[url,0])
+			        return false
+			   	end
+			rescue Exception => e  
+				if not e.message.include? "Network is unreachable"
+					Utilities.warning "is_1pixel_image: "+e.message+"\n"+url  
+					@db.insert(@defines.beaconDBTable,[url,0])
+				end
+			end				
+		end			
         return false
     end
 end
