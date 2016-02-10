@@ -93,9 +93,14 @@ Utilities.error "pwwwwwww "+line if str==nil
 
 
 	def is_GarbageOrEmpty?(str) #filter out version, density parameters
-        return (str[1]==nil or str[0].eql? "v" or str[0].downcase.include? "ver" \
+		return true if str==nil
+		if str.kind_of?(Array) and (str[1]==nil or str[0].eql? "v" or str[0].downcase.include? "ver" \
                     or str[0].eql? "density" or str[0].eql? "u_sd")
-    end
+			return true
+		else
+			return (str.size<8 or (["http","utf","www","text","image"].any? { |word| str.downcase.include?(word)}))
+    	end
+	end
 
     def has_PriceKeyword?(param)            # Check if there is a price-related keyword and return the price
        return (@lists.keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
@@ -153,6 +158,17 @@ Utilities.error "pwwwwwww "+line if str==nil
         end
     end
 
+	def getRootHost(host,cat) 
+		if cat==nil
+			@lists.sameParty.keys.each{|c| res=@lists.sameParty[c][host]; if res!=nil
+				return res.split("://").last.gsub("/","").gsub("www.","")
+			end}
+			return host
+		else
+			return @lists.sameParty[cat][host]
+		end
+	end
+
 #-----------------------------------------------------------------------------------
 
 private
@@ -165,9 +181,11 @@ private
 			host=domain+"."+tld
             cat=result.split("#")[0]
 		end
-		if @lists.sameParty[host]!=nil and @lists.sameParty[lastPublisher]!=nil
-			if cat=="Content" and @lists.sameParty[host]==@lists.sameParty[lastPublisher]	#whitelist same parties
-				return "Other"	
+		if cat=="Content"
+			rootHostA=getRootHost(host,"Content")
+			rootHostB=getRootHost(lastPublisher,"Content")
+			if rootHostA!=nil and rootHostB!=nil and rootHostA==rootHostB	#whitelist same parties
+				cat="Other"	
 			end
 		end
 		return cat

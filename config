@@ -12,8 +12,9 @@
 		"beacons": false,
 		"impressions": false,
 		"advertisements": false,
-		"userResults": true,
+		"userResults": false,
 		"prices": false,
-		"traceResults": false
+		"traceResults": false,
+		"csyncResults": true
 	}
 }

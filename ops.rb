@@ -7,7 +7,7 @@ class Operations
 	
 	def initialize(filename)
 		@defines=Defines.new(filename)
-		if @defines.traceFile==""
+		if @defines.traceFile!=""
 			@filters=Filters.new(@defines)
 			@func=Core.new(@defines,@filters)
 		else
@@ -33,13 +33,16 @@ class Operations
 				if row['host'].size>1 and row['host'].count('.')>0
 					if function==1 or function==0
 						atts.each{|att| (f[att].puts row[att]) if (att!='url' and att!="tmstp") and f[att]!=nil}
-						Utilities.separateTimelineEvents(row,@defines.dirs['userDir']+row['IPport'],@defines.column_Format)
+						Utilities.separateTimelineEvents(row,@defines.dirs['userDir']+row['IPport'],@defines.column_Format) #timelines creation
 					end					
 					if function==2 or function==0
-						@func.parseRequest(row,false)
+						@func.parseRequest(row,false) 	#categorization,cookie synchronization and prices detection
 					end
-					if function==3
+					if function==3		#find
 						@func.findStrInRows(row,str)
+					end
+					if function==4		#find
+						@func.cookieSyncing(row)
 					end
 				end
 			end
@@ -51,6 +54,9 @@ class Operations
 		end
 		if function==2 or function==0
 			@func.analysis
+		end
+		if function==4		#find
+			@func.csyncResults()
 		end
 		@func.database.close
 	end

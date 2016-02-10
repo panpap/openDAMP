@@ -15,6 +15,7 @@ class Core
 		@trace=Trace.new(@defines)
 		@window=-1
 		@cwd=nil
+		@params_cs=Hash.new(nil)
 		@database=nil
 	end
 	
@@ -73,10 +74,6 @@ class Core
 	end
 
 	def parseRequest(row,browserOnly)
-		@curUser=row['IPport']
-		if @trace.users[@curUser]==nil		#first seen user
-			@trace.users[@curUser]=User.new	
-		end
 		if row['ua']!=-1
 			mob,dev,browser=reqOrigin(row)		#CHECK THE DEVICE TYPE
 			row['mob']=mob
@@ -86,6 +83,7 @@ class Core
 				return false
 			end		#FILTER ROW
 		end
+		cookieSyncing(row)
 		filterRow(row)
 		return true
 	end
@@ -122,11 +120,49 @@ class Core
 		fr.close
 	end
 
+	def cookieSyncing(row)
+		firstSeenUser?(row)
+		@params_cs[@curUser]=Hash.new(nil) if @params_cs[@curUser]==nil
+		urlAll=row['url'].split("?")
+		return if (urlAll.last==nil)
+		fields=urlAll.last.split('&')
+		return if fields.size>4 # usually there are very few params_cs (only sessionids)
+		for field in fields do
+			paramPair=field.split("=")
+			if not @filters.is_GarbageOrEmpty?(paramPair.last)
+				if @params_cs[@curUser][paramPair.last]==nil
+					@params_cs[@curUser][paramPair.last]={"url"=>urlAll,"paramName"=>paramPair.first,"tmstp"=>row['tmstp']}
+				else
+					prev=@params_cs[@curUser][paramPair.last]
+					prevHost=Utilities.calculateHost(prev['url'].first)
+					curHost=Utilities.calculateHost(urlAll.first)
+					if @filters.getRootHost(prevHost,nil)!=@filters.getRootHost(curHost,nil)
+						params=[prev['tmstp'],row['tmstp'],prevHost,curHost,prev["paramName"], paramPair.last, paramPair.first, 
+								prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s]
+						id=Digest::SHA256.hexdigest (params.join("|")+prev['url'].first+"|"+urlAll.first)
+						@trace.users[@curUser].csync.push(params.push(id))
+						@trace.cooksyncs+=1
+					end
+				end
+			end
+		end
+	end
 
+def csyncResults()
+	@defines.puts "> Dumping Cookie synchronization results..."
+	dumpUserRes(nil,nil)	
+end
 #------------------------------------------------------------------------------------------------
 
 
 	private
+
+	def firstSeenUser?(row)
+		@curUser=row['IPport']
+		if @trace.users[@curUser]==nil		#first seen user
+			@trace.users[@curUser]=User.new	
+		end
+	end
 
 	def	createTmlnForUser(tmln,timeline_path,user_path)
 		if not tmln.eql? '.' and not tmln.eql? ".." and not File.directory?(user_path+tmln)
@@ -180,7 +216,6 @@ class Core
 		end
 	end
 
-
 	def applyTimeWindow(firstTime,row,fw)
 		diff=row['tmstp'].to_i-firstTime
 		wnum=diff.to_f/@window.to_i
@@ -203,6 +238,7 @@ class Core
 	end		
 
 	def filterRow(row)
+		firstSeenUser?(row)
 		url=row['url'].split("?")
 		host=row['host']
 		isPorI,noOfparam=beaconImprParamCkeck(url,row)
@@ -269,14 +305,30 @@ class Core
 		@defines.puts "> Dumping to database..."
 		durStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
 		sizeStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
+		dumpUserRes(durStats,sizeStats)
+	end
+
+
+	def dumpUserRes(durStats,sizeStats)
 		for id,user in @trace.users do
-			user.ads.each{|row| Utilities.printRowToDB(row,@database,@defines.tables['adsTable'],nil)}
-			user.publishers.each{|row| 
-				tid=Digest::SHA256.hexdigest (row.values.join("|")); 
-				@database.insert(@defines.tables['publishersTable'], [tid,row['tmstp'],row['IPport'],row['uIP'],row['url'],row['host'],row['mob'],row['dev'],row['browser']])}
-			user.size3rdparty.each{|category, sizes| sizeStats[category]=Utilities.makeStats(sizes)}
-			user.dur3rd.each{|category, durations| durStats[category]=Utilities.makeStats(durations)}
-			if @database!=nil
+			if user.ads!=nil
+				user.ads.each{|row| Utilities.printRowToDB(row,@database,@defines.tables['adsTable'],nil)}
+			end
+			if user.csync!=nil
+				user.csync.each{|elem| @database.insert(@defines.tables['csyncTable'], elem)}
+			end
+			if user.publishers!=nil
+				user.publishers.each{|row| 
+					tid=Digest::SHA256.hexdigest (row.values.join("|")); 
+					@database.insert(@defines.tables['publishersTable'], [tid,row['tmstp'],row['IPport'],row['uIP'],row['url'],row['host'],row['mob'],row['dev'],row['browser']])}
+			end
+			if user.size3rdparty!=nil and sizeStats!=nil
+				user.size3rdparty.each{|category, sizes| sizeStats[category]=Utilities.makeStats(sizes)}
+			end
+			if user.dur3rd!=nil and durStats!=nil
+				user.dur3rd.each{|category, durations| durStats[category]=Utilities.makeStats(durations)}
+			end
+			if @database!=nil and durStats!=nil and sizeStats!=nil
 				avgDurPerCat="["+durStats['Advertising']['avg'].to_s+","+durStats['Analytics']['avg'].to_s+
 				","+durStats['Social']['avg'].to_s+","+durStats['Content']['avg'].to_s+","+durStats['Beacons']['avg'].to_s+
 				","+durStats['Other']['avg'].to_s+"]"
@@ -284,11 +336,8 @@ class Core
 				","+sizeStats['Social']['sum'].to_s+","+sizeStats['Content']['sum'].to_s+","+sizeStats['Beacons']['sum'].to_s+
 				","+sizeStats['Other']['sum'].to_s+"]"
 				@database.insert(@defines.tables['userTable'],[id,user.size3rdparty['Advertising'].size,user.size3rdparty['Analytics'].size,user.size3rdparty['Social'].size,user.size3rdparty['Content'].size,user.size3rdparty['Beacons'].size,user.size3rdparty['Other'].size,avgDurPerCat,sumSizePerCat,user.hashedPrices.length,user.numericPrices.length,user.adBeacon,user.imp.length,user.publishers.size])
-			end	
-			Utilities.individualSites(@defines.traceFile,user,sumSizePerCat,avgDurPerCat,@trace)		
-		end
-		if @trace.users.values.first!=nil
-	#			Utilities.individualSites(@defines.traceFile,@trace.users.values.first,sumSizePerCat,avgDurPerCat,@trace)
+				Utilities.individualSites(@defines.traceFile,user,sumSizePerCat,avgDurPerCat,@trace)
+			end					
 		end
 	end
 

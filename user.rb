@@ -1,6 +1,6 @@
 
 class User
-	attr_accessor :dur3rd, :publishers, :numericPrices, :hashedPrices, :size3rdparty, :sizes3rd, :imp, :latency, :ads, :adBeacon, :filterType, :adsType
+	attr_accessor :dur3rd, :csync, :publishers, :numericPrices, :hashedPrices, :size3rdparty, :sizes3rd, :imp, :latency, :ads, :adBeacon, :filterType, :adsType
 
 	def initialize
 		@hashedPrices=Array.new
@@ -10,8 +10,7 @@ class User
 		@imp=Array.new
 	#	@beacons=Array.new
 		@adBeacon=0
-	#	@restNumOfParams=Array.new
-	#	@adNumOfParams=Array.new
+		@csync=Array.new
 		@publishers=Array.new
 	#	@row3rdparty={"Advertising"=>[],"Beacons"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"Other"=>[]}
 		@size3rdparty={"Advertising"=>[],"Beacons"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"Other"=>[]}

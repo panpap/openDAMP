@@ -21,7 +21,7 @@ module Utilities
             return Utilities.is_numeric?(object)
         end
     end
-
+	
 	def Utilities.printCat(fw,cat,c,trace)
 		if trace.fileTypes[cat]==nil
 			for i in 0...9 do
@@ -242,7 +242,7 @@ module Utilities
 			'tablesDB'=>{tables["publishersTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
 			tables["impTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
 			tables["adsTable"].keys[0]=>true, tables["userTable"].keys[0]=>true,
-			tables["priceTable"].keys[0]=>true,	tables["traceTable"].keys[0]=>true}}
+			tables["priceTable"].keys[0]=>true,	tables["traceTable"].keys[0]=>true,tables["csyncTable"].keys[0]=>true}}
 		File.open(configFile,"w") do |f|
 		  f.write(JSON.pretty_generate(defaultOptions, :indent => "\t"))
 		end

@@ -2,7 +2,7 @@ load 'user.rb'
 
 
 class Trace
-	attr_accessor :adSize, :fileTypes, :fromBrowser, :beacons,:totalAdBeacons, :party3rd,:restNumOfParams, :adNumOfParams, :devs, :numericPrices, :mobDev, :numOfMobileAds, :totalImps, :users, :hashedPrices, :sizes, :totalParamNum
+	attr_accessor :adSize, :cooksyncs, :fileTypes, :fromBrowser, :beacons,:totalAdBeacons, :party3rd,:restNumOfParams, :adNumOfParams, :devs, :numericPrices, :mobDev, :numOfMobileAds, :totalImps, :users, :hashedPrices, :sizes, :totalParamNum
 
 	def initialize(defs)
 		@defines=defs
@@ -20,6 +20,7 @@ class Trace
 		@adNumOfParams=Array.new
 		@restNumOfParams=Array.new
 		@totalImps=0
+		@cooksyncs=0;
 @adSize=Array.new
 		@fileTypes={"Advertising"=>nil,"Social"=>nil,"Analytics"=>nil,"Content"=>nil, "Other"=>nil, "Beacons"=>nil}
 		@party3rd={"Advertising"=>0,"Social"=>0,"Analytics"=>0,"Content"=>0, "Other"=>0, "totalBeacons"=>0}
@@ -50,6 +51,7 @@ class Trace
 			sizeStats['avg'].to_s+" Bytes"+"\n\nADVERTISING STATS\n- AdRelated traffic from mobile devices: "+@numOfMobileAds.to_s+"/"+
 			@party3rd['Advertising'].to_s+"\n- Prices Detected "+(@numericPrices+@hashedPrices).to_s+"\n\tHashed Price tags found: "+@hashedPrices.to_s+
 			"\n\tNumeric Price tags found: "+@numericPrices.to_s+"\n- Advertising content Total size "+(Utilities.makeStats(@adSize)["sum"]).to_s+
+			"\n- Cookie Synchronizations detected: "+cooksyncs.to_s+
 			"\n------------\n"#-Impressions detected "+@totalImps.to_s+"\n"
 
 

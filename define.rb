@@ -29,7 +29,8 @@ class Defines
 				"adsTable"=>{"advertisements"=>'id VARCHAR PRIMARY KEY, timestamp BIGINT, ip_Port VARCHAR, userIP VARCHAR, url VARCHAR, host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER,mob INTEGER,device VARCHAR,browser VARCHAR'},
 				"userTable"=>{"userResults"=>'id VARCHAR PRIMARY KEY, advertising INTEGER, analytics INTEGER, social INTEGER, content INTEGER, noAdBeacons INTEGER, other INTEGER, avgDurationPerCategory VARCHAR, totalSizePerCategory VARCHAR, hashedPrices INTEGER, numericPrices INTEGER,adBeacons INTEGER, impressions INTEGER, publishersVisited INTEGER'},
 				"priceTable"=>{"prices"=>'id VARCHAR PRIMARY KEY,timestamp BIGINT, host VARCHAR, priceTag VARCHAR, priceValue VARCHAR,type VARCHAR, mob INTEGER, device VARCHAR, browser VARCHAR, url VARCHAR'},
-				"traceTable"=>{"traceResults"=>'id VARCHAR PRIMARY KEY, totalRows BIGINT, users INTEGER, advertising INTEGER, analytics INTEGER, social INTEGER, content INTEGER, beacons INTEGER, other INTEGER, thirdPartySize_total INTEGER, totalMobileReqs INTEGER, browserReqs INTEGER,mobileAdReqs VARCHAR, hashedPrices INTEGER, numericPrices INTEGER, adRelatedBeacons VARCHAR, numImpressions INTEGER'}
+				"traceTable"=>{"traceResults"=>'id VARCHAR PRIMARY KEY, totalRows BIGINT, users INTEGER, advertising INTEGER, analytics INTEGER, social INTEGER, content INTEGER, beacons INTEGER, other INTEGER, thirdPartySize_total INTEGER, totalMobileReqs INTEGER, browserReqs INTEGER,mobileAdReqs VARCHAR, hashedPrices INTEGER, numericPrices INTEGER, adRelatedBeacons VARCHAR, numImpressions INTEGER'},
+				"csyncTable"=>{"csyncResults"=>'prevTimestamp BIGINT,curTimestamp BIGINT,hostPrev VARCHAR, hostCur VARCHAR, paramNamePrev VARCHAR, userID VARCHAR, paramNameCur VARCHAR, allParamsPrev VARCHAR, allParamsCur VARCHAR, id VARCHAR PRIMARY KEY'}
 		}
 	
 		if File.exist?(@traceFile)

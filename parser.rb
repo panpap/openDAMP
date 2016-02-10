@@ -32,7 +32,7 @@ end
 start = Time.now
 
 OptionParser.new { |opts|
-  opts.banner = "Usage: #{File.basename($0)} [-p -c -s -d -a -h -o] [-f <SEARCH_STRING>] [-t <TIME_WINDOW>] [FILENAME]"
+  opts.banner = "Usage: #{File.basename($0)} [-p -s -c -g -d -a -h -o] [-f <SEARCH_STRING>] [-t <TIME_WINDOW>] [FILENAME]"
 
 	opts.on( '-s', '--separate', 'Separate fields to files. Produced files are stored in ./data/ folder') do
 		ops=Operations.new(ARGV[0])
@@ -62,8 +62,15 @@ OptionParser.new { |opts|
 		ops.plot(folder)
 	end
 
-	opts.on('-c', '--config', 'Config') do
+	opts.on('-g', '--config', 'Config') do
+		puts "> Config file check"
 		ops=Operations.new(ARGV[0])
+	end
+
+	opts.on('-c', '--cookieSync', 'Cookie synchronization detection') do
+		puts "> Cookie synchronization detection"
+		ops=Operations.new(ARGV[0])
+		ops.dispatcher(4,nil)
 	end
 
 	opts.on('-t', '--timelines MILLISECONDS', 'Make user Timelines per N milliseconds') do |sec|
