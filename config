@@ -1,6 +1,6 @@
 {
-	"header": false,
-	"printToSTDOUT": true,
+	"isThereHeader?": false,
+	"printToSTDOUT?": true,
 	"resultToFiles": {
 		"devices.csv": false,
 		"sizes3rd.csv": false,
@@ -12,9 +12,9 @@
 		"beacons": false,
 		"impressions": false,
 		"advertisements": false,
-		"userResults": false,
+		"userResults": true,
 		"prices": false,
-		"traceResults": false,
-		"csyncResults": true
+		"traceResults": true,
+		"csyncResults": false
 	}
 }

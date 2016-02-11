@@ -13,7 +13,8 @@ module Format
 		    h['uIP']=part[1]
 		    h['url']=part[2]
 		    h['ua']=part[3]
-		    h['host']=part[4]
+			h['host']=Utilities.calculateHost(h['url'])
+			h['type']=filter.getTypeOfContent(h['url'],nil)
 		    h['tmstp']=part[5]
 		    h['status']=part[6]
 		    h['length']=part[7]
@@ -44,6 +45,7 @@ module Format
 			else
 				puts "--------> UKNOWN HTTP VERB: "+h['verb']
 			end
+			h['type']=filter.getTypeOfContent(h['url'],nil)
             h['ua']=part[14]		
 		else
 
@@ -54,8 +56,7 @@ module Format
 			end
 
 			h['host']=Utilities.calculateHost(h['url'])
-		
-			h['type']=filter.translateHTMLContent(part[3])
+			h['type']=filter.getTypeOfContent(h['url'],part[3])
 			h['tmstp']=part[4]
 			h['dur']=part[5]
 			h['dataSz']=part[6]

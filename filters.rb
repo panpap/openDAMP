@@ -12,7 +12,12 @@ class Filters
 		@lists=KeywordsLists.new(@defines.files["filterFile"])
 		@db = Database.new(@defines,@defines.beaconDB)
 		@lastPub=Hash.new(nil)
+		@cats=@lists.sameParty.keys
 		@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
+	end
+
+	def getCats
+		return @cats+["Beacons","Other"]
 	end
 
 	def close
@@ -20,11 +25,24 @@ class Filters
 		@db.close if db
 	end
 
-	def translateHTMLContent(str)
-Utilities.error "pwwwwwww "+line if str==nil
-		t1=str.split(";")[0]
-		type=t1.split(":")[0].gsub(" ","").downcase
-		return @lists.types[type]
+	def getTypeOfContent(url,httpContent)
+		#Find content type from filetype
+		temp=url.split("?").first.split("/")
+		if temp.size>1
+			temp2=temp.last.split(".")
+			if temp2.size>1				
+				fileEnd=temp2.last.split("%").first.split("#").first.split("&").first.split("$").first.split("@").first
+		  		type=@lists.filetypes["."+fileEnd]
+				return type if type!=nil
+			end
+		end
+		if httpContent!=nil
+			#Fallback to HTTP content field
+			t1=httpContent.split(";")[0]
+			type=t1.split(":")[0].gsub(" ","").downcase
+			return @lists.types[type]
+		end
+		return -1
 	end
 
 	def is_inInria_PriceTagList? (domain,keyVal)
@@ -35,18 +53,18 @@ Utilities.error "pwwwwwww "+line if str==nil
 		return false
 	end
 
-    def is_Beacon_param?(params)
-        return (@lists.beacon_key.any? {|word| params[0].downcase.include?(word)})
-    end
+ #   def is_Beacon_param?(params)
+ #       return (@lists.beacon_key.any? {|word| params[0].downcase.include?(word)})
+ #   end
 
     def is_Beacon?(url,type,force)
-		if (@lists.beacon_key.any? { |word| url.include?(word)})
-			return true
-		elsif ([".jpeg", ".gif", ".png" ,".bmp"].any? {|word| url.downcase.include?(word)}) or type=="image" or force
+		if ([".jpeg", ".gif", ".png" ,".bmp"].any? {|word| url.downcase.include?(word)}) or type=="image" or force
 		    return is_1pixel_image?(url)
-		else
-			return false
 		end
+		if (@lists.beacon_key.any? { |word| url.include?(word)})
+			return true		
+		end
+		return false
     end
 
 	def is_Browser?(row)
@@ -160,7 +178,7 @@ Utilities.error "pwwwwwww "+line if str==nil
 
 	def getRootHost(host,cat) 
 		if cat==nil
-			@lists.sameParty.keys.each{|c| res=@lists.sameParty[c][host]; if res!=nil
+			@cats.each{|c| res=@lists.sameParty[c][host]; if res!=nil
 				return res.split("://").last.gsub("/","").gsub("www.","")
 			end}
 			return host

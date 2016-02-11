@@ -19,12 +19,13 @@ class Operations
 		@func.makeDirsFiles
 		@defines.puts "> Loading Trace... "+@defines.traceFile
 		count=0
-		count=1 if @defines.options['header']
+		count=1 if not @defines.options['isThereHeader?']
 		#atts=@options['headers']
 		atts=["IPport", "uIP", "url", "ua", "host", "tmstp", "status", "length", "dataSz", "dur"]		
 		f=Hash.new
 		File.foreach(@defines.traceFile) {|line|
 			if count==0		# options consume HEADER
+				puts "header detected"
 				if function==1 or function==0
 					atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w') if File.size?(@defines.dirs['dataDir']+a)==nil and (a!='url') and (a!="tmstp") }
 				end
@@ -48,7 +49,7 @@ class Operations
 			end
 			count+=1
         }
-		@defines.puts "\t"+count.to_s+" rows have been loaded successfully!"
+		@defines.puts "\t"+(count-1).to_s+" rows have been loaded successfully!"
 		if function==1 or function==0
 			atts.each{|a| f[a].close if f[a]!=nil; Utilities.countInstances(@defines.dirs['dataDir']+a); }
 		end
@@ -127,10 +128,10 @@ class Operations
 		whatToPlot={"priceTagPopularity" => ["priceTable","priceTag"],
 					"priceTagsPerDSP" => ["priceTable","host"],
 					"beaconTypesCDF" => ["bcnTable","beaconType"],
-					"categoriesTrace" => ["traceTable","advertising,analytics,social,beacons,content,other,adRelatedBeacons"],
+					"categoriesTrace" => ["traceTable","advertising,analytics,social,beacons,content,other"],
 					"percSizeCategoryPerUser" => ["userTable","totalSizePerCategory"],
-					"categoriesPerUser" => ["userTable","advertising,analytics,social,content,noAdBeacons,other"],	
-					"sizesPerReqsOfUsers"=> ["userTable","advertising,analytics,social,content,noAdBeacons,other,totalSizePerCategory"] #stacked area
+					"categoriesPerUser" => ["userTable","advertising,analytics,social,content,Beacons,other"],	
+					"sizesPerReqsOfUsers"=> ["userTable","advertising,analytics,social,content,Beacons,other,totalSizePerCategory"] #stacked area
 							#boxplot price values (normalized xaxis window/avg reqs
 							#boxplot number of detected prices
 					}

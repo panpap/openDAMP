@@ -22,67 +22,65 @@ module Utilities
         end
     end
 	
-	def Utilities.printCat(fw,cat,c,trace)
-		if trace.fileTypes[cat]==nil
+	def Utilities.printCatFileTypes(cat,c,user)
+		s=""
+		if user.fileTypes[cat]==nil
 			for i in 0...9 do
-				fw.print "0\t"
+				s+="0\t"
 			end
-			return;
+			return s;
 		end
-		if trace.fileTypes[cat].size!=0
-			trace.fileTypes[cat].each{|type, bytes|
+		if user.fileTypes[cat].size!=0
+			user.fileTypes[cat].each{|type, bytes|
 				if bytes==nil or bytes.size==0
-					fw.print "0\t"
+					s+="0\t"
 				else			
 					res=Utilities.makeStats(bytes); 
 					if c==1 
-						fw.print res['sum'].to_s+"\t"
+						s+=res['sum'].to_s+"\t"
 					else
-						fw.print bytes.size.to_s+"\t"
+						s+=bytes.size.to_s+"\t"
 					end
 				end };
 		else
 			for i in 0...9 do
-				fw.print "0\t"
+				s+="0\t"
 			end
 		end
+		return s
 	end
 
 
-	def Utilities.individualSites(traceFile,user,sumSizePerCat,avgDurPerCat,trace)
-		if not File.exist? "./sites.csv"
-			fw=File.new("./sites.csv","a")
-			fw.puts "site\tReqs:Advertising\tReqs:Analytics\tReqs:Social\tReqs:Content\tReqs:Beacons\tReqs:Other\t"+
-					"AvgTimePerReq:Advertising\tAvgTimePerReq:Analytics\tAvgTimePerReq:Social\tAvgTimePerReq:Content\tAvgTimePerReq:Beacons\tAvgTimePerReq:Other\t"+
-					"TotalBytes:Advertising\tTotalBytes:Analytics\tTotalBytes:Social\tTotalBytes:Content\tTotalBytes:Beacons\tTotalBytes:Other\t"+
-					"Reqs:Advertising:data\tReqs:Advertising:gif\tReqs:Advertising:html\tReqs:Advertising:image\tReqs:Advertising:other\tReqs:Advertising:script\tReqs:Advertising:styling\tReqs:Advertising:text\tReqs:Advertising:video\t"+
-		"Reqs:Analytics:data\tReqs:Analytics:gif\tReqs:Analytics:html\tReqs:Analytics:image\tReqs:Analytics:other\tReqs:Analytics:script\tReqs:Analytics:styling\tReqs:Analytics:text\tReqs:Analytics:video\t"+
-		"Reqs:Social:data\tReqs:Social:gif\tReqs:Social:html\tReqs:Social:image\tReqs:Social:other\tReqs:Social:script\tReqs:Social:styling\tReqs:Social:text\tReqs:Social:video\t"+
-		"Reqs:Content:data\tReqs:Content:gif\tReqs:Content:html\tReqs:Content:image\tReqs:Content:other\tReqs:Content:script\tReqs:Content:styling\tReqs:Content:text\tReqs:Content:video\t"+
-		"Reqs:Beacons:data\tReqs:Beacons:gif\tReqs:Beacons:html\tReqs:Beacons:image\tReqs:Beacons:other\tReqs:Beacons:script\tReqs:Beacons:styling\tReqs:Beacons:text\tReqs:Beacons:video\t"+
-		"Reqs:Other:data\tReqs:Other:gif\tReqs:Other:html\tReqs:Other:image\tReqs:Other:other\tReqs:Other:script\tReqs:Other:styling\tReqs:Other:text\tReqs:Other:video\t"+
-		"TotalBytes:Advertising:data\tTotalBytes:Advertising:gif\tTotalBytes:Advertising:html\tTotalBytes:Advertising:image\tTotalBytes:Advertising:other\tTotalBytes:Advertising:script\tTotalBytes:Advertising:styling\tTotalBytes:Advertising:text\tTotalBytes:Advertising:video\t"+
-		"TotalBytes:Analytics:data\tTotalBytes:Analytics:gif\tTotalBytes:Analytics:html\tTotalBytes:Analytics:image\tTotalBytes:Analytics:other\tTotalBytes:Analytics:script\tTotalBytes:Analytics:styling\tTotalBytes:Analytics:text\tTotalBytes:Analytics:video\t"+
-		"TotalBytes:Social:data\tTotalBytes:Social:gif\tTotalBytes:Social:html\tTotalBytes:Social:image\tTotalBytes:Social:other\tTotalBytes:Social:script\tTotalBytes:Social:styling\tTotalBytes:Social:text\tTotalBytes:Social:video\t"+
-		"TotalBytes:Content:data\tTotalBytes:Content:gif\tTotalBytes:Content:html\tTotalBytes:Content:image\tTotalBytes:Content:other\tTotalBytes:Content:script\tTotalBytes:Content:styling\tTotalBytes:Content:text\tTotalBytes:Content:video\t"+
-		"TotalBytes:Beacons:data\tTotalBytes:Beacons:gif\tTotalBytes:Beacons:html\tTotalBytes:Beacons:image\tTotalBytes:Beacons:other\tTotalBytes:Beacons:script\tTotalBytes:Beacons:styling\tTotalBytes:Beacons:text\tTotalBytes:Beacons:video\t"+
-		"TotalBytes:Other:data\tTotalBytes:Other:gif\tTotalBytes:Other:html\tTotalBytes:Other:image\tTotalBytes:Other:other\tTotalBytes:Other:script\tTotalBytes:Other:styling\tTotalBytes:Other:text\tTotalBytes:Other:video\t"
+	def Utilities.individualSites(file,traceFile,user,sumSizePerCat,avgDurPerCat,cats)
+		if not File.exist? file and file!=nil
+			fw=File.new(file,"w")
+			fw.puts "site\tReqs:Advertising\tReqs:Analytics\tReqs:Social\tReqs:Content\tReqs:Beacons\tReqs:Other\tTotalNumOfReqs\tAvgTimePerReq:Advertising\tAvgTimePerReq:Analytics\tAvgTimePerReq:Social\tAvgTimePerReq:Content\tAvgTimePerReq:Beacons\tAvgTimePerReq:Other\tTotalBytes:Advertising\tTotalBytes:Analytics\tTotalBytes:Social\tTotalBytes:Content\tTotalBytes:Beacons\tTotalBytes:Other\tReqs:Advertising:data\tReqs:Advertising:gif\tReqs:Advertising:html\tReqs:Advertising:image\tReqs:Advertising:other\tReqs:Advertising:script\tReqs:Advertising:styling\tReqs:Advertising:text\tReqs:Advertising:video\tReqs:Analytics:data\tReqs:Analytics:gif\tReqs:Analytics:html\tReqs:Analytics:image\tReqs:Analytics:other\tReqs:Analytics:script\tReqs:Analytics:styling\tReqs:Analytics:text\tReqs:Analytics:video\tReqs:Social:data\tReqs:Social:gif\tReqs:Social:html\tReqs:Social:image\tReqs:Social:other\tReqs:Social:script\tReqs:Social:styling\tReqs:Social:text\tReqs:Social:video\tReqs:Content:data\tReqs:Content:gif\tReqs:Content:html\tReqs:Content:image\tReqs:Content:other\tReqs:Content:script\tReqs:Content:styling\tReqs:Content:text\tReqs:Content:video\tReqs:Beacons:data\tReqs:Beacons:gif\tReqs:Beacons:html\tReqs:Beacons:image\tReqs:Beacons:other\tReqs:Beacons:script\tReqs:Beacons:styling\tReqs:Beacons:text\tReqs:Beacons:video\tReqs:Other:data\tReqs:Other:gif\tReqs:Other:html\tReqs:Other:image\tReqs:Other:other\tReqs:Other:script\tReqs:Other:styling\tReqs:Other:text\tReqs:Other:video\tTotalBytes:Advertising:data\tTotalBytes:Advertising:gif\tTotalBytes:Advertising:html\tTotalBytes:Advertising:image\tTotalBytes:Advertising:other\tTotalBytes:Advertising:script\tTotalBytes:Advertising:styling\tTotalBytes:Advertising:text\tTotalBytes:Advertising:video\tTotalBytes:Analytics:data\tTotalBytes:Analytics:gif\tTotalBytes:Analytics:html\tTotalBytes:Analytics:image\tTotalBytes:Analytics:other\tTotalBytes:Analytics:script\tTotalBytes:Analytics:styling\tTotalBytes:Analytics:text\tTotalBytes:Analytics:video\tTotalBytes:Social:data\tTotalBytes:Social:gif\tTotalBytes:Social:html\tTotalBytes:Social:image\tTotalBytes:Social:other\tTotalBytes:Social:script\tTotalBytes:Social:styling\tTotalBytes:Social:text\tTotalBytes:Social:video\tTotalBytes:Content:data\tTotalBytes:Content:gif\tTotalBytes:Content:html\tTotalBytes:Content:image\tTotalBytes:Content:other\tTotalBytes:Content:script\tTotalBytes:Content:styling\tTotalBytes:Content:text\tTotalBytes:Content:video\tTotalBytes:Beacons:data\tTotalBytes:Beacons:gif\tTotalBytes:Beacons:html\tTotalBytes:Beacons:image\tTotalBytes:Beacons:other\tTotalBytes:Beacons:script\tTotalBytes:Beacons:styling\tTotalBytes:Beacons:text\tTotalBytes:Beacons:video\tTotalBytes:Other:data\tTotalBytes:Other:gif\tTotalBytes:Other:html\tTotalBytes:Other:image\tTotalBytes:Other:other\tTotalBytes:Other:script\tTotalBytes:Other:styling\tTotalBytes:Other:text\tTotalBytes:Other:video"
 		else
-			fw=File.new("./sites.csv","a")
+			fw=File.new(file,"a")
+		end		
+		reqs="";str="";totalReqs=0
+		cats.each{|cat|  totalReqs+=user.size3rdparty[cat].size; reqs+=user.size3rdparty[cat].size.to_s+"\t"} 
+		if traceFile!=nil
+			str=traceFile+"\t"
 		end
-		fw.print traceFile+"\t"+user.size3rdparty['Advertising'].size.to_s+"\t"+user.size3rdparty['Analytics'].size.to_s+"\t"+user.size3rdparty['Social'].size.to_s+"\t"+user.size3rdparty['Content'].size.to_s+"\t"+user.size3rdparty['Beacons'].size.to_s+"\t"+user.size3rdparty['Other'].size.to_s+"\t"+avgDurPerCat.gsub(",","\t").gsub("[","").gsub("]","")+"\t"+sumSizePerCat.gsub(",","\t").gsub("[","").gsub("]","").to_s+"\t" 
-
-		cats=['Advertising','Analytics','Social','Content','Beacons','Other']
-		cats.each{|cat| 
-			Utilities.printCat(fw,cat,0,trace)
-		}
-		cats.each{|cat| 
-			Utilities.printCat(fw,cat,1,trace)
-		}
-		fw.puts ;
+		str+=reqs+totalReqs.to_s+"\t"
+		str+=avgDurPerCat.gsub(",","\t").gsub("[","").gsub("]","")+"\t"+sumSizePerCat.gsub(",","\t").gsub("[","").gsub("]","").to_s+"\t"
+		fileTypesStr=Utilities.printFileTypeAnalysis(cats,user)
+		fw.puts str+fileTypesStr
 		fw.close
+		return str
 	end
 
+	def Utilities.printFileTypeAnalysis(cats,user)
+		str=""
+		cats.each{|cat| 
+			str+=Utilities.printCatFileTypes(cat,0,user)
+		}
+		cats.each{|cat| 
+			str+=Utilities.printCatFileTypes(cat,1,user)
+		}
+		return str
+	end
 
 	def Utilities.perUserEventSeparation(defines)
 		fr=File.new(defines.dirs['dataDir']+"IPport_uniq")
@@ -235,8 +233,20 @@ module Utilities
 		return options
 	end
 
+	def Utilities.digitAlfa(str)
+		alfas=0; digits=0
+		return -1,-1 if str==nil
+		str.chars.each{|c| 
+			if Utilities.is_numeric?(c) 
+				digits+=1; 
+			else 
+				alfas+=1; 
+			end}
+		return alfas,digits
+	end
+
 	def Utilities.produceConfigFile(configFile,files,tables)
-		defaultOptions={"header"=>true,"printToSTDOUT"=>true, 'resultToFiles'=>
+		defaultOptions={"isThereHeader?"=>true,"printToSTDOUT?"=>true, 'resultToFiles'=>
 			{files[0]=>true, files[1]=>true,
 			files[2]=>true, files[3]=>true},
 			'tablesDB'=>{tables["publishersTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,

@@ -175,17 +175,9 @@ class Plotter
 		case whatToPlot
 		when "categoriesTrace"
 			plotType="bars"; xTitle="Categories"; yTitle="Percentage of reqs"
-			totalRows=0;adBeacons=0
-			data.each{|key, value| (key!=columns.last)? totalRows+=value[0].to_i : adBeacons=value[0].to_i}
-			totalRows-=adBeacons
-			data.each{|key, value| 
-				if key!=columns.last
-					value=value[0].to_f
-					if key=='beacons'
-						value-=data[columns.last][0].split("/")[0].to_f
-					end					
-					fw.puts key+"\t"+(value*100/totalRows).to_s
-				end	}
+			totalRows=0
+			data.each{|key, value| totalRows+=value[0].to_i}
+			data.each{|key, value| value=value[0].to_f;	fw.puts key+"\t"+(value*100/totalRows).to_s}
 		when "percSizeCategoryPerUser"
 			plotType="cdf";	xTitle="Percentage of Total Volume"; yTitle="CDF"
 			instances=Array.new()
@@ -326,7 +318,7 @@ class Plotter
 				binOth.push(elem[7].to_f)
 				size=elem[0].to_i.to_s
 			else
-				fw.puts line.gsub("noAdBeacons","beacons").gsub("other","\"actual content\"")
+				fw.puts line.gsub("other","\"actual content\"")
 			end
 		end
 		if c<3
