@@ -48,7 +48,7 @@ class Filters
 	end
 
 	def getReceiverType(host)
-		return @list.adCompaniesCat[host]
+		return -1#@lists.adCompaniesCat[host]
 	end
 
 	def is_inInria_PriceTagList? (domain,keyVal)

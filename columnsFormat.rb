@@ -9,7 +9,7 @@ module Format
 		h=Hash.new(-1)
 		if dataset==1
 			#IP_Port	UserIP	URL	UserAgent	Host	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss
-			h['IPport']=part[0].split(":")[1]
+			h['IPport']=part[0].split(":").last
 		    h['uIP']=part[1]
 		    h['url']=part[2]
 		    h['ua']=part[3]
@@ -31,7 +31,7 @@ module Format
             h['length']=part[5]
             h['dataSz']=part[6]
             h['dur']=part[7]
-			h['IPport']=part[9]
+			h['IPport']=part[9].split(":").last
 			h['verb']=part[10]
 			h['host']=part[15]
 			h['mob']=nil

@@ -1,3 +1,5 @@
+require 'geoip'
+
 module Utilities
 
 	def Utilities.loadOptions(configFile,files,tables)
@@ -243,6 +245,41 @@ module Utilities
 				alfas+=1; 
 			end}
 		return alfas,digits
+	end
+
+	def Utilities.calcPriceValue(val)
+		if Utilities.is_float? (val)
+  			# If the price is microdollars
+			value=val.to_f
+   			if(value>100000)
+       			value=value/1e6;
+			end
+    		if(value>100)
+				Utilities.warning "More than 100 in price "+val
+ 			end
+			return value,true
+		else # this is an effort to find the encrypted values
+      		if val.size==11 or val.size==16 or val.size==38 or val.size==39	# 11, 16, 38, 39
+				return val,false
+			end
+      	end
+		return nil,false
+	end
+
+	def Utilities.getGeoLocation(ip)
+		city=-1
+		Utilities.error "NOT IMPLEMENTED"
+		return city
+	end
+
+	def Utilities.analyzePublisher(publisher)
+		Utilities.error "NOT IMPLEMENTED"
+		return interest,alexaRank
+	end
+
+	def Utilities.getTod(time)
+		Utilities.error "NOT IMPLEMENTED"
+		return tod
 	end
 
 	def Utilities.produceConfigFile(configFile,files,tables)

@@ -157,7 +157,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 	def it_is_CM(row,prev,curHost,paramPair,urlAll,ids,curCat,confirmed)
 #prevTimestamp|curTimestamp|hostPrev|prevCat|hostCur|curCat|paramNamePrev|userID|paramNameCur|possibleNumberOfIDs|prevStatus|curStatus|allParamsPrev|allParamsCur
 		prevHost=prev['host']
-		params=[prev['tmstp'],row['tmstp'],prevHost,prev['cat'],curHost,curCat,prev["paramName"], paramPair.last, paramPair.first, ids,confirmed,prev['status'],row["status"],prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s]
+		params=[prev['tmstp'],row['tmstp'],prevHost,prev['cat'],curHost,curCat,prev["paramName"], paramPair.last, paramPair.first, prev['status'],row["status"],ids,confirmed,prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s]
 		id=Digest::SHA256.hexdigest (params.join("|")+prev['url'].first+"|"+urlAll.first)
 		@trace.users[@curUser].csync.push(params.push(id))
 		if @trace.users[@curUser].csyncIDs[paramPair.last]==nil
@@ -268,7 +268,8 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		url=row['url'].split("?")
 		host=row['host']
 		@isBeacon=false
-		isAd,noOfparam=beaconImprParamCkeck(url,row)
+publisher=-1
+		isAd,noOfparam=beaconImprParamCkeck(row,url,publisher)
 		type3rd=nil
 		@trace.sizes.push(row['dataSz'].to_i)
 		if not @isBeacon
@@ -336,18 +337,18 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		end
 	end
 
-    def detectPrice(row,keyVal,numOfPrices)     	# Detect possible price in parameters and returns URL Parameters in String
+    def detectPrice(row,keyVal,numOfPrices,numOfparams,adSize, adPosition,publisher)     	# Detect possible price in parameters and returns URL Parameters in String
 		domainStr=row['host']
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
 			priceTag=keyVal[0]
-			priceVal=keyVal[1]
-			if priceVal.include? "startapp" or priceVal.include? "pkg"
-				return false
-			end
+			paramVal=keyVal[1]
 			type=""
-			if Utilities.is_float?(priceVal)
+			return false if priceVal.include? "startapp" or priceVal.include? "pkg" or priceVal.include? "v-vice" or priceVal.include? "button_icon"			
+			priceVal,enc=Utilities.calcPriceValue(paramVal)
+			return false if priceVal==nil
+			if enc
 				@trace.users[@curUser].numericPrices.push(priceVal)
 				@trace.numericPrices+=1
 				type="numeric"
@@ -361,7 +362,10 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 			end
 			if @database!=nil
 				id=Digest::SHA256.hexdigest (row.values.join("|")+priceTag+"|"+priceVal+"|"+type)
-params=[row['tmstp'],domainStr,priceTag.downcase,priceVal,type,row['mob'],row['dev'],row['browser'],row['url'],id]
+				time=row['tmstp']
+				adx=nil,ssp=nil,dsp=nil
+				interest,pubPopularity=Utilities.analyzePublisher(publisher)
+				params=[type,time,domainStr,priceTag.downcase,priceVal, row['dataSz'], numOfparams, adSize, adPosition,Utilities.getGeoLocation(row['uIP']),Utilities.getTod(time),interest,pubPopularity,row['IPport'],ssp,dsp,adx,row['mob'],row['dev'],row['browser'],row['url'],id]
 				@database.insert(@defines.tables['priceTable'],params)
 			end
 			return true
@@ -379,17 +383,19 @@ params=[row['tmstp'],domainStr,priceTag.downcase,priceVal,type,row['mob'],row['d
 		return false
     end
 
-	def checkParams(row,url)
+	def checkParams(row,url,publisher)
      	if (url.last==nil)
      		return 0,false
     	end
 		isAd=false
+adSize=-1
+adPosition=-1
         fields=url.last.split('&')
 		numOfPrices=0
         for field in fields do
             keyVal=field.split("=")
             if(not @filters.is_GarbageOrEmpty?(keyVal))
-				if(detectPrice(row,keyVal,numOfPrices))
+				if detectPrice(row,keyVal,numOfPrices,fields.length,adSize, adPosition,publisher)
 					numOfPrices+=1
 					Utilities.warning ("Price Detected in Beacon") if @isBeacon
 					isAd=true
@@ -422,13 +428,13 @@ params=[row['tmstp'],domainStr,priceTag.downcase,priceVal,type,row['mob'],row['d
 		@trace.beacons.push([tmpstp,row['IPport'],u,type,row['mob'],row['dev'],row['browser'],id])
 	end
 
-	def beaconImprParamCkeck(url,row) 
+	def beaconImprParamCkeck(row,url,publisher)
         @isBeacon=false
 		isAd=false
         if @filters.is_Beacon?(row['url'],row['type'],false) 		#findBeacon in URL
             beaconSave(url.first,row)
         end
-        paramNum, result=checkParams(row,url)             #check ad in URL params
+        paramNum, result=checkParams(row,url,publisher)             #check ad in URL params
         if(result==true or detectImpressions(url,row))
             isAd=true
 		end
