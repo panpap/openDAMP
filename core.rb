@@ -10,7 +10,6 @@ class Core
 
 	def initialize(defs,filters)
 		@defines=defs
-		@options=@defines.options
 		@filters=filters	
 		@trace=Trace.new(@defines)
 		@window=-1
@@ -32,25 +31,26 @@ class Core
 	end
 
 	def analysis
+		options=@defines.options['resultToFiles']
 		@defines.puts "> Stripping parameters, detecting and classifying Third-Party content..."
 		fw=nil
 		@defines.puts "> Dumping to files..."
-		if @defines.options[@defines.files['devices']] and not File.size?@defines.files['devices']
+		if options[@defines.files['devices'].split("/").last] and not File.size?@defines.files['devices']
 			fd=File.new(@defines.files['devices'],'w')
 			@trace.devs.each{|dev| fd.puts dev}
 			fd.close
 		end
-		if @defines.options[@defines.files['restParamsNum']] and not File.size?@defines.files['restParamsNum']
+		if options[@defines.files['restParamsNum'].split("/").last] and not File.size?@defines.files['restParamsNum']
 			fpar=File.new(@defines.files['restParamsNum'],'w')
 			@trace.restNumOfParams.each{|p| fpar.puts p}
 			fpar.close
 		end
-		if @defines.options[@defines.files['adParamsNum']] and not File.size?@defines.files['adParamsNum']
+		if options[@defines.files['adParamsNum'].split("/").last] and not File.size?@defines.files['adParamsNum']
 			fpar=File.new(@defines.files['adParamsNum'],'w')
 			@trace.adNumOfParams.each{|p| fpar.puts p}
 			fpar.close
 		end
-		if @defines.options[@defines.files['size3rdFile']] and not File.size?@defines.files['size3rdFile']
+		if options[@defines.files['size3rdFile'].split("/").last] and not File.size?@defines.files['size3rdFile']
 			fsz=File.new(@defines.files['size3rdFile'],'w')
 			@trace.sizes.each{|sz| fsz.puts sz}
 			fsz.close
@@ -83,8 +83,8 @@ class Core
 				return false
 			end		#FILTER ROW
 		end
-		cookieSyncing(row)
-		filterRow(row)
+		cat=filterRow(row)
+		cookieSyncing(row,cat)
 		return true
 	end
 
@@ -120,7 +120,7 @@ class Core
 		fr.close
 	end
 
-	def cookieSyncing(row)
+	def cookieSyncing(row,cat)
 		firstSeenUser?(row)
 		@params_cs[@curUser]=Hash.new(nil) if @params_cs[@curUser]==nil
 		urlAll=row['url'].split("?")
@@ -128,36 +128,56 @@ class Core
 		fields=urlAll.last.split('&')
 		return if fields.size>4 # usually there are very few params_cs (only sessionids)
 		ids=0
+confirmed=0
 		for field in fields do
 			paramPair=field.split("=")
 			alfa,digit=Utilities.digitAlfa(paramPair.last)
 			if not @filters.is_GarbageOrEmpty?(paramPair.last) and digit>3 and alfa>4 
 				ids+=1
-				if @params_cs[@curUser][paramPair.last]==nil
-					@params_cs[@curUser][paramPair.last]={"url"=>urlAll,"paramName"=>paramPair.first,"tmstp"=>row['tmstp']}
-				else
-					prev=@params_cs[@curUser][paramPair.last]
-					prevHost=Utilities.calculateHost(prev['url'].first)
-					curHost=Utilities.calculateHost(urlAll.first)
-					if @filters.getRootHost(prevHost,nil)!=@filters.getRootHost(curHost,nil)
-						params=[prev['tmstp'],row['tmstp'],prevHost,curHost,prev["paramName"], paramPair.last, paramPair.first, ids,
-								prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s]
-						id=Digest::SHA256.hexdigest (params.join("|")+prev['url'].first+"|"+urlAll.first)
-						@trace.users[@curUser].csync.push(params.push(id))
-						@trace.cooksyncs+=1
-					end				
+				curHost=Utilities.calculateHost(urlAll.first)
+confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.eql?(word)}
+				if cat==nil
+					cat=@filters.getCategory(urlAll,curHost,@curUser)
+					cat="Other" if cat==nil
 				end
+				if @params_cs[@curUser][paramPair.last]==nil #first seen ID
+					@params_cs[@curUser][paramPair.last]=Array.new
+				else	#have seen that ID before -> possible cookieSync
+					prev=@params_cs[@curUser][paramPair.last].last
+					if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil)
+						it_is_CM(row,prev,curHost,paramPair,urlAll,ids,cat,confirmed)
+					end			
+				end
+				@params_cs[@curUser][paramPair.last].push({"url"=>urlAll,"paramName"=>paramPair.first,"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>curHost})
 			end
 		end
 	#	puts row['url']+" "+ids.to_s if ids>0
 	end
 
-def csyncResults()
-	if @database!=nil
-		@defines.puts "> Dumping Cookie synchronization results..."	
-		@trace.dumpUserRes(@database,nil,nil,@filters.getCats,@defines.options['tablesDB'])	
+	def it_is_CM(row,prev,curHost,paramPair,urlAll,ids,curCat,confirmed)
+#prevTimestamp|curTimestamp|hostPrev|prevCat|hostCur|curCat|paramNamePrev|userID|paramNameCur|possibleNumberOfIDs|prevStatus|curStatus|allParamsPrev|allParamsCur
+		prevHost=prev['host']
+		params=[prev['tmstp'],row['tmstp'],prevHost,prev['cat'],curHost,curCat,prev["paramName"], paramPair.last, paramPair.first, ids,confirmed,prev['status'],row["status"],prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s]
+		id=Digest::SHA256.hexdigest (params.join("|")+prev['url'].first+"|"+urlAll.first)
+		@trace.users[@curUser].csync.push(params.push(id))
+		if @trace.users[@curUser].csyncIDs[paramPair.last]==nil
+			@trace.users[@curUser].csyncIDs[paramPair.last]=0
+		end
+		
+		if 	@trace.users[@curUser].csyncHosts[prevHost+">"+curHost]==nil
+			@trace.users[@curUser].csyncHosts[prevHost+">"+curHost]=Array.new
+		end
+		@trace.users[@curUser].csyncHosts[prevHost+">"+curHost].push(ids)
+		@trace.users[@curUser].csyncIDs[paramPair.last]+=1
+		@trace.cooksyncs+=1
 	end
-end
+
+	def csyncResults()
+		if @database!=nil
+			@defines.puts "> Dumping Cookie synchronization results..."	
+			@trace.dumpUserRes(@database,nil,nil,@filters,@defines.options['tablesDB'])	
+		end
+	end
 #------------------------------------------------------------------------------------------------
 
 
@@ -252,7 +272,7 @@ end
 		type3rd=nil
 		@trace.sizes.push(row['dataSz'].to_i)
 		if not @isBeacon
-			type3rd=@filters.is_Ad?(url,host,@curUser)
+			type3rd=@filters.getCategory(url,host,@curUser)
 		end
 		if type3rd!=nil	#	3rd PARTY CONTENT
 			collector(type3rd,row)
@@ -280,7 +300,7 @@ end
 				if @isBeacon==false and @filters.is_Beacon?(row['url'],row['type'],true)	#Beacon NOT ad-related2
 					type3rd="Beacons"
 					@isBeacon=true
-					beaconSave(url[0],row)
+					beaconSave(url.first,row)
 				else	# Rest
 					type3rd="Other"
 					@trace.party3rd[type3rd]+=1
@@ -293,6 +313,7 @@ end
 			end
 			collector(type3rd,row)
 		end
+		return type3rd
 	end
 
 	def collector(contenType,row)
@@ -311,7 +332,7 @@ end
 			@defines.puts "> Dumping per user results to database..."
 			durStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
 			sizeStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
-			@trace.dumpUserRes( @database,durStats,sizeStats,@filters.getCats,@defines.options['tablesDB'])
+			@trace.dumpUserRes(@database,durStats,sizeStats,@filters,@defines.options['tablesDB'])
 		end
 	end
 
@@ -340,7 +361,8 @@ end
 			end
 			if @database!=nil
 				id=Digest::SHA256.hexdigest (row.values.join("|")+priceTag+"|"+priceVal+"|"+type)
-				@database.insert(@defines.tables['priceTable'], [id,row['tmstp'],domainStr,priceTag.downcase,priceVal,type,row['mob'],row['dev'],row['browser'],row['url']])
+params=[row['tmstp'],domainStr,priceTag.downcase,priceVal,type,row['mob'],row['dev'],row['browser'],row['url'],id]
+				@database.insert(@defines.tables['priceTable'],params)
 			end
 			return true
 		end
@@ -369,7 +391,7 @@ end
             if(not @filters.is_GarbageOrEmpty?(keyVal))
 				if(detectPrice(row,keyVal,numOfPrices))
 					numOfPrices+=1
-	Utilities.warning ("Price Detected in Beacon") if @isBeacon
+					Utilities.warning ("Price Detected in Beacon") if @isBeacon
 					isAd=true
 				end
 				if(@filters.is_Ad_param?(keyVal))
@@ -382,7 +404,7 @@ end
 			
 	def beaconSave(url,row)         #findBeacons
 		@isBeacon=true
-		urlStr=url.split("%")[0].split(";")[0]		
+		urlStr=url.split("%").first.split(";").first		
 		temp=urlStr.split("/")	   #beacon type
 		words=temp.size
 		slashes=urlStr.count("/")
@@ -397,14 +419,14 @@ end
 		@trace.party3rd["Beacons"]+=1
 		tmpstp=row['tmstp'];u=row['url']
 		id=Digest::SHA256.hexdigest (row.values.join("|"))
-		@trace.beacons.push([id,tmpstp,row['IPport'],row['userIP'],u,type,row['mob'],row['dev'],row['browser']])
+		@trace.beacons.push([tmpstp,row['IPport'],u,type,row['mob'],row['dev'],row['browser'],id])
 	end
 
 	def beaconImprParamCkeck(url,row) 
         @isBeacon=false
 		isAd=false
         if @filters.is_Beacon?(row['url'],row['type'],false) 		#findBeacon in URL
-            beaconSave(url[0],row)
+            beaconSave(url.first,row)
         end
         paramNum, result=checkParams(row,url)             #check ad in URL params
         if(result==true or detectImpressions(url,row))

@@ -5,12 +5,14 @@ class Database
 
 	def initialize(defs,dbName)		
 		@defines=defs
-		if dbName==nil
+		if dbName==nil and defs!=nil
 			@db=SQLite3::Database.open @defines.dirs['rootDir']+@defines.resultsDB
 		else
 			@db=SQLite3::Database.open dbName
 		end
-		@options=@defines.options
+		if defs!=nil
+			@options=@defines.options
+		end
 		@alerts=Hash.new(0)
 	end
 
@@ -83,6 +85,7 @@ private
 
 	def blockOutput(tbl)
 		table=arrayCase(tbl)
+		return false if @defines==nil
 		blockOptions=@defines.options['tablesDB']
 		return false if blockOptions[table]==nil
 		return (not blockOptions[table])
@@ -116,13 +119,13 @@ private
 			if e.to_s.include? "no such table" 
 				Utilities.error "SQLite Exception: "+e.to_s
 			elsif e.to_s.include? "is not unique"
-					table=command.split("INTO")[1].split("VALUES")[0].gsub("'","")
+					table=command.split("INTO ")[1].split("VALUES")[0].gsub("'","")
 					if @alerts[table]==nil or @alerts[table]==0
 						Utilities.warning "not unique: "+table+"\n"+command+"("+params+")"
 					end
 					@alerts[table]+=1
 			elsif e.to_s.include? "UNIQUE constraint failed"
-					table=e.to_s.split(":")[1].split(".")[0]
+					table=e.to_s.split(": ")[1].split(".")[0]
 					if @alerts[table]==nil or @alerts[table]==0
 						Utilities.warning "UNIQUE constraint failed: "+table+"\n"+command+"("+params+")"
 					end

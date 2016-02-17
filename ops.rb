@@ -43,7 +43,7 @@ class Operations
 						@func.findStrInRows(row,str)
 					end
 					if function==4		#find
-						@func.cookieSyncing(row)
+						@func.cookieSyncing(row,nil)
 					end
 				end
 			end

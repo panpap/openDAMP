@@ -248,7 +248,7 @@ module Utilities
 	def Utilities.produceConfigFile(configFile,files,tables)
 		defaultOptions={"isThereHeader?"=>true,"printToSTDOUT?"=>true, 'resultToFiles'=>
 			{files[0]=>true, files[1]=>true,
-			files[2]=>true, files[3]=>true},
+			files[2]=>true, files[3]=>true,files[4]=>true,files[5]=>true},
 			'tablesDB'=>{tables["publishersTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
 			tables["impTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
 			tables["adsTable"].keys[0]=>true, tables["userTable"].keys[0]=>true,

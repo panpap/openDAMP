@@ -54,7 +54,6 @@ module Format
 			if part[2].include? "http"
 				h['url']=part[2].split("://").last
 			end
-
 			h['host']=Utilities.calculateHost(h['url'])
 			h['type']=filter.getTypeOfContent(h['url'],part[3])
 			h['tmstp']=part[4]

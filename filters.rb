@@ -9,11 +9,13 @@ class Filters
 		@defines=defs
 		@publishers=Hash.new(nil)
 		@latency=Array.new
-		@lists=KeywordsLists.new(@defines.files["filterFile"])
-		@db = Database.new(@defines,@defines.beaconDB)
 		@lastPub=Hash.new(nil)
-		@cats=@lists.sameParty.keys
-		@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
+		if @defines!=nil
+			@lists=KeywordsLists.new(@defines.files["filterFile"])
+			@db = Database.new(@defines,@defines.beaconDB)
+			@cats=@lists.sameParty.keys
+			@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
+		end
 	end
 
 	def getCats
@@ -43,6 +45,10 @@ class Filters
 			return @lists.types[type]
 		end
 		return -1
+	end
+
+	def getReceiverType(host)
+		return @list.adCompaniesCat[host]
 	end
 
 	def is_inInria_PriceTagList? (domain,keyVal)
@@ -110,13 +116,13 @@ class Filters
     end
 
 
-	def is_GarbageOrEmpty?(str) #filter out version, density parameters
+	def is_GarbageOrEmpty?(str) 
 		return true if str==nil
 		if str.kind_of?(Array) and (str[1]==nil or str[0].eql? "v" or str[0].downcase.include? "ver" \
                     or str[0].eql? "density" or str[0].eql? "u_sd")
 			return true
 		else
-			return (str.size<8 or (["http","utf","www","text","image"].any? { |word| str.downcase.include?(word)}))
+			return (str.size<17 or (["http","utf","www","text","image"].any? { |word| str.downcase.include?(word)}))
     	end
 	end
 
@@ -124,7 +130,7 @@ class Filters
        return (@lists.keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
     end
 
-	def is_Ad?(urlAll,host,user)
+	def getCategory(urlAll,host,user)
 		url=urlAll[0]
 		rootUrl=url.gsub("/","")
 		if rootUrl.count('.')==2
@@ -146,7 +152,8 @@ class Filters
 		# FIND TLD AND DOMAIN
 		domain,tld=Utilities.tokenizeHost(host)
 		# FILTER USING DISCONNECT
-        if cat=findCategory(host,domain,tld,@lastPub[user])
+		cat,domain,tld=externalList(host,@lastPub[user])
+        if cat!=nil
 			return cat
         else           
 			 # FILTER USING KEYWORDS
@@ -187,26 +194,29 @@ class Filters
 		end
 	end
 
+
 #-----------------------------------------------------------------------------------
 
 private
 
-	def findCategory(host,domain,tld,lastPublisher)
+
+	def externalList(host,lastPublisher)
 		cat=nil
+		domain,tld=Utilities.tokenizeHost(host)
         if result=@lists.disconnect[host]                # APPLY FILTER
             cat=result.split("#")[0]
         elsif (host.count('.')>1 && result=@lists.disconnect[domain+"."+tld])      # APPLY FILTER NOT IN SUBDOMAIN
 			host=domain+"."+tld
             cat=result.split("#")[0]
 		end
-		if cat=="Content"
+		if cat=="Content" and lastPublisher!=nil
 			rootHostA=getRootHost(host,"Content")
 			rootHostB=getRootHost(lastPublisher,"Content")
 			if rootHostA!=nil and rootHostB!=nil and rootHostA==rootHostB	#whitelist same parties
 				cat="Other"	
 			end
 		end
-		return cat
+		return cat,domain,tld
 	end
 
     def is_1pixel_image?(url)

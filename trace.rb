@@ -86,19 +86,39 @@ class Trace
 		end
 	end
 
-	def dumpUserRes(db,durStats,sizeStats,cats,allowOptions)
+	def dumpUserRes(db,durStats,sizeStats,filters,allowOptions)
+		cats=filters.getCats
+		options=@defines.options['resultToFiles']
 		for id,user in users do
+			#ADVERTISEMENTS
 			if user.ads!=nil and allowOptions[@defines.tables["adsTable"].keys[0]]
-				user.ads.each{|row| Utilities.printRowToDB(row,db,@defines.tables['adsTable'],nil)}
+				user.ads.each{|row|		
+					receiverType=filters.getReceiverType(row['host'])
+					params=[row['tmstp'],receiverType,row['IPport'],row['url'],row['dataSz'],row['dur'],row['mob'],row['dev'],row['browser']]
+					aid=Digest::SHA256.hexdigest (params.join("|"));
+					db.insert(@defines.tables['adsTable'], params.push(aid))}
 			end
-			if user.csync!=nil and allowOptions[@defines.tables["csyncTable"].keys[0]]
+			#COOKIE SYNC
+			if user.csync!=nil and allowOptions[@defines.tables["csyncTable"].keys[0]]				
 				user.csync.each{|elem| db.insert(@defines.tables['csyncTable'], elem)}
+				if options[@defines.files['cmIDcount'].split("/").last] and not File.size?@defines.files['cmIDcount']
+					fw=File.new(@defines.files["cmIDcount"],"w")
+					user.csyncIDs.each{|cookieID, count| fw.puts count.to_s+"\t"+cookieID+"\t"+id.to_s}
+					fw.close
+				end
+				if options[@defines.files['cmHost'].split("/").last] and not File.size?@defines.files['cmHost']
+					fw=File.new(@defines.files["cmHost"],"w")
+					user.csyncHosts.each{|hosts, array| fw.puts id.to_s+"\t"+hosts+"\t"+array.size.to_s+"\t"+array.to_s}
+					fw.close
+				end
 			end
+			#PUBLISHERS
 			if user.publishers!=nil and allowOptions[@defines.tables["publishersTable"].keys[0]]
 				user.publishers.each{|row| 
 					tid=Digest::SHA256.hexdigest (row.values.join("|")); 
-					db.insert(@defines.tables['publishersTable'], [tid,row['tmstp'],row['IPport'],row['uIP'],row['url'],row['host'],row['mob'],row['dev'],row['browser']])}
+					db.insert(@defines.tables['publishersTable'], [row['tmstp'],row['IPport'],row['url'],row['host'],row['mob'],row['dev'],row['browser'],tid])}
 			end
+			#3rd PARTY
 			if user.size3rdparty!=nil and sizeStats!=nil
 				user.size3rdparty.each{|category, sizes| sizeStats[category]=Utilities.makeStats(sizes)}
 			end
