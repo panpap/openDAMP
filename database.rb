@@ -1,5 +1,4 @@
 require 'sqlite3'
-require 'uri'
 
 class Database
 

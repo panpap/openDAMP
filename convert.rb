@@ -1,8 +1,14 @@
+require "ipaddress"
 require 'maxminddb'
 
 class Convert
 	def initialize(defs)
 		@resouces=defs.resourceFiles
+		@interests=loadInterests(defs.resourceFiles["interestsFile"])
+	end
+
+	def advertiserType(host)
+		return -1
 	end
 
 	def calcPriceValue(val)
@@ -28,13 +34,18 @@ class Convert
 		city=-1
 		return city if ips==nil
 		if ips.kind_of?(Array)
+			return city if ips.size==0
 			city=Hash.new(0)
 			ips.each{|addr| 
-				geo=fromIPtoGeo(addr)
-				city[geo]+=1	
+				if IPAddress.valid? addr
+					geo=fromIPtoGeo(addr)
+					city[geo]+=1
+				end	
 			}
 		else
-			city=fromIPtoGeo(ips)
+			if IPAddress.valid? ips
+				city=fromIPtoGeo(ips)
+			end
 		end
 		return city
 	end
@@ -42,17 +53,18 @@ class Convert
 	def analyzePublisher(publisher)
 		interest=-1;alexaRank=-1
 		return interest,alexaRank if publisher==nil
-		interest=extractInterests(publisher)
-		Utilities.warning "NOT IMPLEMENTED"
-		return interest,alexaRank
+		interests=extractInterests(publisher)
+		alexaRank=-1
+		Utilities.warning "ALEXA RANK IS NOT IMPLEMENTED"
+		return interests,alexaRank
 	end
 
 	def getTod(time)
 		return -1 if time==nil
 		if time.to_s.size==13
-			time=time/ 1000.0
+			time=time.to_f/ 1000.0
 		end
-		tod=Time.at(time)#.strftime("%H:%M:%S.%L_%d-%m-%Y")
+		tod=Time.at(time.to_i)#.strftime("%H:%M:%S.%L_%d-%m-%Y")
 		if tod.hour>=00 and tod.hour<=03
 			return "00:00-03:00"
 		elsif tod.hour>=4 and tod.hour<=7
@@ -74,7 +86,7 @@ class Convert
 	def extractInterests(publishers)
 		interests=Array.new
 		return -1 if publishers==nil
-		publishers.each{|host| interest,alexaRank=analyzePublisher(host); interests.push(interest)}
+		publishers.each{|pub| interests.push(hostToInterest(pub['host']))}
 		return interests
 	end
 
@@ -82,6 +94,19 @@ class Convert
 
 private
 
+	def hostToInterest(pubHost)
+		ints=@interests[pubHost]
+		if ints==nil
+puts "AGAIN "+pubHost
+			str=""
+			@interests.keys.any? {|word| str=pubHost.downcase.include?(word)}
+			ints=@interests[str]
+		end
+puts ints
+abort
+		return ints
+	end
+	
 	def fromIPtoGeo(ip)
 		db = MaxMindDB.new(@resouces["geoCity"])
 		ret = db.lookup(ip)
@@ -94,5 +119,16 @@ private
 		else
 			return ip
 		end
+	end
+
+	def loadInterests(filename)
+		interests=Hash.new
+		File.foreach(filename) {|line|
+			if line.include?("\t")
+				parts=line.gsub('"',"").split("\t")
+				interests[parts.first]=parts.last.split(" >").first
+			end
+		}
+		return interests
 	end
 end

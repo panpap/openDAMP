@@ -1,4 +1,4 @@
-load 'defines.rb'
+load 'define.rb'
 load 'ops.rb'
 require 'optparse'
 
@@ -63,6 +63,8 @@ OptionParser.new { |opts|
 	end
 
 	opts.on('-g', '--config', 'Config') do
+		puts "> Install needed gems"
+		system("sudo gem install ipaddress maxminddb fastimage json sqlite3")
 		puts "> Config file check"
 		ops=Operations.new(ARGV[0])
 	end

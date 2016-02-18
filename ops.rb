@@ -115,7 +115,7 @@ class Operations
 		end
 		Dir.mkdir @defines.dirs['plotDir'] unless File.exists?(@defines.dirs['plotDir'])
 		if @database==nil
-			@database=Database.new(@defines,nil,nil)
+			@database=Database.new(@defines,nil)
 		end
 		plotter=Plotter.new(@defines,@database)
 		puts "> Plotting existing output from <"+path+">..."

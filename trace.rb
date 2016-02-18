@@ -1,8 +1,8 @@
-load 'user.rb'
+load 'entities.rb'
 
 class Trace
-	attr_accessor :adSize, :cooksyncs,:fromBrowser, :beacons, :party3rd,:restNumOfParams, :adNumOfParams, :devs, :numericPrices, :mobDev, 
-				:numOfMobileAds, :totalImps, :users, :hashedPrices, :sizes, :totalParamNum
+	attr_accessor :adSize, :cooksyncs, :fromBrowser, :beacons, :party3rd,:restNumOfParams, :adNumOfParams, :devs, :numericPrices, :mobDev, 
+				:numOfMobileAds, :totalImps, :users, :hashedPrices, :sizes, :totalParamNum, :advertisers
 
 	def initialize(defs)
 		@defines=defs
@@ -15,6 +15,7 @@ class Trace
 		@fromBrowser=0
 		@numericPrices=0
 		@numOfMobileAds=0
+		@advertisers=Hash.new(nil)
 		@beacons=Array.new
 		@adNumOfParams=Array.new
 		@restNumOfParams=Array.new
@@ -33,7 +34,7 @@ class Trace
 		return Utilities.makeStats(@sizes)
 	end
 
-	def results_toString(db,traceTable,beaconTable,cats)
+	def results_toString(db,traceTable,beaconTable,advertiserTable,cats)
 		totalNumofRows=(@party3rd['Advertising']+@party3rd['Analytics']+@party3rd['Social']+@party3rd['Beacons']+@party3rd['Content']+@party3rd['Other'])
 		sizeStats=analyzeTotalAds
 		#PRINTING RESULTS
@@ -47,18 +48,31 @@ class Trace
 			"\n- Total Size: "+sizeStats['sum'].to_s+" Bytes\n\tAverage per req: "+
 			sizeStats['avg'].to_s+" Bytes"+"\n\nADVERTISING STATS\n- AdRelated traffic from mobile devices: "+@numOfMobileAds.to_s+"/"+
 			@party3rd['Advertising'].to_s+"\n- Prices Detected "+(@numericPrices+@hashedPrices).to_s+"\n\tHashed Price tags found: "+@hashedPrices.to_s+
-			"\n\tNumeric Price tags found: "+@numericPrices.to_s+"\n- Advertising reqs Total size "+(Utilities.makeStats(@adSize)["sum"]).to_s+
-			"\n- Cookie Synchronizations detected: "+cooksyncs.to_s+
+			"\n\tNumeric Price tags found: "+@numericPrices.to_s+"\n- Advertising reqs Total size: "+(Utilities.makeStats(@adSize)["sum"]).to_s+
+			"\n- Cookie Synchronizations detected: "+cooksyncs.to_s+"\n- Unique Advertisers: "+@advertisers.size.to_s
 			"\n------------\n"#-Impressions detected "+@totalImps.to_s+"\n"
 
 
 			if db!=nil
-				@beacons.each{|array| db.insert(beaconTable,array)}			
+				#beacons				
+				@beacons.each{|array| db.insert(beaconTable,array)}	
+		
+				#traceresults		
 				params=[totalNumofRows,@users.size,@party3rd['Advertising'],@party3rd['Analytics'],@party3rd['Social'],
-				@party3rd['Content'],@party3rd['Beacons'],@party3rd['Other'],sizeStats['sum'],@mobDev,@fromBrowser,@numOfMobileAds.to_s+"/"+
-				@party3rd['Advertising'].to_s,@hashedPrices,@numericPrices,	@totalImps]	
+					@party3rd['Content'],@party3rd['Beacons'],@party3rd['Other'],sizeStats['sum'],@mobDev,@fromBrowser,@numOfMobileAds.to_s+"/"+
+					@party3rd['Advertising'].to_s,@hashedPrices,@numericPrices,	@totalImps]	
 				id=Digest::SHA256.hexdigest (params.join("|"))	
 				db.insert(traceTable,params.push(id))
+
+				#advertisers
+				@advertisers.each{|host, attrs| 
+					sizes=Utilities.makeStats(attrs.sizePerReq)
+					durs=Utilities.makeStats(attrs.durPerReq)
+					reqPerUser=Utilities.makeStats(attrs.reqsPerUser.values)
+					Utilities.warning "CAN'T HAPPEN" if reqPerUser['sum']!=attrs.totalReqs
+					params=[host, attrs.totalReqs, attrs.reqsPerUser.size, reqPerUser['avg'], durs['avg'], durs['sum'], sizes['avg'], sizes['sum'], attrs.type]
+					db.insert(advertiserTable, params)
+				}				
 			end
 			return s
 		else
@@ -137,7 +151,7 @@ class Trace
 					sumDuration=(durStats['Advertising']['sum'].to_i+durStats['Analytics']['sum'].to_i+durStats['Social']['sum'].to_i+durStats['Content']['sum'].to_i+durStats['Beacons']['sum'].to_i+durStats['Other']['sum'].to_i)
 					avgBytesPerReq=Utilities.makeStats(user.size3rdparty['Advertising']+user.size3rdparty['Analytics']+user.size3rdparty['Social']+user.size3rdparty['Content']+user.size3rdparty['Beacons']+user.size3rdparty['Other'])['avg']
 					avgDurationOfReq=Utilities.makeStats(user.dur3rd['Advertising']+user.dur3rd['Analytics']+user.dur3rd['Social']+user.dur3rd['Content']+user.dur3rd['Beacons']+user.dur3rd['Other'])['avg']
-					locations=conv.getGeoLocation(user.uIPs)
+					locations=conv.getGeoLocation(user.uIPs.keys)
 					interests=conv.extractInterests(user.publishers)
 					params=[id, totalRows, user.size3rdparty['Advertising'].size, user.size3rdparty['Analytics'].size, user.size3rdparty['Social'].size, 			
 						user.size3rdparty['Content'].size, user.size3rdparty['Beacons'].size, user.size3rdparty['Other'].size, avgDurPerCat, sumSizePerCat, 
