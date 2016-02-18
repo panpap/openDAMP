@@ -157,7 +157,8 @@ class Trace
 						totalBytes,avgBytesPerReq, sumDuration, avgDurationOfReq, user.hashedPrices.length, user.numericPrices.length, user.imp.length, 
 						user.publishers.size, user.csync.size, locations.size, locations.to_s]
 					db.insert(@defines.tables['userTable'],params+fileTypesArray)
-					db.insert(@defines.tables['visitsTable'],[id,user.pubVisits.to_s])
+					totalVisits=Utilities.makeStats(user.pubVisits.values)
+					db.insert(@defines.tables['visitsTable'],[id,totalVisits['sum'],user.pubVisits.to_s])
 				end
 				if users.size==1
 					@defines.puts "> Dumping results to <"+@defines.siteFile+"> for the individual website..."

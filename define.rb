@@ -81,7 +81,7 @@ class Defines
 			"priceTable"=>{"prices"=> 'type VARCHAR, timestamp BIGINT, host VARCHAR, priceTag VARCHAR, priceValue VARCHAR, bytes INTEGER, numOfParams INTEGER, adSize	VARCHAR, adPosition VARCHAR, userLocation VARCHAR, TOD VARCHAR, interest VARCHAR, pubPopularity INTEGER, userId VARCHAR, associatedSSP VARCHAR, associatedDSP VARCHAR, associatedADX VARCHAR, mob VARCHAR, device VARCHAR, browser VARCHAR, url VARCHAR, id VARCHAR PRIMARY KEY'},
 			"traceTable"=>{"traceResults"=>'totalRows BIGINT, users INTEGER, advertising INTEGER, analytics INTEGER, social INTEGER, third_party_content INTEGER, beacons INTEGER, other INTEGER, thirdPartySize_total INTEGER, totalMobileReqs INTEGER, browserReqs INTEGER,mobileAdReqs VARCHAR, hashedPrices INTEGER, numericPrices INTEGER, numImpressions INTEGER,id VARCHAR PRIMARY KEY'},
 			"csyncTable"=>{"csyncResults"=>'prevTimestamp BIGINT,curTimestamp BIGINT,hostPrev VARCHAR,prevCat VARCHAR, hostCur VARCHAR,curCat VARCHAR, paramNamePrev VARCHAR, userID VARCHAR, paramNameCur VARCHAR, prevStatus INTEGER, curStatus INTEGER, possibleNumberOfIDs INTEGER,confirmed INTEGER, allParamsPrev VARCHAR, allParamsCur VARCHAR, id VARCHAR PRIMARY KEY'},
-			"visitsTable"=>{"userVisits"=> 'userID VARCHAR PRIMARY KEY, visits VARCHAR'}
+			"visitsTable"=>{"userVisits"=> 'userID VARCHAR PRIMARY KEY, totalVisits INTEGER,visits VARCHAR'}
 		}
 
 		#LOAD OPTIONS
