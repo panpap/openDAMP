@@ -1,22 +1,22 @@
 {
-	"isThereHeader?": true,
+	"isThereHeader?": false,
 	"printToSTDOUT?": true,
 	"resultToFiles": {
-		"devices.csv": true,
-		"sizes3rd.csv": true,
-		"adParamsNum.csv": true,
-		"restParamsNum.csv": true,
-		"cmIDcount.csv": true,
-		"cmHosts.csv": true
+		"devices.csv": false,
+		"sizes3rd.csv": false,
+		"adParamsNum.csv": false,
+		"restParamsNum.csv": false,
+		"cmIDcount.csv": false,
+		"cmHosts.csv": false
 	},
 	"tablesDB": {
 		"publishers": false,
-		"beacons": true,
+		"beacons": false,
 		"impressions": false,
-		"advertisements": true,
+		"advertisements": false,
 		"userResults": true,
 		"prices": true,
 		"traceResults": true,
-		"csyncResults": true
+		"csyncResults": false
 	}
 }

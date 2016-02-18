@@ -1,7 +1,8 @@
+load 'convert.rb'
 load 'trace.rb'
 load 'filters.rb'
 load 'database.rb'
-load 'columnsFormat.rb'
+require 'digest/sha1'
 
 class Core
 	attr_writer :window, :cwd
@@ -10,6 +11,7 @@ class Core
 
 	def initialize(defs,filters)
 		@defines=defs
+		@convert=Convert.new(@defines)
 		@filters=filters	
 		@trace=Trace.new(@defines)
 		@window=-1
@@ -187,6 +189,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		@curUser=row['IPport']
 		if @trace.users[@curUser]==nil		#first seen user
 			@trace.users[@curUser]=User.new	
+			@trace.users[@curUser].uIPs=Hash.new
 		end
 	end
 
@@ -364,8 +367,8 @@ publisher=-1
 				id=Digest::SHA256.hexdigest (row.values.join("|")+priceTag+"|"+priceVal+"|"+type)
 				time=row['tmstp']
 				adx=nil,ssp=nil,dsp=nil
-				interest,pubPopularity=Utilities.analyzePublisher(publisher)
-				params=[type,time,domainStr,priceTag.downcase,priceVal, row['dataSz'], numOfparams, adSize, adPosition,Utilities.getGeoLocation(row['uIP']),Utilities.getTod(time),interest,pubPopularity,row['IPport'],ssp,dsp,adx,row['mob'],row['dev'],row['browser'],row['url'],id]
+				interest,pubPopularity=@convert.analyzePublisher(publisher)
+				params=[type,time,domainStr,priceTag.downcase,priceVal, row['dataSz'], numOfparams, adSize, adPosition,@convert.getGeoLocation(row['uIP']),@convert.getTod(time),interest,pubPopularity,row['IPport'],ssp,dsp,adx,row['mob'],row['dev'],row['browser'],row['url'],id]
 				@database.insert(@defines.tables['priceTable'],params)
 			end
 			return true

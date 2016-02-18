@@ -1,6 +1,5 @@
 load 'user.rb'
 
-
 class Trace
 	attr_accessor :adSize, :cooksyncs,:fromBrowser, :beacons, :party3rd,:restNumOfParams, :adNumOfParams, :devs, :numericPrices, :mobDev, 
 				:numOfMobileAds, :totalImps, :users, :hashedPrices, :sizes, :totalParamNum
@@ -56,7 +55,7 @@ class Trace
 			if db!=nil
 				@beacons.each{|array| db.insert(beaconTable,array)}			
 				params=[totalNumofRows,@users.size,@party3rd['Advertising'],@party3rd['Analytics'],@party3rd['Social'],
-				@party3rd['Content'],@party3rd['Beacons'],@party3rd['Other'],sizeStats['sum'],@mobDev,@fromBrowser.size,@numOfMobileAds.to_s+"/"+
+				@party3rd['Content'],@party3rd['Beacons'],@party3rd['Other'],sizeStats['sum'],@mobDev,@fromBrowser,@numOfMobileAds.to_s+"/"+
 				@party3rd['Advertising'].to_s,@hashedPrices,@numericPrices,	@totalImps]	
 				id=Digest::SHA256.hexdigest (params.join("|"))	
 				db.insert(traceTable,params.push(id))
@@ -127,15 +126,23 @@ class Trace
 			end
 			if durStats!=nil and sizeStats!=nil 
 				totalRows=user.size3rdparty['Advertising'].size+user.size3rdparty['Analytics'].size+user.size3rdparty['Social'].size+user.size3rdparty['Content'].size+user.size3rdparty['Beacons'].size+user.size3rdparty['Other'].size
-				avgDurPerCat="["+durStats['Advertising']['avg'].to_s+","+durStats['Analytics']['avg'].to_s+
-				","+durStats['Social']['avg'].to_s+","+durStats['Content']['avg'].to_s+","+durStats['Beacons']['avg'].to_s+
-				","+durStats['Other']['avg'].to_s+"]"
-				sumSizePerCat="["+sizeStats['Advertising']['sum'].to_s+","+sizeStats['Analytics']['sum'].to_s+
-				","+sizeStats['Social']['sum'].to_s+","+sizeStats['Content']['sum'].to_s+","+sizeStats['Beacons']['sum'].to_s+
-				","+sizeStats['Other']['sum'].to_s+"]"
+				avgDurPerCat="["+durStats['Advertising']['avg'].to_s+","+durStats['Analytics']['avg'].to_s+","+durStats['Social']['avg'].to_s+
+					","+durStats['Content']['avg'].to_s+","+durStats['Beacons']['avg'].to_s+","+durStats['Other']['avg'].to_s+"]"
+				sumSizePerCat="["+sizeStats['Advertising']['sum'].to_s+","+sizeStats['Analytics']['sum'].to_s+","+sizeStats['Social']['sum'].to_s+
+					","+sizeStats['Content']['sum'].to_s+","+sizeStats['Beacons']['sum'].to_s+","+sizeStats['Other']['sum'].to_s+"]"
 				if db!=nil and allowOptions[@defines.tables["userTable"].keys[0]]
+					conv=Convert.new(@defines)
 					fileTypesArray=Utilities.printFileTypeAnalysis(cats,user).split("\t")
-					params=[id,totalRows,user.size3rdparty['Advertising'].size,user.size3rdparty['Analytics'].size,user.size3rdparty['Social'].size,user.size3rdparty['Content'].size,user.size3rdparty['Beacons'].size,user.size3rdparty['Other'].size,avgDurPerCat,sumSizePerCat,user.hashedPrices.length,user.numericPrices.length,user.imp.length,user.publishers.size]
+					totalBytes=(sizeStats['Advertising']['sum'].to_i+sizeStats['Analytics']['sum'].to_i+sizeStats['Social']['sum'].to_i+sizeStats['Content']['sum'].to_i+sizeStats['Beacons']['sum'].to_i+sizeStats['Other']['sum'].to_i)
+					sumDuration=(durStats['Advertising']['sum'].to_i+durStats['Analytics']['sum'].to_i+durStats['Social']['sum'].to_i+durStats['Content']['sum'].to_i+durStats['Beacons']['sum'].to_i+durStats['Other']['sum'].to_i)
+					avgBytesPerReq=Utilities.makeStats(user.size3rdparty['Advertising']+user.size3rdparty['Analytics']+user.size3rdparty['Social']+user.size3rdparty['Content']+user.size3rdparty['Beacons']+user.size3rdparty['Other'])['avg']
+					avgDurationOfReq=Utilities.makeStats(user.dur3rd['Advertising']+user.dur3rd['Analytics']+user.dur3rd['Social']+user.dur3rd['Content']+user.dur3rd['Beacons']+user.dur3rd['Other'])['avg']
+					locations=conv.getGeoLocation(user.uIPs)
+					interests=conv.extractInterests(user.publishers)
+					params=[id, totalRows, user.size3rdparty['Advertising'].size, user.size3rdparty['Analytics'].size, user.size3rdparty['Social'].size, 			
+						user.size3rdparty['Content'].size, user.size3rdparty['Beacons'].size, user.size3rdparty['Other'].size, avgDurPerCat, sumSizePerCat, 
+						totalBytes,avgBytesPerReq, sumDuration, avgDurationOfReq, user.hashedPrices.length, user.numericPrices.length, user.imp.length, 
+						user.publishers.size, user.csync.size, locations.size, locations.to_s,interests.size,interests.to_s]
 					db.insert(@defines.tables['userTable'],params+fileTypesArray)
 				end
 				if users.size==1

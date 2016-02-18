@@ -1,7 +1,6 @@
-load 'define.rb'
 load 'core.rb'
 load 'plotter.rb'
-require 'digest/sha1'
+load 'columnsFormat.rb'
 
 class Operations
 	

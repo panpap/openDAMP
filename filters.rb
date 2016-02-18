@@ -1,6 +1,4 @@
 require 'fastimage'
-require 'rubygems'
-require 'json'
 load 'keywordsLists.rb'
 
 class Filters
@@ -11,7 +9,7 @@ class Filters
 		@latency=Array.new
 		@lastPub=Hash.new(nil)
 		if @defines!=nil
-			@lists=KeywordsLists.new(@defines.files["filterFile"])
+			@lists=KeywordsLists.new(@defines.resourceFiles["filterFile"])
 			@db = Database.new(@defines,@defines.beaconDB)
 			@cats=@lists.sameParty.keys
 			@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')

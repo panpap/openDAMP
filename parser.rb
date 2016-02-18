@@ -1,6 +1,6 @@
-require 'optparse'
-load 'utilities.rb'
+load 'defines.rb'
 load 'ops.rb'
+require 'optparse'
 
 def	 folderAsInput(arg)
 	if arg==nil

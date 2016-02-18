@@ -1,6 +1,6 @@
 
 class User
-	attr_accessor :dur3rd, :csyncIDs, :csyncHosts, :csync, :fileTypes, :publishers, :numericPrices, :hashedPrices, :size3rdparty, :sizes3rd, :imp, :latency, :ads
+	attr_accessor :dur3rd, :uIPs, :csyncIDs, :csyncHosts, :csync, :fileTypes, :publishers, :numericPrices, :hashedPrices, :size3rdparty, :sizes3rd, :imp, :latency, :ads
 
 	def initialize
 		@hashedPrices=Array.new
@@ -10,6 +10,7 @@ class User
 		@csyncIDs=Hash.new
 		@csyncHosts=Hash.new
 		@csync=Array.new
+		@uIPs=Hash.new
 		@publishers=Array.new
 		@size3rdparty={"Advertising"=>[],"Beacons"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"Other"=>[]}
 		@dur3rd={"Advertising"=>[],"Beacons"=>[],"Social"=>[],"Analytics"=>[],"Content"=>[],"Other"=>[]}
