@@ -279,10 +279,8 @@ publisher=nil
 		isAd,noOfparam=beaconImprParamCkeck(row,url,publisher)
 		type3rd=nil
 		@trace.sizes.push(row['dataSz'].to_i)
-		if not @isBeacon
-			type3rd=@filters.getCategory(url,host,@curUser)
-		end
-		if type3rd!=nil	#	3rd PARTY CONTENT
+		type3rd=@filters.getCategory(url,host,@curUser)
+		if type3rd!=nil	and not @isBeacon #	3rd PARTY CONTENT
 			collector(type3rd,row)
 			@trace.party3rd[type3rd]+=1
 			if not type3rd.eql? "Content"
@@ -295,7 +293,8 @@ publisher=nil
 				@trace.restNumOfParams.push(noOfparam.to_i)
 			end
 		else
-			if @isBeacon 	#Beacon NOT ad-related
+			if @isBeacon 	#Beacon
+				collectAdvertiser(row)	if type3rd=="Advertising"	#Ad-related beacon
 				type3rd="Beacons"
 				@trace.restNumOfParams.push(noOfparam.to_i)
 				@isBeacon=false
@@ -314,8 +313,12 @@ publisher=nil
 					@trace.party3rd[type3rd]+=1
 					if (row['browser']!="unknown")
 						@trace.users[@curUser].publishers.push(row)
+						domain=url.first.split("/").first
+						if @trace.users[@curUser].pubVisits[domain]==nil
+							@trace.users[@curUser].pubVisits[domain]=0
+						end
+						@trace.users[@curUser].pubVisits[domain]+=1
 					end	
-					system("echo '"+host+"\t"+@defines.traceFile+"\t"+row['url']+"' >> noCats.out")
 				end
 				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
@@ -466,10 +469,10 @@ adPosition=-1
 			@trace.advertisers[host].durPerReq=Array.new
 			@trace.advertisers[host].sizePerReq=Array.new
 		end
-		@trace.advertisers[host].totalReqs+=1
+		#@trace.advertisers[host].totalReqs+=1
 		@trace.advertisers[host].reqsPerUser[@curUser]+=1
-		@trace.advertisers[host].durPerReq.push(row['dur'])
-		@trace.advertisers[host].sizePerReq.push(row['dataSz'])
+		@trace.advertisers[host].durPerReq.push(row['dur'].to_i)
+		@trace.advertisers[host].sizePerReq.push(row['dataSz'].to_i)
 		@trace.advertisers[host].type=@convert.advertiserType(host)
 	end
 end

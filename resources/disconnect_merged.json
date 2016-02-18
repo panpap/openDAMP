@@ -461,7 +461,7 @@
   {"Creafi": {"http://www.creafi.com/": ["creafi.com"]}},
   {"Crimtan": {"http://www.crimtan.com/": ["crimtan.com"]}},
   {"Crisp Media": {"http://www.crispmedia.com/": ["crispmedia.com"]}},
-  {"Criteo": {"http://www.criteo.com/": ["criteo.com", "criteo.net"]}},
+  {"Criteo": {"http://www.criteo.com/": ["criteo.com", "criteo.net","tracker.emailretargeting.com","emailretargeting.com"]}},
   {"Cross Pixel": {"http://crosspixel.net/": [
     "crosspixel.net", "crosspixelmedia.com", "crsspxl.com"
   ]}},

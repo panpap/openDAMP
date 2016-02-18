@@ -1,4 +1,4 @@
-load 'define.rb'
+load 'utilities.rb'
 load 'ops.rb'
 require 'optparse'
 

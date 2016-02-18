@@ -1,3 +1,4 @@
+load 'define.rb'
 load 'core.rb'
 load 'plotter.rb'
 load 'columnsFormat.rb'

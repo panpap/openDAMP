@@ -69,8 +69,8 @@ class Trace
 					sizes=Utilities.makeStats(attrs.sizePerReq)
 					durs=Utilities.makeStats(attrs.durPerReq)
 					reqPerUser=Utilities.makeStats(attrs.reqsPerUser.values)
-					Utilities.warning "CAN'T HAPPEN" if reqPerUser['sum']!=attrs.totalReqs
-					params=[host, attrs.totalReqs, attrs.reqsPerUser.size, reqPerUser['avg'], durs['avg'], durs['sum'], sizes['avg'], sizes['sum'], attrs.type]
+					totalReqs=reqPerUser['sum']
+					params=[host, totalReqs, attrs.reqsPerUser.size, reqPerUser['avg'], durs['avg'], durs['sum'], sizes['avg'], sizes['sum'], attrs.type]
 					db.insert(advertiserTable, params)
 				}				
 			end
@@ -152,12 +152,12 @@ class Trace
 					avgBytesPerReq=Utilities.makeStats(user.size3rdparty['Advertising']+user.size3rdparty['Analytics']+user.size3rdparty['Social']+user.size3rdparty['Content']+user.size3rdparty['Beacons']+user.size3rdparty['Other'])['avg']
 					avgDurationOfReq=Utilities.makeStats(user.dur3rd['Advertising']+user.dur3rd['Analytics']+user.dur3rd['Social']+user.dur3rd['Content']+user.dur3rd['Beacons']+user.dur3rd['Other'])['avg']
 					locations=conv.getGeoLocation(user.uIPs.keys)
-					interests=conv.extractInterests(user.publishers)
 					params=[id, totalRows, user.size3rdparty['Advertising'].size, user.size3rdparty['Analytics'].size, user.size3rdparty['Social'].size, 			
 						user.size3rdparty['Content'].size, user.size3rdparty['Beacons'].size, user.size3rdparty['Other'].size, avgDurPerCat, sumSizePerCat, 
 						totalBytes,avgBytesPerReq, sumDuration, avgDurationOfReq, user.hashedPrices.length, user.numericPrices.length, user.imp.length, 
-						user.publishers.size, user.csync.size, locations.size, locations.to_s,interests.size,interests.to_s]
+						user.publishers.size, user.csync.size, locations.size, locations.to_s]
 					db.insert(@defines.tables['userTable'],params+fileTypesArray)
+					db.insert(@defines.tables['visitsTable'],[id,user.pubVisits.to_s])
 				end
 				if users.size==1
 					@defines.puts "> Dumping results to <"+@defines.siteFile+"> for the individual website..."

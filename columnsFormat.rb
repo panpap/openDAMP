@@ -11,7 +11,7 @@ module Format
 			#IP_Port	UserIP	URL	UserAgent	Host	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss
 			h['IPport']=part[0].split(":").last
 		    h['uIP']=part[1]
-		    h['url']=part[2]
+		    h['url']=part[2].split("://").last
 		    h['ua']=part[3]
 			h['host']=Utilities.calculateHost(h['url'])
 			h['type']=filter.getTypeOfContent(h['url'],nil)
@@ -33,7 +33,7 @@ module Format
             h['dur']=part[7]
 			h['IPport']=part[9].split(":").last
 			h['verb']=part[10]
-			h['host']=part[15]
+			h['host']=part[15].split("://").last
 			h['mob']=nil
 			h['browser']=-1
 			h['httpRef']=part[13]
@@ -41,7 +41,7 @@ module Format
 			if (["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})
 				h['url']=h['host']+part[12]	#host+path
 			elsif h['verb'].downcase=="connect" 
-				h['url']=part[12]
+				h['url']=part[12].split("://").last
 			else
 				puts "--------> UKNOWN HTTP VERB: "+h['verb']
 			end

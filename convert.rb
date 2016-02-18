@@ -97,13 +97,10 @@ private
 	def hostToInterest(pubHost)
 		ints=@interests[pubHost]
 		if ints==nil
-puts "AGAIN "+pubHost
 			str=""
 			@interests.keys.any? {|word| str=pubHost.downcase.include?(word)}
 			ints=@interests[str]
 		end
-puts ints
-abort
 		return ints
 	end
 	

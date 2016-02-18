@@ -253,7 +253,8 @@ module Utilities
 			'tablesDB'=>{tables["publishersTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
 			tables["impTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
 			tables["adsTable"].keys[0]=>true, tables["userTable"].keys[0]=>true,
-			tables["priceTable"].keys[0]=>true,	tables["traceTable"].keys[0]=>true,tables["csyncTable"].keys[0]=>true,tables["advertiserTable"].keys[0]=>true}}
+			tables["priceTable"].keys[0]=>true,	tables["traceTable"].keys[0]=>true,
+			tables["csyncTable"].keys[0]=>true,tables["visitsTable"].keys[0]=>true,tables["advertiserTable"].keys[0]=>true}}
 		File.open(configFile,"w") do |f|
 		  f.write(JSON.pretty_generate(defaultOptions, :indent => "\t"))
 		end

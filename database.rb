@@ -116,7 +116,7 @@ private
 			return true
 		rescue SQLite3::Exception => e 
 			if e.to_s.include? "no such table" 
-				Utilities.error "SQLite Exception: "+e.to_s
+				Utilities.error "SQLite Exception: "+e.to_s+" "+command
 			elsif e.to_s.include? "is not unique"
 					table=command.split("INTO ")[1].split("VALUES")[0].gsub("'","")
 					if @alerts[table]==nil or @alerts[table]==0
