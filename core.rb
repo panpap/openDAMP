@@ -314,15 +314,17 @@ publisher=nil
 					if (row['browser']!="unknown")
 						@trace.users[@curUser].publishers.push(row)
 						domain=url.first.split("/").first
-						if @trace.users[@curUser].pubVisits[domain]==nil
-							@trace.users[@curUser].pubVisits[domain]=0
-						end
-						@trace.users[@curUser].pubVisits[domain]+=1
-					end	
+					end
 				end
 				#Utilities.printStrippedURL(url,@fl)	# dump leftovers
 			end
 			collector(type3rd,row)
+		end
+		if type3rd=="Other" or type3rd=="Content"
+			if @trace.users[@curUser].pubVisits[domain]==nil
+				@trace.users[@curUser].pubVisits[domain]=0
+			end
+			@trace.users[@curUser].pubVisits[domain]+=1
 		end
 		return type3rd
 	end
