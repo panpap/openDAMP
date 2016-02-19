@@ -24,6 +24,7 @@ class Operations
 		atts=["IPport", "uIP", "url", "ua", "host", "tmstp", "status", "length", "dataSz", "dur"]		
 		f=Hash.new
 		File.foreach(@defines.traceFile) {|line|
+			begin
 			if count==0		# options consume HEADER
 				puts "header detected"
 				if function==1 or function==0
@@ -46,6 +47,9 @@ class Operations
 						@func.cookieSyncing(row,nil)
 					end
 				end
+			end
+			rescue SQLite3::Exception => e 
+				Utilities.error "Exception: "+e.to_s+"\n"+line+"\n"+e.backtrace.join("\n").to_s
 			end
 			count+=1
         }

@@ -28,12 +28,15 @@ class Filters
 	def getTypeOfContent(url,httpContent)
 		#Find content type from filetype
 		temp=url.split("?").first.split("/")
-		if temp.size>1
+		if temp.size>1	 
 			temp2=temp.last.split(".")
-			if temp2.size>1				
-				fileEnd=temp2.last.split("%").first.split("#").first.split("&").first.split("$").first.split("@").first
-		  		type=@lists.filetypes["."+fileEnd]
-				return type if type!=nil
+			if temp2.size>1
+				temp=temp2.last.split("%").first
+				if temp!=nil and temp!=""
+					fileEnd=temp.split("#").first.split("&").first.split("$").first.split("@").first
+		  			type=@lists.filetypes["."+fileEnd]
+					return type if type!=nil
+				end
 			end
 		end
 		if httpContent!=nil

@@ -49,7 +49,7 @@ class Trace
 			sizeStats['avg'].to_s+" Bytes"+"\n\nADVERTISING STATS\n- AdRelated traffic from mobile devices: "+@numOfMobileAds.to_s+"/"+
 			@party3rd['Advertising'].to_s+"\n- Prices Detected "+(@numericPrices+@hashedPrices).to_s+"\n\tHashed Price tags found: "+@hashedPrices.to_s+
 			"\n\tNumeric Price tags found: "+@numericPrices.to_s+"\n- Advertising reqs Total size: "+(Utilities.makeStats(@adSize)["sum"]).to_s+
-			"\n- Cookie Synchronizations detected: "+cooksyncs.to_s+"\n- Unique Advertisers: "+@advertisers.size.to_s
+			"\n- Cookie Synchronizations detected: "+cooksyncs.to_s+"\n- Unique Advertisers: "+@advertisers.size.to_s+
 			"\n------------\n"#-Impressions detected "+@totalImps.to_s+"\n"
 
 
