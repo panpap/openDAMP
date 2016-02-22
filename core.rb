@@ -342,7 +342,12 @@ publisher=nil
 	end
 	def perUserAnalysis
 		if @database!=nil
-			@defines.puts "> Dumping per user results to database..."
+			@defines.print "> Dumping per user results to "
+			if @defines.options["database?"]
+				@defines.puts "database..."
+			else
+				@defines.puts "files..."
+			end
 			durStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
 			sizeStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
 			@trace.dumpUserRes(@database,durStats,sizeStats,@filters,@defines.options['tablesDB'])
@@ -409,7 +414,7 @@ adPosition=-1
             if(not @filters.is_GarbageOrEmpty?(keyVal.last))
 				if detectPrice(row,keyVal,numOfPrices,fields.length,adSize, adPosition,publisher)
 					numOfPrices+=1
-					Utilities.warning ("Price Detected in Beacon") if @isBeacon
+					Utilities.warning ("Price Detected in Beacon\n"+row['url']) if @isBeacon
 					isAd=true
 				end
 				if(@filters.is_Ad_param?(keyVal))

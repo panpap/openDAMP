@@ -13,7 +13,7 @@ module Format
 		    h['uIP']=part[1]
 		    h['url']=part[2].split("://").last
 		    h['ua']=part[3]
-			h['host']=Utilities.calculateHost(h['url'])
+			h['host']=Utilities.calculateHost(h['url'],part[4])
 			h['type']=filter.getTypeOfContent(h['url'],nil)
 		    h['tmstp']=part[5]
 		    h['status']=part[6]
@@ -54,7 +54,7 @@ module Format
 			if part[2].include? "http"
 				h['url']=part[2].split("://").last
 			end
-			h['host']=Utilities.calculateHost(h['url'])
+			h['host']=Utilities.calculateHost(h['url'],nil)
 			h['type']=filter.getTypeOfContent(h['url'],part[3])
 			h['tmstp']=part[4]
 			h['dur']=part[5]

@@ -8,7 +8,7 @@ class Defines
 		@beaconDBTable="beaconURLs"
 		@beaconDB="beaconsDB.db"
 		@column_Format={"2monthSorted_trace"=>1,"10k_trace"=>1 ,
-			"full_trace"=>1, 	#awazza dataset 6million reqs
+			"2m_trace"=>1, 	#awazza dataset 6million reqs
 			"souneil_trace"=>2,"souneilSorted_trace"=>2} 	#awazza dataset 1million reqs
 		filenames=["devices.csv","sizes3rd.csv","adParamsNum.csv","restParamsNum.csv","cmIDcount.csv","cmHosts.csv"]
 		@traceFile=filename

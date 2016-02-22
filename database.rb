@@ -9,17 +9,31 @@ class Database
 		else
 			@db=SQLite3::Database.open dbName
 		end
+
 		if defs!=nil
 			@options=@defines.options
 		end
+		@db.execute 'PRAGMA main.page_size=4096;'
+		@db.execute 'PRAGMA main.cache_size=10000;'
+		@db.execute 'PRAGMA main.locking_mode=EXCLUSIVE;'
+		@db.execute 'PRAGMA main.synchronous=NORMAL;'
+		@db.execute 'PRAGMA main.journal_mode=WAL;'
+		@db.execute 'PRAGMA main.temp_store = MEMORY;'
 		@alerts=Hash.new(0)
+		@farray=Hash.new
 	end
 
 	def insert(tbl, params)
 		table=arrayCase(tbl)
 		return if blockOutput(table)
 		par=prepareStr(params)
-		return execute("INSERT INTO '#{table}' VALUES ",par)
+
+		if not @options["database?"]
+			@farray[table]=File.new(@defines.dirs['rootDir']+table+".csv",'w') if @farray[table]==nil
+			@farray[table].puts par
+		else
+	#		return execute("INSERT INTO '#{table}' VALUES ",par)
+		end
 	end
 
 	def create(tbl,params)
@@ -76,6 +90,7 @@ class Database
 			Utilities.warning "Your results may be biased..."
 			puts "\tDublicates detected from Database: \n\t"+@alerts.to_s
 		end
+		#@farray.each{|file| file.close}
 		@db.close if @db
 	end
 # -------------------------------------------

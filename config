@@ -1,4 +1,4 @@
-{
+{	
 	"isThereHeader?": true,
 	"printToSTDOUT?": true,
 	"resultToFiles": {
@@ -9,6 +9,7 @@
 		"cmIDcount.csv": false,
 		"cmHosts.csv": false
 	},
+	"database?": true,
 	"tablesDB": {
 		"publishers": false,
 		"beacons": false,

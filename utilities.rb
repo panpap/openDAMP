@@ -112,14 +112,22 @@ module Utilities
 		fp.close
 	end
 
-	def Utilities.calculateHost(url)
+	def Utilities.calculateHost(url,host)
 		temp=url.split("?").first.split("/").first.split(".")
-		if Utilities.is_numeric?(temp[temp.size-2]) and Utilities.is_numeric?(temp[temp.size-1])
-			return url
-		elsif (url.include? 'co.jp' or url.include? 'co.uk' or url.include? 'co.in' or url.include? 'com.br' or url.include? 'com.au' or url.include? 'org.br' )
-			return temp[temp.size-3]+"."+temp[temp.size-2]+"."+temp[temp.size-1]
+		if temp.size>1
+			if Utilities.is_numeric?(temp[temp.size-2]) and Utilities.is_numeric?(temp[temp.size-1])
+				return url
+			elsif (url.include? 'co.jp' or url.include? 'co.uk' or url.include? 'co.in' or url.include? 'com.br' or url.include? 'com.au' or url.include? 'org.br' )
+				return temp[temp.size-3]+"."+temp[temp.size-2]+"."+temp[temp.size-1]
+			else
+				return temp[temp.size-2]+"."+temp[temp.size-1]
+			end
 		else
-			return temp[temp.size-2]+"."+temp[temp.size-1]
+			if host!=nil
+				return host
+			else
+				return temp.first
+			end
 		end
 	end
 
@@ -247,10 +255,10 @@ module Utilities
 
 
 	def Utilities.produceConfigFile(configFile,files,tables)
-		defaultOptions={"isThereHeader?"=>true,"printToSTDOUT?"=>true, 'resultToFiles'=>
-			{files[0]=>true, files[1]=>true,
-			files[2]=>true, files[3]=>true,files[4]=>true,files[5]=>true},
-			'tablesDB'=>{tables["publishersTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
+		defaultOptions={"isThereHeader?"=>true,"printToSTDOUT?"=>true, "detectBeacons?"=>true,'resultToFiles'=>
+			{files[0]=>false, files[1]=>false,
+			files[2]=>false, files[3]=>false,files[4]=>false,files[5]=>false},"database?"=>true,
+			'tablesDB'=>{tables["publishersTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>false,
 			tables["impTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
 			tables["adsTable"].keys[0]=>true, tables["userTable"].keys[0]=>true,
 			tables["priceTable"].keys[0]=>true,	tables["traceTable"].keys[0]=>true,

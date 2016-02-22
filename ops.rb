@@ -25,6 +25,7 @@ class Operations
 		f=Hash.new
 		File.foreach(@defines.traceFile) {|line|
 			begin
+			puts count.to_s+" lines so far..." if count%10000==0
 			if count==0		# options consume HEADER
 				puts "header detected"
 				if function==1 or function==0
@@ -48,7 +49,7 @@ class Operations
 					end
 				end
 			end
-			rescue SQLite3::Exception => e 
+			rescue => e 
 				Utilities.error "Exception: "+e.to_s+"\n"+line+"\n"+e.backtrace.join("\n").to_s
 			end
 			count+=1

@@ -27,15 +27,25 @@ class Filters
 
 	def getTypeOfContent(url,httpContent)
 		#Find content type from filetype
+		type=-1
 		temp=url.split("?").first.split("/")
 		if temp.size>1	 
 			temp2=temp.last.split(".")
 			if temp2.size>1
 				temp=temp2.last.split("%").first
 				if temp!=nil and temp!=""
-					fileEnd=temp.split("#").first.split("&").first.split("$").first.split("@").first
-		  			type=@lists.filetypes["."+fileEnd]
-					return type if type!=nil
+					temp2=temp.split("#").first
+					if temp2!=nil and temp2!=""
+						temp=temp2.split("&").first
+						if temp!=nil and temp!=""					
+							temp2=temp.split("$").first
+							if temp2!=nil and temp2!=""
+								fileEnd=temp2.split("@").first
+		  						type=@lists.filetypes["."+fileEnd]
+								return type if type!=nil
+							end
+						end
+					end
 				end
 			end
 		end
@@ -43,7 +53,7 @@ class Filters
 			#Fallback to HTTP content field
 			t1=httpContent.split(";")[0]
 			type=t1.split(":")[0].gsub(" ","").downcase
-			return @lists.types[type]
+			return @lists.types[type] if @lists.types[type]!=nil
 		end
 		return -1
 	end
@@ -65,6 +75,7 @@ class Filters
  #   end
 
     def is_Beacon?(url,type,force)
+		return false if not @defines.options["detectBeacons?"]
 		if ([".jpeg", ".gif", ".png" ,".bmp"].any? {|word| url.downcase.include?(word)}) or type=="image" or force
 		    return is_1pixel_image?(url)
 		end

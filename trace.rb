@@ -102,7 +102,10 @@ class Trace
 	def dumpUserRes(db,durStats,sizeStats,filters,allowOptions)
 		cats=filters.getCats
 		options=@defines.options['resultToFiles']
-		for id,user in users do
+		count=0
+		arr=Array.new
+		for id,user in users do	
+			puts count.to_s+" users were stored..."+(Time.now).to_i.to_s if count%10==0
 			#ADVERTISEMENTS
 			if user.ads!=nil and allowOptions[@defines.tables["adsTable"].keys[0]]
 				user.ads.each{|row|		
@@ -132,39 +135,44 @@ class Trace
 					db.insert(@defines.tables['publishersTable'], [row['tmstp'],row['IPport'],row['url'],row['host'],row['mob'],row['dev'],row['browser'],tid])}
 			end
 			#3rd PARTY
-			if user.size3rdparty!=nil and sizeStats!=nil
-				user.size3rdparty.each{|category, sizes| sizeStats[category]=Utilities.makeStats(sizes)}
-			end
-			if user.dur3rd!=nil and durStats!=nil
-				user.dur3rd.each{|category, durations| durStats[category]=Utilities.makeStats(durations)}
-			end
-			if durStats!=nil and sizeStats!=nil 
-				totalRows=user.size3rdparty['Advertising'].size+user.size3rdparty['Analytics'].size+user.size3rdparty['Social'].size+user.size3rdparty['Content'].size+user.size3rdparty['Beacons'].size+user.size3rdparty['Other'].size
-				avgDurPerCat="["+durStats['Advertising']['avg'].to_s+","+durStats['Analytics']['avg'].to_s+","+durStats['Social']['avg'].to_s+
-					","+durStats['Content']['avg'].to_s+","+durStats['Beacons']['avg'].to_s+","+durStats['Other']['avg'].to_s+"]"
-				sumSizePerCat="["+sizeStats['Advertising']['sum'].to_s+","+sizeStats['Analytics']['sum'].to_s+","+sizeStats['Social']['sum'].to_s+
-					","+sizeStats['Content']['sum'].to_s+","+sizeStats['Beacons']['sum'].to_s+","+sizeStats['Other']['sum'].to_s+"]"
-				if db!=nil and allowOptions[@defines.tables["userTable"].keys[0]]
-					conv=Convert.new(@defines)
-					fileTypesArray=Utilities.printFileTypeAnalysis(cats,user).split("\t")
-					totalBytes=(sizeStats['Advertising']['sum'].to_i+sizeStats['Analytics']['sum'].to_i+sizeStats['Social']['sum'].to_i+sizeStats['Content']['sum'].to_i+sizeStats['Beacons']['sum'].to_i+sizeStats['Other']['sum'].to_i)
-					sumDuration=(durStats['Advertising']['sum'].to_i+durStats['Analytics']['sum'].to_i+durStats['Social']['sum'].to_i+durStats['Content']['sum'].to_i+durStats['Beacons']['sum'].to_i+durStats['Other']['sum'].to_i)
-					avgBytesPerReq=Utilities.makeStats(user.size3rdparty['Advertising']+user.size3rdparty['Analytics']+user.size3rdparty['Social']+user.size3rdparty['Content']+user.size3rdparty['Beacons']+user.size3rdparty['Other'])['avg']
-					avgDurationOfReq=Utilities.makeStats(user.dur3rd['Advertising']+user.dur3rd['Analytics']+user.dur3rd['Social']+user.dur3rd['Content']+user.dur3rd['Beacons']+user.dur3rd['Other'])['avg']
-					locations=conv.getGeoLocation(user.uIPs.keys)
-					params=[id, totalRows, user.size3rdparty['Advertising'].size, user.size3rdparty['Analytics'].size, user.size3rdparty['Social'].size, 			
-						user.size3rdparty['Content'].size, user.size3rdparty['Beacons'].size, user.size3rdparty['Other'].size, avgDurPerCat, sumSizePerCat, 
-						totalBytes,avgBytesPerReq, sumDuration, avgDurationOfReq, user.hashedPrices.length, user.numericPrices.length, user.imp.length, 
-						user.publishers.size, user.csync.size, locations.size, locations.to_s]
-					db.insert(@defines.tables['userTable'],params+fileTypesArray)
-					totalVisits=Utilities.makeStats(user.pubVisits.values)
-					db.insert(@defines.tables['visitsTable'],[id,totalVisits['sum'],user.pubVisits.to_s])
+	#		arr[count] = Thread.new {
+				if user.size3rdparty!=nil and sizeStats!=nil
+					user.size3rdparty.each{|category, sizes| sizeStats[category]=Utilities.makeStats(sizes)}
 				end
+				if user.dur3rd!=nil and durStats!=nil
+					user.dur3rd.each{|category, durations| durStats[category]=Utilities.makeStats(durations)}
+				end
+				if durStats!=nil and sizeStats!=nil
+					totalRows=user.size3rdparty['Advertising'].size+user.size3rdparty['Analytics'].size+user.size3rdparty['Social'].size+user.size3rdparty['Content'].size+user.size3rdparty['Beacons'].size+user.size3rdparty['Other'].size
+					avgDurPerCat="["+durStats['Advertising']['avg'].to_s+","+durStats['Analytics']['avg'].to_s+","+durStats['Social']['avg'].to_s+
+						","+durStats['Content']['avg'].to_s+","+durStats['Beacons']['avg'].to_s+","+durStats['Other']['avg'].to_s+"]"
+					sumSizePerCat="["+sizeStats['Advertising']['sum'].to_s+","+sizeStats['Analytics']['sum'].to_s+","+sizeStats['Social']['sum'].to_s+
+						","+sizeStats['Content']['sum'].to_s+","+sizeStats['Beacons']['sum'].to_s+","+sizeStats['Other']['sum'].to_s+"]"
+					if db!=nil and allowOptions[@defines.tables["userTable"].keys[0]]
+						conv=Convert.new(@defines)
+						fileTypesArray=Utilities.printFileTypeAnalysis(cats,user).split("\t")
+						totalBytes=(sizeStats['Advertising']['sum'].to_i+sizeStats['Analytics']['sum'].to_i+sizeStats['Social']['sum'].to_i+sizeStats['Content']['sum'].to_i+sizeStats['Beacons']['sum'].to_i+sizeStats['Other']['sum'].to_i)
+						sumDuration=(durStats['Advertising']['sum'].to_i+durStats['Analytics']['sum'].to_i+durStats['Social']['sum'].to_i+durStats['Content']['sum'].to_i+durStats['Beacons']['sum'].to_i+durStats['Other']['sum'].to_i)
+						avgBytesPerReq=Utilities.makeStats(user.size3rdparty['Advertising']+user.size3rdparty['Analytics']+user.size3rdparty['Social']+user.size3rdparty['Content']+user.size3rdparty['Beacons']+user.size3rdparty['Other'])['avg']
+						avgDurationOfReq=Utilities.makeStats(user.dur3rd['Advertising']+user.dur3rd['Analytics']+user.dur3rd['Social']+user.dur3rd['Content']+user.dur3rd['Beacons']+user.dur3rd['Other'])['avg']
+						locations=conv.getGeoLocation(user.uIPs.keys)
+						params=[id, totalRows, user.size3rdparty['Advertising'].size, user.size3rdparty['Analytics'].size, user.size3rdparty['Social'].size, 			
+							user.size3rdparty['Content'].size, user.size3rdparty['Beacons'].size, user.size3rdparty['Other'].size, avgDurPerCat, sumSizePerCat, 
+							totalBytes,avgBytesPerReq, sumDuration, avgDurationOfReq, user.hashedPrices.length, user.numericPrices.length, user.imp.length, 
+							user.publishers.size, user.csync.size, locations.size, locations.to_s]
+						puts "IN "+(Time.now).to_i.to_s if count%10==0
+						db.insert(@defines.tables['userTable'],params+fileTypesArray)
+						totalVisits=Utilities.makeStats(user.pubVisits.values)
+						db.insert(@defines.tables['visitsTable'],[id,totalVisits['sum'],user.pubVisits.to_s])
+					end
+		#		}
+		#		arr.each {|t| t.join}
 				if users.size==1
 					@defines.puts "> Dumping results to <"+@defines.siteFile+"> for the individual website..."
 					Utilities.individualSites(@defines.siteFile,@defines.traceFile,user,sumSizePerCat,avgDurPerCat,cats)
 				end
-			end					
+			end
+			count+=1					
 		end
 	end
 end
