@@ -12,6 +12,7 @@ class Operations
 			@func=Core.new(@defines,@filters)
 		else
 			@defines.puts "Done..."
+			abort
 		end
 	end
 
