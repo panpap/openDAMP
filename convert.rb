@@ -12,20 +12,21 @@ class Convert
 		return -1
 	end
 
-	def calcPriceValue(val)
-		if Utilities.is_float? (val)
+	def calcPriceValue(val,adCat)
+		if Utilities.is_numeric? (val)
   			# If the price is microdollars
 			value=val.to_f
    			if(value>100000)
        			value=value/1e6;
 			end
-    		if(value>100)
+    		if(value>100) and not adCat
 				Utilities.warning "More than 100 in price "+val
+				return nil, false
  			end
 			return value,true
 		else # this is an effort to find the encrypted values
       		if val.size==11 or val.size==16 or val.size==38 or val.size==39	# 11, 16, 38, 39
-				return val,false
+				return val, false
 			end
       	end
 		return nil,false
@@ -56,7 +57,7 @@ class Convert
 		return interest,alexaRank if publisher==nil
 		interests=extractInterests(publisher)
 		alexaRank=-1
-		Utilities.warning "ALEXA RANK IS NOT IMPLEMENTED"
+		#Utilities.warning "ALEXA RANK IS NOT IMPLEMENTED"
 		return interests,alexaRank
 	end
 
@@ -96,6 +97,7 @@ class Convert
 private
 
 	def hostToInterest(pubHost)
+		return nil if pubHost==nil
 		ints=@interests[pubHost]
 		if ints==nil
 			str=""

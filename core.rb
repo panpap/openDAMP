@@ -30,7 +30,7 @@ class Core
 		if @options["database?"]
 			@defines.puts "and database tables..."
 			@database=Database.new(@defines,nil)
-			@defines.tables.values.each{|fields| @database.create(fields.keys[0],fields.values[0])}
+			@defines.tables.values.each{|fields| @database.create(fields.keys.first,fields.values.first)}
 		end
 	end
 
@@ -59,9 +59,11 @@ class Core
 			@trace.sizes.each{|sz| fsz.puts sz}
 			fsz.close
 		end
-		@defines.puts "> Calculating Statistics about detected ads..."
-		@defines.puts @trace.results_toString(@database,@defines.tables['traceTable'],@defines.tables['bcnTable'],@defines.tables['advertiserTable'],@filters.getCats)
+		total=Thread.new {
+			@defines.puts "> Calculating Statistics about detected ads..."
+			@defines.puts @trace.results_toString(@database,@defines.tables['traceTable'],@defines.tables['bcnTable'],@defines.tables['advertiserTable'],@filters.getCats)}
 		perUserAnalysis()
+		total.join
 	end
 
 	def findStrInRows(str)
@@ -179,7 +181,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 	def csyncResults()
 		if @database!=nil
 			@defines.puts "> Dumping Cookie synchronization results..."	
-			@trace.dumpUserRes(@database,nil,nil,@filters,@options['tablesDB'])	
+			@trace.dumpUserRes(@database,nil,nil,@filters)	
 		end
 	end
 #------------------------------------------------------------------------------------------------
@@ -274,19 +276,20 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 
 	def filterRow(row)
 		firstSeenUser?(row)
-		url=row['url'].split("?")
-		host=row['host']
-		@isBeacon=false
-publisher=nil
-		isAd,noOfparam=beaconImprParamCkeck(row,url,publisher)
 		type3rd=nil
+		@isBeacon=false
+		url=row['url'].split("?")
+		host=row['host']		
 		@trace.sizes.push(row['dataSz'].to_i)
+publisher=nil
 		type3rd=@filters.getCategory(url,host,@curUser)
+		adCat=type3rd.eql? "Advertising"
+		isAd,noOfparam=beaconImprParamCkeck(row,url,publisher,adCat)
 		if type3rd!=nil	and not @isBeacon #	3rd PARTY CONTENT
 			collector(type3rd,row)
 			@trace.party3rd[type3rd]+=1
 			if not type3rd.eql? "Content"
-				if	type3rd.eql? "Advertising"
+				if type3rd.eql? "Advertising"
 					ad_detected(row,noOfparam,url)
 				else # SOCIAL or ANALYTICS or OTHER type
 					@trace.restNumOfParams.push(noOfparam.to_i)
@@ -352,11 +355,11 @@ publisher=nil
 			end
 			durStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
 			sizeStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
-			@trace.dumpUserRes(@database,durStats,sizeStats,@filters,@options['tablesDB'])
+			@trace.dumpUserRes(@database,durStats,sizeStats,@filters)
 		end
 	end
 
-    def detectPrice(row,keyVal,numOfPrices,numOfparams,adSize, adPosition,publisher)     	# Detect possible price in parameters and returns URL Parameters in String
+    def detectPrice(row,keyVal,numOfPrices,numOfparams,adSize, adPosition,publisher,isAdCat)     	# Detect possible price in parameters and returns URL Parameters in String
 		domainStr=row['host']
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
@@ -364,25 +367,31 @@ publisher=nil
 			priceTag=keyVal[0]
 			paramVal=keyVal[1]
 			type=""
-			return false if paramVal.include? "startapp" or paramVal.include? "pkg" or paramVal.include? "v-vice" or paramVal.include? "button_icon"			
-			priceVal,enc=@convert.calcPriceValue(paramVal)
+			priceVal,enc=@convert.calcPriceValue(paramVal,isAdCat)
 			return false if priceVal==nil
 			if enc
-				@trace.users[@curUser].numericPrices.push(priceVal)
-				@trace.numericPrices+=1
 				type="numeric"
 			else
 				type="encrypted"
-				@trace.users[@curUser].hashedPrices.push(priceVal)
-				@trace.hashedPrices+=1
 			end
+			done=false
 			if @database!=nil
 				id=Digest::SHA256.hexdigest (row.values.join("|")+priceTag+"|"+priceVal.to_s+"|"+type)
 				time=row['tmstp']
 				adx=-1,ssp=-1,dsp=-1
 				interest,pubPopularity=@convert.analyzePublisher(publisher)
-				params=[type,time,domainStr,priceTag.downcase,priceVal, row['dataSz'].to_i, numOfparams, adSize, adPosition,@convert.getGeoLocation(row['uIP']),@convert.getTod(time),interest,pubPopularity,row['IPport'],ssp,dsp,-1,row['mob'],row['dev'],row['browser'],row['url'],id]
-				@database.insert(@defines.tables['priceTable'],params)
+				upToKnowCM=@trace.users[@curUser].csync.size
+				params=[type,time,domainStr,priceTag.downcase,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, adPosition,@convert.getGeoLocation(row['uIP']),@convert.getTod(time),interest,pubPopularity,row['IPport'],ssp,dsp,-1,row['mob'],row['dev'],row['browser'],row['url'],id]
+				done=@database.insert(@defines.tables['priceTable'],params)
+			end
+			if @database==nil or done
+				if enc
+					@trace.users[@curUser].numericPrices.push(priceVal)
+					@trace.numericPrices+=1
+				else
+					@trace.users[@curUser].hashedPrices.push(priceVal)
+					@trace.hashedPrices+=1
+				end
 			end
 			return true
 		end
@@ -399,7 +408,7 @@ publisher=nil
 		return false
     end
 
-	def checkParams(row,url,publisher)
+	def checkParams(row,url,publisher,adCat)
      	return 0,false if (url.last==nil)
 		isAd=false
 adSize=-1
@@ -409,12 +418,12 @@ adPosition=-1
         for field in fields do
             keyVal=field.split("=")
             if(not @filters.is_GarbageOrEmpty?(keyVal))
-				if detectPrice(row,keyVal,numOfPrices,fields.length,adSize, adPosition,publisher)
-					numOfPrices+=1
-					Utilities.warning ("Price Detected in Beacon\n"+row['url']) if @isBeacon
+				if(@filters.is_Ad_param?(keyVal))
 					isAd=true
 				end
-				if(@filters.is_Ad_param?(keyVal))
+				if detectPrice(row,keyVal,numOfPrices,fields.length,adSize, adPosition,publisher,(adCat or isAd))
+					numOfPrices+=1
+					Utilities.warning ("Price Detected in Beacon\n"+row['url']) if @isBeacon
 					isAd=true
 				end
 			end
@@ -442,13 +451,13 @@ adPosition=-1
 		@trace.beacons.push([tmpstp,row['IPport'],u,type,row['mob'],row['dev'],row['browser'],id])
 	end
 
-	def beaconImprParamCkeck(row,url,publisher)
+	def beaconImprParamCkeck(row,url,publisher,adCat)
         @isBeacon=false
 		isAd=false
         if @filters.is_Beacon?(row['url'],row['type'],false) 		#findBeacon in URL
             beaconSave(url.first,row)
         end
-        paramNum, result=checkParams(row,url,publisher)             #check ad in URL params
+        paramNum, result=checkParams(row,url,publisher,adCat)             #check ad in URL params
         if(result==true or detectImpressions(url,row))
             isAd=true
 		end
@@ -467,16 +476,18 @@ adPosition=-1
 	end
 
 	def collectAdvertiser(row)
-		host=row['host']
-		if @trace.advertisers[host]==nil
-			@trace.advertisers[host]=Advertiser.new
-			@trace.advertisers[host].durPerReq=Array.new
-			@trace.advertisers[host].sizePerReq=Array.new
+		if row!=nil and @options['tablesDB'][@defines.tables["advertiserTable"]]
+			host=row['host']
+			if @trace.advertisers[host]==nil
+				@trace.advertisers[host]=Advertiser.new
+				@trace.advertisers[host].durPerReq=Array.new
+				@trace.advertisers[host].sizePerReq=Array.new
+			end
+			#@trace.advertisers[host].totalReqs+=1
+			@trace.advertisers[host].reqsPerUser[@curUser]+=1
+			@trace.advertisers[host].durPerReq.push(row['dur'].to_i)
+			@trace.advertisers[host].sizePerReq.push(row['dataSz'].to_i)
+			@trace.advertisers[host].type=@convert.advertiserType(host)
 		end
-		#@trace.advertisers[host].totalReqs+=1
-		@trace.advertisers[host].reqsPerUser[@curUser]+=1
-		@trace.advertisers[host].durPerReq.push(row['dur'].to_i)
-		@trace.advertisers[host].sizePerReq.push(row['dataSz'].to_i)
-		@trace.advertisers[host].type=@convert.advertiserType(host)
 	end
 end

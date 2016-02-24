@@ -1,7 +1,7 @@
 {
 	"isThereHeader?": true,
 	"printToSTDOUT?": true,
-	"detectBeacons?": false,
+	"detectBeacons?": true,
 	"resultToFiles": {
 		"devices.csv": false,
 		"sizes3rd.csv": false,
@@ -16,12 +16,12 @@
 		"beacons": false,
 		"impressions": false,
 		"advertisements": false,
-		"userResults": true,
+		"userResults": false,
 		"prices": true,
 		"traceResults": true,
 		"csyncResults": false,
-		"userVisits": true,
+		"userVisits": false,
 		"userFiletypes": false,
-		"advertisers": true
+		"advertisers": false
 	}
 }

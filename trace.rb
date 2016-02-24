@@ -99,9 +99,10 @@ class Trace
 		end
 	end
 
-	def dumpUserRes(db,durStats,sizeStats,filters,allowOptions)
+	def dumpUserRes(db,durStats,sizeStats,filters)
 		start = Time.now
 		cats=filters.getCats
+		allowOptions=@defines.options['tablesDB']
 		options=@defines.options['resultToFiles']
 		count=0
 		conv=Convert.new(@defines)
@@ -170,13 +171,15 @@ class Trace
 							db.insert(@defines.tables['userTable'],params)
 #puts "finished user res "+(Time.now).to_i.to_s
 						end		
-						if allowOptions[@defines.tables["userFilesTable"].keys[0]]
+						if allowOptions[@defines.tables["userFilesTable"].keys.first]
 							fileTypesArray=Utilities.printFileTypeAnalysis(cats,user).split("\t")
 							db.insert(@defines.tables["userFilesTable"],fileTypesArray.unshift(id))
 						end
-						if allowOptions[@defines.tables["visitsTable"].keys[0]]
+						if allowOptions[@defines.tables["visitsTable"].keys.first]
 							totalVisits=Utilities.makeStats(user.pubVisits.values)
-							db.insert(@defines.tables['visitsTable'],[id,totalVisits['sum'],user.pubVisits.to_s])
+							interests=conv.analyzePublisher(user.pubVisits.keys)
+puts "INTERESTS "+interests.to_s
+							db.insert(@defines.tables['visitsTable'],[id,totalVisits['sum'],user.pubVisits.to_s,interests.to_s])
 						end
 #puts "Dumped "+(Time.now).to_i.to_s #if count%10==0
 					end
