@@ -64,7 +64,7 @@ class Operations
 		if function==4		#find
 			@func.csyncResults()
 		end
-		@func.database.close
+		@func.database.close if @func.database!=nil
 	end
 
 	def countDuplicates()

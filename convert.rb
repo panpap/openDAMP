@@ -5,6 +5,7 @@ class Convert
 	def initialize(defs)
 		@resouces=defs.resourceFiles
 		@interests=loadInterests(defs.resourceFiles["interestsFile"])
+		@db = MaxMindDB.new(@resouces["geoCity"])
 	end
 
 	def advertiserType(host)
@@ -105,8 +106,7 @@ private
 	end
 	
 	def fromIPtoGeo(ip)
-		db = MaxMindDB.new(@resouces["geoCity"])
-		ret = db.lookup(ip)
+		ret = @db.lookup(ip)
 		if ret.found? # => true
 			if ret.city.name==nil
 				return ret.country.name

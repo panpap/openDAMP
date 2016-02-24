@@ -113,10 +113,11 @@ module Utilities
 	end
 
 	def Utilities.calculateHost(url,host)
-		temp=url.split("?").first.split("/").first.split(".")
+		firstPart=url.split("?").first.split("/").first
+		temp=firstPart.split(".")
 		if temp.size>1
 			if Utilities.is_numeric?(temp[temp.size-2]) and Utilities.is_numeric?(temp[temp.size-1])
-				return url
+				return firstPart
 			elsif (url.include? 'co.jp' or url.include? 'co.uk' or url.include? 'co.in' or url.include? 'com.br' or url.include? 'com.au' or url.include? 'org.br' )
 				return temp[temp.size-3]+"."+temp[temp.size-2]+"."+temp[temp.size-1]
 			else
@@ -262,7 +263,8 @@ module Utilities
 			tables["impTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
 			tables["adsTable"].keys[0]=>true, tables["userTable"].keys[0]=>true,
 			tables["priceTable"].keys[0]=>true,	tables["traceTable"].keys[0]=>true,
-			tables["csyncTable"].keys[0]=>true,tables["visitsTable"].keys[0]=>true,tables["advertiserTable"].keys[0]=>true}}
+			tables["csyncTable"].keys[0]=>true,tables["visitsTable"].keys[0]=>true,tables["userFilesTable"].keys[0]=>false,
+			tables["advertiserTable"].keys[0]=>true}}
 		File.open(configFile,"w") do |f|
 		  f.write(JSON.pretty_generate(defaultOptions, :indent => "\t"))
 		end

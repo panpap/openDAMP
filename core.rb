@@ -1,7 +1,6 @@
 load 'convert.rb'
 load 'trace.rb'
 load 'filters.rb'
-load 'database.rb'
 require 'digest/sha1'
 
 class Core
@@ -14,6 +13,7 @@ class Core
 		@convert=Convert.new(@defines)
 		@filters=filters	
 		@trace=Trace.new(@defines)
+		@options=@defines.options
 		@window=-1
 		@cwd=nil
 		@params_cs=Hash.new(nil)
@@ -21,19 +21,21 @@ class Core
 	end
 	
 	def makeDirsFiles()
-		@defines.print "> Creating Directories..., "
+		@defines.puts "> Creating Directories..., "
 		Dir.mkdir @defines.dirs['rootDir'] unless File.exists?(@defines.dirs['rootDir'])
 		Dir.mkdir @defines.dirs['dataDir'] unless File.exists?(@defines.dirs['dataDir'])
 		Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
 		Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
 		Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
-		@defines.puts "and database tables..."
-		@database=Database.new(@defines,nil)
-		@defines.tables.values.each{|fields| @database.create(fields.keys[0],fields.values[0])}
+		if @options["database?"]
+			@defines.puts "and database tables..."
+			@database=Database.new(@defines,nil)
+			@defines.tables.values.each{|fields| @database.create(fields.keys[0],fields.values[0])}
+		end
 	end
 
 	def analysis
-		options=@defines.options['resultToFiles']
+		options=@options['resultToFiles']
 		@defines.puts "> Stripping parameters, detecting and classifying Third-Party content..."
 		fw=nil
 		@defines.puts "> Dumping to files..."
@@ -86,7 +88,7 @@ class Core
 			end		#FILTER ROW
 		end
 		cat=filterRow(row)
-		cookieSyncing(row,cat) if @defines.options['tablesDB'][@defines.tables["csyncTable"]]
+		cookieSyncing(row,cat) if @options['tablesDB'][@defines.tables["csyncTable"]]
 		return true
 	end
 
@@ -177,7 +179,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 	def csyncResults()
 		if @database!=nil
 			@defines.puts "> Dumping Cookie synchronization results..."	
-			@trace.dumpUserRes(@database,nil,nil,@filters,@defines.options['tablesDB'])	
+			@trace.dumpUserRes(@database,nil,nil,@filters,@options['tablesDB'])	
 		end
 	end
 #------------------------------------------------------------------------------------------------
@@ -333,7 +335,7 @@ publisher=nil
 		@trace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
 		@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)
 		type=row['type']
-		if type!=-1
+		if type!=-1 and @options['tablesDB'][@defines.tables["userFilesTable"].keys[0]]
 			if @trace.users[@curUser].fileTypes[contenType]==nil
 				@trace.users[@curUser].fileTypes[contenType]={"data"=>Array.new, "gif"=>Array.new,"html"=>Array.new,"image"=>Array.new,"other"=>Array.new,"script"=>Array.new,"styling"=>Array.new,"text"=>Array.new,"video"=>Array.new} 
 			end
@@ -343,14 +345,14 @@ publisher=nil
 	def perUserAnalysis
 		if @database!=nil
 			@defines.print "> Dumping per user results to "
-			if @defines.options["database?"]
+			if @options["database?"]
 				@defines.puts "database..."
 			else
 				@defines.puts "files..."
 			end
 			durStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
 			sizeStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
-			@trace.dumpUserRes(@database,durStats,sizeStats,@filters,@defines.options['tablesDB'])
+			@trace.dumpUserRes(@database,durStats,sizeStats,@filters,@options['tablesDB'])
 		end
 	end
 
@@ -371,9 +373,6 @@ publisher=nil
 				type="numeric"
 			else
 				type="encrypted"
-				if priceVal.size < 6
-					return false
-				end
 				@trace.users[@curUser].hashedPrices.push(priceVal)
 				@trace.hashedPrices+=1
 			end
@@ -401,9 +400,7 @@ publisher=nil
     end
 
 	def checkParams(row,url,publisher)
-     	if (url.last==nil)
-     		return 0,false
-    	end
+     	return 0,false if (url.last==nil)
 		isAd=false
 adSize=-1
 adPosition=-1
@@ -411,7 +408,7 @@ adPosition=-1
 		numOfPrices=0
         for field in fields do
             keyVal=field.split("=")
-            if(not @filters.is_GarbageOrEmpty?(keyVal.last))
+            if(not @filters.is_GarbageOrEmpty?(keyVal))
 				if detectPrice(row,keyVal,numOfPrices,fields.length,adSize, adPosition,publisher)
 					numOfPrices+=1
 					Utilities.warning ("Price Detected in Beacon\n"+row['url']) if @isBeacon

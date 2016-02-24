@@ -32,7 +32,7 @@ class Database
 			@farray[table]=File.new(@defines.dirs['rootDir']+table+".csv",'w') if @farray[table]==nil
 			@farray[table].puts par
 		else
-	#		return execute("INSERT INTO '#{table}' VALUES ",par)
+			return execute("INSERT INTO '#{table}' VALUES ",par)
 		end
 	end
 

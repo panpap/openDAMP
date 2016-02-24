@@ -133,7 +133,10 @@ class Filters
 		if str.kind_of?(Array) and (str[1]==nil or str[0].eql? "v" or str[0].downcase.include? "ver" \
                     or str[0].eql? "density" or str[0].eql? "u_sd")
 			return true
-		else
+		end
+		if str.kind_of?(String)
+puts "NO"
+abort
 			return (str.size<17 or (["http","utf","www","text","image"].any? { |word| str.downcase.include?(word)}))
     	end
 	end
