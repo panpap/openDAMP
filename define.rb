@@ -27,6 +27,7 @@ class Defines
 			else
 				traceName=@traceFile
 			end	
+			puts "InputFile: "+traceName
 		# DATABASE
 			@resultsDB=traceName+"_analysis.db"
 			#DIRECTORIES

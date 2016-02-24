@@ -7,7 +7,7 @@ class Operations
 	
 	def initialize(filename)
 		@defines=Defines.new(filename)
-		if @defines.traceFile!=""
+		if @defines.traceFile!="" and @defines.resultsDB!=nil
 			@filters=Filters.new(@defines)
 			@func=Core.new(@defines,@filters)
 		else
