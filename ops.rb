@@ -26,9 +26,9 @@ class Operations
 		f=Hash.new
 		File.foreach(@defines.traceFile) {|line|
 			begin
-			puts count.to_s+" lines so far..." if count%10000==0
+			@defines.puts "\t"+count.to_s+" lines so far..." if count%10000==0
 			if count==0		# options consume HEADER
-				puts "header detected"
+				@defines.puts "\theader detected"
 				if function==1 or function==0
 					atts.each{|a| f[a]=File.new(@defines.dirs['dataDir']+a,'w') if File.size?(@defines.dirs['dataDir']+a)==nil and (a!='url') and (a!="tmstp") }
 				end

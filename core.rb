@@ -324,14 +324,26 @@ publisher=nil
 			end
 			collector(type3rd,row)
 		end
-		if type3rd=="Other" or type3rd=="Content"
-			domain=url.first.split("/").first
-			if @trace.users[@curUser].pubVisits[domain]==nil
-				@trace.users[@curUser].pubVisits[domain]=0
-			end
-			@trace.users[@curUser].pubVisits[domain]+=1
+		if (type3rd=="Other" or type3rd=="Content") and @options['tablesDB'][@defines.tables["visitsTable"].keys.first]
+			collectInterests(url.first)
 		end
 		return type3rd
+	end
+
+	def collectInterests(url)
+		site=url
+		site=url.split("://").last if url.include? "://"
+		domain=site.split("/").first
+		@trace.users[@curUser].pubVisits[domain]=0 if @trace.users[@curUser].pubVisits[domain]==nil
+		@trace.users[@curUser].pubVisits[domain]+=1
+		topics=nil
+		topics,alexaRank=@convert.analyzePublisher(domain)
+		if topics!=nil
+			if @trace.users[@curUser].interests==nil
+				@trace.users[@curUser].interests=Hash.new(0)
+			end
+			topics.each{|key, value| @trace.users[@curUser].interests[key]+=value}
+		end
 	end
 
 	def collector(contenType,row)

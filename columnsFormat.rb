@@ -11,7 +11,7 @@ module Format
 			#IP_Port	UserIP	URL	UserAgent	Host	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss
 			h['IPport']=part[0].split(":").last
 		    h['uIP']=part[1]
-		    h['url']=part[2].split("://").last
+		    h['url']=part[2]
 		    h['ua']=part[3]
 			h['host']=Utilities.calculateHost(h['url'],part[4])
 			h['type']=filter.getTypeOfContent(h['url'],nil)
@@ -51,9 +51,9 @@ module Format
 
 			h['uIP']=part[1]
 			h['url']=part[2]
-			if part[2].include? "http"
-				h['url']=part[2].split("://").last
-			end
+		#	if part[2].include? "http"
+		#		h['url']=part[2].split("://").last
+		#	end
 			h['host']=Utilities.calculateHost(h['url'],nil)
 			h['type']=filter.getTypeOfContent(h['url'],part[3])
 			h['tmstp']=part[4]

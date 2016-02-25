@@ -16,7 +16,7 @@ class Defines
 		traceName=""
 		@siteFile="./sites.csv"
 		@resources="resources/"
-		@resourceFiles={"filterFile"=>@resources+"disconnect_merged.json","interestsFile"=>@resources+"interests.csv",
+		@resourceFiles={"filterFile"=>@resources+"disconnect_merged.json","interestsFile"=>@resources+"interestBitmaps.json",
 					"geoCity"=>@resources+"GeoLite2-City.mmdb","geoCountry"=>@resources+"GeoLite2-Country.mmdb",
 				}
 

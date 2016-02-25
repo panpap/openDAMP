@@ -3,9 +3,13 @@ require 'maxminddb'
 
 class Convert
 	def initialize(defs)
-		@resouces=defs.resourceFiles
-		@interests=loadInterests(defs.resourceFiles["interestsFile"])
+		@defines=defs
+		@resouces=@defines.resourceFiles
+		@interests=nil
 		@db = MaxMindDB.new(@resouces["geoCity"])
+		if @defines.options['tablesDB'][@defines.tables["visitsTable"].keys[0]]
+			loadInterests
+		end
 	end
 
 	def advertiserType(host)
@@ -55,7 +59,7 @@ class Convert
 	def analyzePublisher(publisher)
 		interest=-1;alexaRank=-1
 		return interest,alexaRank if publisher==nil
-		interests=extractInterests(publisher)
+		interests=hostToInterest(publisher)
 		alexaRank=-1
 		#Utilities.warning "ALEXA RANK IS NOT IMPLEMENTED"
 		return interests,alexaRank
@@ -85,12 +89,12 @@ class Convert
 		end
 	end
 
-	def extractInterests(publishers)
-		interests=Array.new
-		return -1 if publishers==nil
-		publishers.each{|pub| interests.push(hostToInterest(pub['host']))}
-		return interests
-	end
+#	def extractInterests(publishers)
+#		interests=Array.new
+#		return -1 if publishers==nil
+#		publishers.each{|pub| interests.push(hostToInterest(pub)); puts pub+" "+hostToInterest(pub).to_s}
+#		return interests
+#	end
 
 #-----------------------------------------------
 
@@ -120,14 +124,40 @@ private
 		end
 	end
 
-	def loadInterests(filename)
+	def loadInterests
+		start = Time.now
+		filename=@defines.resourceFiles["interestsFile"]
+		file = File.read(filename)
+	   	json = JSON.parse(file)
+    	@interests=json
+		@defines.puts "> List of interests has been loaded... in "+(Time.now - start).to_s+" seconds"
+	end
+
+	def storeInterests(filename)
 		interests=Hash.new
+		publisher=""
+		cats=Array.new
 		File.foreach(filename) {|line|
-			if line.include?("\t")
-				parts=line.gsub('"',"").split("\t")
-				interests[parts.first]=parts.last.split(" >").first
+			if line.size>2
+				line=line.gsub("\n","")
+				if line.include?("\t")
+					parts=line.gsub('"',"").split("\t")
+					publisher=parts.first
+					interests[publisher]=Hash.new if interests[parts.first]==nil
+					topic=parts.last.split(" >").first
+				else
+					topic=line
+					topic=line.split(" >").first if line.include?(">")
+				end
+				cats.push(topic)
+				interests[publisher][topic]=0 if interests[publisher][topic]==nil
+				interests[publisher][topic]+=1
 			end
 		}
-		return interests
+		cats=cats.uniq
+		interests.each{|pub,topics| cats.each{|cat| interests[pub][cat]=0 if topics[cat]==nil};}
+		File.open(@defines.resourceFiles["interestsFile"],"w") do |f|
+		  f.write(interests.to_json)
+		end
 	end
 end
