@@ -98,13 +98,12 @@ class Trace
 		end
 	end
 
-	def dumpUserRes(db,durStats,sizeStats,filters)
+	def dumpUserRes(db,durStats,sizeStats,filters,conv)
 		start = Time.now
 		cats=filters.getCats
 		allowOptions=@defines.options['tablesDB']
 		options=@defines.options['resultToFiles']
 		count=0
-		conv=Convert.new(@defines)
 		arr=Array.new
 		for id,user in users do	
 #puts count.to_s+" users were stored..."+(Time.now).to_i.to_s #if count%10==0

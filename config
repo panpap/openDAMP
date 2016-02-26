@@ -18,8 +18,8 @@
 		"advertisements": false,
 		"userResults": true,
 		"prices": true,
-		"traceResults": true,
-		"csyncResults": false,
+		"traceResults": false,
+		"csyncResults": true,
 		"userVisits": true,
 		"userFiletypes": false,
 		"advertisers": true

@@ -90,7 +90,7 @@ class Core
 			end		#FILTER ROW
 		end
 		cat=filterRow(row)
-		cookieSyncing(row,cat) if @options['tablesDB'][@defines.tables["csyncTable"]]
+		cookieSyncing(row,cat) if @options['tablesDB'][@defines.tables["csyncTable"].keys.first]
 		return true
 	end
 
@@ -140,7 +140,7 @@ confirmed=0
 			alfa,digit=Utilities.digitAlfa(paramPair.last)
 			if not @filters.is_GarbageOrEmpty?(paramPair.last) and digit>3 and alfa>4 
 				ids+=1
-				curHost=Utilities.calculateHost(urlAll.first)
+				curHost=Utilities.calculateHost(urlAll.first,nil)
 confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.eql?(word)}
 				if cat==nil
 					cat=@filters.getCategory(urlAll,curHost,@curUser)
@@ -181,7 +181,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 	def csyncResults()
 		if @database!=nil
 			@defines.puts "> Dumping Cookie synchronization results..."	
-			@trace.dumpUserRes(@database,nil,nil,@filters)	
+			@trace.dumpUserRes(@database,nil,nil,@filters,@convert)	
 		end
 	end
 #------------------------------------------------------------------------------------------------
@@ -324,7 +324,7 @@ publisher=nil
 			end
 			collector(type3rd,row)
 		end
-		if (type3rd=="Other" or type3rd=="Content") and @options['tablesDB'][@defines.tables["visitsTable"].keys.first]
+		if @options['tablesDB'][@defines.tables["visitsTable"].keys.first] and (type3rd=="Other" )#or type3rd=="Content") 
 			collectInterests(url.first)
 		end
 		return type3rd
@@ -350,7 +350,7 @@ publisher=nil
 		@trace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
 		@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)
 		type=row['type']
-		if type!=-1 and @options['tablesDB'][@defines.tables["userFilesTable"].keys[0]]
+		if type!=-1 and @options['tablesDB'][@defines.tables["userFilesTable"].keys.first]
 			if @trace.users[@curUser].fileTypes[contenType]==nil
 				@trace.users[@curUser].fileTypes[contenType]={"data"=>Array.new, "gif"=>Array.new,"html"=>Array.new,"image"=>Array.new,"other"=>Array.new,"script"=>Array.new,"styling"=>Array.new,"text"=>Array.new,"video"=>Array.new} 
 			end
@@ -367,7 +367,7 @@ publisher=nil
 			end
 			durStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
 			sizeStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
-			@trace.dumpUserRes(@database,durStats,sizeStats,@filters)
+			@trace.dumpUserRes(@database,durStats,sizeStats,@filters,@convert)
 		end
 	end
 
@@ -469,7 +469,7 @@ adPosition=-1
         if @filters.is_Beacon?(row['url'],row['type'],false) 		#findBeacon in URL
             beaconSave(url.first,row)
         end
-        paramNum, result=checkParams(row,url,publisher,adCat)             #check ad in URL params
+        paramNum, result=checkParams(row,url,publisher,adCat)       #check ad in URL params
         if(result==true or detectImpressions(url,row))
             isAd=true
 		end
@@ -488,7 +488,7 @@ adPosition=-1
 	end
 
 	def collectAdvertiser(row)
-		if row!=nil and @options['tablesDB'][@defines.tables["advertiserTable"]]
+		if row!=nil and @options['tablesDB'][@defines.tables["advertiserTable"].keys.first]
 			host=row['host']
 			if @trace.advertisers[host]==nil
 				@trace.advertisers[host]=Advertiser.new

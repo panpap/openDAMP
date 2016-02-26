@@ -142,7 +142,7 @@ class Plotter
 	end
 
 	def getDBdata(table,column)
-		data=@db.getAll(table,column,nil,nil).sort
+		data=@db.getAll(table,column,nil,nil,false).sort
 		if data.size==0
 			Utilities.warning "No data was found in table: <"+table+"> column: <"+column+">"
 			return nil
@@ -168,7 +168,7 @@ class Plotter
 	def multipleColumns(table,column,whatToPlot,data)				
 		data=Hash.new(Array.new)
 		columns=column.split(",")
-		columns.each{|c| data[c]=(@db.getAll(table,c,nil,nil).flatten)}
+		columns.each{|c| data[c]=(@db.getAll(table,c,nil,nil,false).flatten)}
 		outFile=@defines.dirs['plotDir']+whatToPlot+'.data'
 		fw=File.new(outFile,'w')
 		plotType="";xTitle="";yTitle=""
