@@ -8,13 +8,13 @@ def getBinding(array,id,name)
 end
 
 def printer(fw,arrayAttrs,data)
-	arrayAttrs.split("\t").each{|col| fw.print data[col].to_s+"\t"}
+	arrayAttrs.split("\t").each{|col| fw.print data[col.split(":").last].to_s+"\t"}
 end
 
 filename=ARGV[0]
-columns=["type\tpriceValue\tbytes\tnumOfParams\tadSize\tadPosition\tuserLocation\tTOD\tinterest\tpubPopularity\tassociatedSSP\tassociatedDSP\tassociatedADX\tmob\tbrowser\tdevice\t", #PRICE-RELATED
-"totalRows\tnumOfCookieSyncs\tnumOfLocations\tuniqLocations\ttotalBytes\tavgBytesPerReq\tsumDuration\tavgDurationOfReq\tnumOfCookieSyncs\tpublishersVisited\t","interests\t", #USER-RELATED
-"numOfReqs\tnumOfUsers\tavgReqPerUser\ttotalDurOfReqs\tavgDurOfReqs\ttotalBytesDelivered\ttype\t"] #ADVERTISERS-RELATED
+columns=["price:type\tprice:priceValue\tprice:bytes\tprice:upToKnowCM\tprice:numOfParams\tprice:adSize\tprice:adPosition\tprice:userLocation\tprice:TOD\tprice:interest\tprice:pubPopularity\tprice:associatedSSP\tprice:associatedDSP\tprice:associatedADX\tprice:mob\tprice:browser\tprice:device\t", #PRICE-RELATED
+"user:totalRows\tuser:numOfLocations\tuser:uniqLocations\tuser:totalBytes\tuser:avgBytesPerReq\tuser:sumDuration\tuser:avgDurationOfReq\tuser:numOfCookieSyncs\tuser:publishersVisited\t","user:interests\t", #USER-RELATED
+"adv:numOfReqs\tadv:numOfUsers\tadv:avgReqPerUser\tadv:totalDurOfReqs\tadv:avgDurOfReqs\tadv:totalBytesDelivered\tadv:type\t"] #ADVERTISERS-RELATED
 writeFile="mergedFeatures.csv"
 trace=""
 path=""
@@ -44,9 +44,8 @@ advertisers=db.getAll(defines.tables["advertiserTable"].keys.first,nil,nil,nil,t
 interests=db.getAll(defines.tables["visitsTable"].keys.first,nil,nil,nil,true)
 users=db.getAll(defines.tables["userTable"].keys.first,nil,nil,nil,true)
 fw=File.new(writeFile,"w")
-
-row=prices.first
-#prices.each do |row|
+columns.each{|col| fw.print col}; fw.puts ;
+prices.each do |row|
     userInterest=getBinding(interests,row['userId'],"userID")
 	advertiser=getBinding(advertisers,row['host'],"host")
 	user=getBinding(users,row['userId'],"id")
@@ -55,5 +54,5 @@ row=prices.first
 	printer(fw,columns[2],userInterest)
 	printer(fw,columns[3],advertiser)
 	fw.puts ;
-#end
+end
 fw.close
