@@ -15,7 +15,6 @@ filename=ARGV[0]
 columns=["price:type\tprice:priceValue\tprice:bytes\tprice:upToKnowCM\tprice:numOfParams\tprice:adSize\tprice:adPosition\tprice:userLocation\tprice:TOD\tprice:interest\tprice:pubPopularity\tprice:associatedSSP\tprice:associatedDSP\tprice:associatedADX\tprice:mob\tprice:browser\tprice:device\t", #PRICE-RELATED
 "user:totalRows\tuser:numOfLocations\tuser:uniqLocations\tuser:totalBytes\tuser:avgBytesPerReq\tuser:sumDuration\tuser:avgDurationOfReq\tuser:numOfCookieSyncs\tuser:publishersVisited\t","user:interests\t", #USER-RELATED
 "adv:numOfReqs\tadv:numOfUsers\tadv:avgReqPerUser\tadv:totalDurOfReqs\tadv:avgDurOfReqs\tadv:totalBytesDelivered\tadv:type\t"] #ADVERTISERS-RELATED
-writeFile="mergedFeatures.csv"
 trace=""
 path=""
 if filename!=nil
@@ -24,18 +23,19 @@ if filename!=nil
 		if filename.include? "_analysis"
 			filename=filename.split(".").first
 			trace=str.last
-			path=str.first
+			path=str.first+"/"
 		else
 			Utilities.error "Wrong file"
 		end
 	else
-		path=str.first
+		path=str.first+"/"
 		trace=str.first.split("results_").last
-		filename=path+"/"+trace+"_analysis"
+		filename=path+trace+"_analysis"
 	end
 else
 	Utilities.error "Give proper path"
 end
+writeFile=path+"mergedFeatures.csv"
 defines=Defines.new(trace)
 puts "Opening "+filename+".db"
 db=Database.new(defines,filename+".db")
