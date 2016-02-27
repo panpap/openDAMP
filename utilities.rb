@@ -114,7 +114,8 @@ module Utilities
 
 	def Utilities.calculateHost(url,host)
 		firstPart=url.split("?").first.split("/").first.gsub("%20","").split("%").first.split("#").first
-		temp=firstPart.split(".")
+		return nil if firstPart==nil
+		temp=firstPart.split(".") 
 		if temp.size>1
 			if Utilities.is_numeric?(temp[temp.size-2]) and Utilities.is_numeric?(temp[temp.size-1])
 				return firstPart

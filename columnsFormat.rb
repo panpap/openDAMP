@@ -23,6 +23,10 @@ module Format
 			h['mob']=nil
 			h['browser']=-1
 			h['device']=nil
+			if h['host']==nil
+				Utilities.warning "ERROR IN HOST: "+part[4]+" url: "+h['url']
+				return nil
+			end
 		elsif dataset==2
 			#id	NodeIP	UserIP	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss	PortNumber	HTTP_Verb	ToCrawl	Path	HTTPReferer	UserAgent	Host	Cookie	OrigReq	ToCrawl_v2	ContentType
 			h['uIP']=part[2]

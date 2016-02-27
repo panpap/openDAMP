@@ -34,13 +34,13 @@ class Operations
 				end
 			else
 				row=Format.columnsFormat(line,@defines.column_Format,@defines.options,@filters)
-				if row['host'].size>1 and row['host'].count('.')>0
+				if row!=nil and row['host'].size>1 and row['host'].count('.')>0
 					if function==1 or function==0
 						atts.each{|att| (f[att].puts row[att]) if (att!='url' and att!="tmstp") and f[att]!=nil}
 						Utilities.separateTimelineEvents(row,@defines.dirs['userDir']+row['IPport'],@defines.column_Format) #timelines creation
 					end					
 					if function==2 or function==0
-						@func.parseRequest(row,false) 	#categorization,cookie synchronization and prices detection
+						@func.parseRequest(row,true) 	#categorization,cookie synchronization and prices detection
 					end
 					if function==3		#find
 						@func.findStrInRows(row,str)
