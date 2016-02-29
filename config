@@ -1,4 +1,5 @@
 {
+	"browserOnly?": false,
 	"isThereHeader?": true,
 	"printToSTDOUT?": true,
 	"detectBeacons?": false,
@@ -16,12 +17,12 @@
 		"beacons": false,
 		"impressions": false,
 		"advertisements": false,
-		"userResults": true,
+		"userResults": false,
 		"prices": true,
 		"traceResults": false,
-		"csyncResults": true,
-		"userVisits": true,
+		"csyncResults": false,
+		"userVisits": false,
 		"userFiletypes": false,
-		"advertisers": true
+		"advertisers": false
 	}
 }

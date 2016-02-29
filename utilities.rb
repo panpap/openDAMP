@@ -113,9 +113,10 @@ module Utilities
 	end
 
 	def Utilities.calculateHost(url,host)
-		firstPart=url.split("?").first.split("/").first.gsub("%20","").split("%").first.split("#").first
-		return nil if firstPart==nil
-		temp=firstPart.split(".") 
+		firstPart=url.split("?").first.split("/").first.gsub("%20","").split("%")
+		return nil if firstPart.first==nil or firstPart.first==""
+		firstPart=firstPart.first.split("#").first
+		temp=firstPart.split(".")
 		if temp.size>1
 			if Utilities.is_numeric?(temp[temp.size-2]) and Utilities.is_numeric?(temp[temp.size-1])
 				return firstPart
@@ -257,7 +258,7 @@ module Utilities
 
 
 	def Utilities.produceConfigFile(configFile,files,tables)
-		defaultOptions={"isThereHeader?"=>true,"printToSTDOUT?"=>true, "detectBeacons?"=>true,'resultToFiles'=>
+		defaultOptions={"browserOnly?"=>true,"isThereHeader?"=>true,"printToSTDOUT?"=>true, "detectBeacons?"=>true,'resultToFiles'=>
 			{files[0]=>false, files[1]=>false,
 			files[2]=>false, files[3]=>false,files[4]=>false,files[5]=>false},"database?"=>true,
 			'tablesDB'=>{tables["publishersTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>false,

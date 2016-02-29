@@ -24,9 +24,13 @@ class Operations
 		#atts=@options['headers']
 		atts=["IPport", "uIP", "url", "ua", "host", "tmstp", "status", "length", "dataSz", "dur"]		
 		f=Hash.new
+		start=Time.now
 		File.foreach(@defines.traceFile) {|line|
 			begin
-			@defines.puts "\t"+count.to_s+" lines so far..." if count%10000==0
+			if count%10000==0
+				@defines.puts "\t"+count.to_s+" lines so far... "+(Time.now - start).to_s+" seconds"
+				start=Time.now
+			end
 			if count==0		# options consume HEADER
 				@defines.puts "\theader detected"
 				if function==1 or function==0
@@ -34,19 +38,21 @@ class Operations
 				end
 			else
 				row=Format.columnsFormat(line,@defines.column_Format,@defines.options,@filters)
-				if row!=nil and row['host'].size>1 and row['host'].count('.')>0
-					if function==1 or function==0
-						atts.each{|att| (f[att].puts row[att]) if (att!='url' and att!="tmstp") and f[att]!=nil}
-						Utilities.separateTimelineEvents(row,@defines.dirs['userDir']+row['IPport'],@defines.column_Format) #timelines creation
-					end					
-					if function==2 or function==0
-						@func.parseRequest(row,true) 	#categorization,cookie synchronization and prices detection
-					end
-					if function==3		#find
-						@func.findStrInRows(row,str)
-					end
-					if function==4		#find
-						@func.cookieSyncing(row,nil)
+				if row!=nil
+					if row['host'].size>1 and row['host'].count('.')>0
+						if function==1 or function==0
+							atts.each{|att| (f[att].puts row[att]) if (att!='url' and att!="tmstp") and f[att]!=nil}
+							Utilities.separateTimelineEvents(row,@defines.dirs['userDir']+row['IPport'],@defines.column_Format) #timelines creation
+						end					
+						if function==2 or function==0
+							@func.parseRequest(row) 	#categorization,cookie synchronization and prices detection
+						end
+						if function==3		#find
+							@func.findStrInRows(row,str)
+						end
+						if function==4		#find
+							@func.cookieSyncing(row,nil)
+						end
 					end
 				end
 			end
@@ -59,12 +65,9 @@ class Operations
 		if function==1 or function==0
 			atts.each{|a| f[a].close if f[a]!=nil; Utilities.countInstances(@defines.dirs['dataDir']+a); }
 		end
-		if function==2 or function==0
-			@func.analysis
-		end
-		if function==4		#find
-			@func.csyncResults()
-		end
+		@func.analysis	if function==2 or function==0
+		@func.csyncResults()	if function==4		#find
+		@defines.puts @func.skipped.to_s+" rows were skipped due to browser-only restriction..."	if @func.skipped>0
 		@func.database.close if @func.database!=nil
 	end
 

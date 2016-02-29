@@ -5,11 +5,12 @@ require 'digest/sha1'
 
 class Core
 	attr_writer :window, :cwd
-	attr_accessor :database
+	attr_accessor :database, :skipped
    	@isBeacon=false
 
 	def initialize(defs,filters)
 		@defines=defs
+		@skipped=0
 		@convert=Convert.new(@defines)
 		@filters=filters	
 		@trace=Trace.new(@defines)
@@ -79,13 +80,14 @@ class Core
 		end
 	end
 
-	def parseRequest(row,browserOnly)
+	def parseRequest(row)
 		if row['ua']!=-1
 			mob,dev,browser=reqOrigin(row)		#CHECK THE DEVICE TYPE
 			row['mob']=mob
 			row['dev']=dev
 			row['browser']=browser
-			if browserOnly and browser.eql? "unknown"
+			if @options["browserOnly?"] and browser.eql? "unknown"
+				@skipped+=1
 				return false
 			end		#FILTER ROW
 		end
@@ -138,7 +140,7 @@ confirmed=0
 		for field in fields do
 			paramPair=field.split("=")
 			alfa,digit=Utilities.digitAlfa(paramPair.last)
-			if not @filters.is_GarbageOrEmpty?(paramPair.last) and digit>3 and alfa>4 
+			if paramPair.last!=nil and not (paramPair.last.size<17 or (["http","utf","www","text","image"].any? { |word| paramPair.last.downcase.include?(word)})) and digit>3 and alfa>4 
 				ids+=1
 				curHost=Utilities.calculateHost(urlAll.first,nil)
 confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.eql?(word)}
@@ -316,7 +318,7 @@ publisher=nil
 				else	# Rest
 					type3rd="Other"
 					@trace.party3rd[type3rd]+=1
-					if (row['browser']!="unknown")
+					if (row['browser']!="unknown") and (@options['tablesDB'][@defines.tables["publishersTable"].keys[0]] or @options['tablesDB'][@defines.tables["userTable"].keys[0]])
 						@trace.users[@curUser].publishers.push(row)
 					end
 				end
@@ -347,9 +349,11 @@ publisher=nil
 	end
 
 	def collector(contenType,row)
-		@trace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
-		@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)
 		type=row['type']
+		if @options['tablesDB'][@defines.tables["userTable"].keys.first]
+			@trace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
+			@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)
+		end
 		if type!=-1 and @options['tablesDB'][@defines.tables["userFilesTable"].keys.first]
 			if @trace.users[@curUser].fileTypes[contenType]==nil
 				@trace.users[@curUser].fileTypes[contenType]={"data"=>Array.new, "gif"=>Array.new,"html"=>Array.new,"image"=>Array.new,"other"=>Array.new,"script"=>Array.new,"styling"=>Array.new,"text"=>Array.new,"video"=>Array.new} 
@@ -381,22 +385,31 @@ publisher=nil
 			type=""
 			priceVal,enc=@convert.calcPriceValue(paramVal,isAdCat)
 			return false if priceVal==nil
+
 			if enc
 				type="numeric"
 			else
 				type="encrypted"
+				alfa,digit=Utilities.digitAlfa(paramVal)
+				return false if (alfa<2 or digit<2)
 			end
-			done=false
+			done=-1
 			if @database!=nil
 				id=Digest::SHA256.hexdigest (row.values.join("|")+priceTag+"|"+priceVal.to_s+"|"+type)
 				time=row['tmstp']
-				adx=-1,ssp=-1,dsp=-1
+				adx=-1,ssp=-1,dsp=-1;
+				bidderStr=row['url'].split("bidder_name=")
+				if bidderStr.size>1
+					dsp=bidderStr.last.split("&").first
+				end
+#CARRIER
 				interest,pubPopularity=@convert.analyzePublisher(publisher)
 				upToKnowCM=@trace.users[@curUser].csync.size
-				params=[type,time,domainStr,priceTag.downcase,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, adPosition,@convert.getGeoLocation(row['uIP']),@convert.getTod(time),interest,pubPopularity,row['IPport'],ssp,dsp,-1,row['mob'],row['dev'],row['browser'],row['url'],id]
+				location=@convert.getGeoLocation(row['uIP'])
+				params=[type,time,domainStr,priceTag.downcase,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, adPosition,location,@convert.getTod(time),interest,pubPopularity,row['IPport'],ssp,dsp,-1,row['mob'],row['dev'],row['browser'],row['url'],id]
 				done=@database.insert(@defines.tables['priceTable'],params)
 			end
-			if @database==nil or done
+			if @database==nil or done>-1
 				if enc
 					@trace.users[@curUser].numericPrices.push(priceVal)
 					@trace.numericPrices+=1
@@ -412,9 +425,11 @@ publisher=nil
 
     def detectImpressions(url,row)     	#Impression term in path
         if @filters.is_Impression?(url[0])
-			Utilities.printRowToDB(row,@database,@defines.tables['impTable'],nil)
+			if @options['tablesDB'][@defines.tables["impTable"].keys.first]
+				Utilities.printRowToDB(row,@database,@defines.tables['impTable'],nil)				
+		    	@trace.users[@curUser].imp.push(row)
+			end
 			@trace.totalImps+=1
-		    @trace.users[@curUser].imp.push(row)
 			return true
         end
 		return false
@@ -430,9 +445,8 @@ adPosition=-1
         for field in fields do
             keyVal=field.split("=")
             if(not @filters.is_GarbageOrEmpty?(keyVal))
-				if(@filters.is_Ad_param?(keyVal))
-					isAd=true
-				end
+puts "AAAAAAAAAAAAA "+keyVal.to_s+" "+@filters.has_PriceKeyword?(keyVal).to_s if row["tmstp"]=="1425167849209"
+				isAd=true if(@filters.is_Ad_param?(keyVal))
 				if detectPrice(row,keyVal,numOfPrices,fields.length,adSize, adPosition,publisher,(adCat or isAd))
 					numOfPrices+=1
 					Utilities.warning ("Price Detected in Beacon\n"+row['url']) if @isBeacon

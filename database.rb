@@ -129,7 +129,7 @@ private
 	def execute(command,params)
 		begin
 			@db.execute command+"("+params+")"
-			return true
+			return 1
 		rescue SQLite3::Exception => e 
 			if e.to_s.include? "no such table" 
 				Utilities.error "SQLite Exception: "+e.to_s+" "+command
@@ -137,18 +137,20 @@ private
 				table=command.split("INTO ")[1].split("VALUES")[0].gsub("'","")
 				if @alerts[table]==nil or @alerts[table]==0
 					Utilities.warning "not unique: "+table+"\n"+command+"("+params+")"
+					return 0
 				end
 				@alerts[table]+=1
 			elsif e.to_s.include? "UNIQUE constraint failed"
 				table=e.to_s.split(": ")[1].split(".")[0]
 				if @alerts[table]==nil or @alerts[table]==0
 					Utilities.warning "UNIQUE constraint failed: "+table+"\n"+command+"("+params+")"
+					return 0
 				end
 				@alerts[table]+=1
 			else
 				Utilities.error "SQLite Exception: "+command+" "+e.to_s+"\n"+params+"\n\n"+e.backtrace.join("\n").to_s
 			end
-			return false
+			return -1
 		end
 	end
 	

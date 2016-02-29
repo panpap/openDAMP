@@ -130,18 +130,12 @@ class Filters
 
 	def is_GarbageOrEmpty?(str) 
 		return true if str==nil
-		if str.kind_of?(Array) 
-			alfa,digit=Utilities.digitAlfa(str[1])
-			if (str[1]==nil or str[0].eql? "v" or str[0].downcase.include? "ver" \
-                    or str[0].eql? "density" or str[0].eql? "u_sd" or (alfa<2 or digit<2) \
-					or str[1].include? "," or str[1].include? "{" or str[1].include? "}" \
-					or (["startapp","pkg","v-vice","button_icon","posts","read","text","image"].any? { |word| str[1].downcase.include?(word)}))
-				return true
-			end
+		if (str[1]==nil or str[0].eql? "v" or str[0].downcase.include? "ver" \
+                or str[0].eql? "density" or str[0].eql? "u_sd" \
+				or str[1].include? "," or str[1].include? "{" or str[1].include? "}" \
+				or (["startapp","pkg","v-vice","button_icon","posts","read","text","image"].any? { |word| str[1].downcase.include?(word)}))
+			return true
 		end
-		if str.kind_of?(String)
-			return (str.size<17 or (["http","utf","www","text","image"].any? { |word| str.downcase.include?(word)}))
-    	end
 		return false
 	end
 

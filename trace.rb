@@ -45,12 +45,17 @@ class Trace
 			"\n- 3rd Party reqs detected: \n\tAdvertising => "+@party3rd['Advertising'].to_s+
 			"\n\tAnalytics => "+@party3rd['Analytics'].to_s+"\n\tSocial => "+@party3rd['Social'].to_s+"\n\t3rd_party_Content => "+@party3rd['Content'].to_s+
 			"\n\tBeacons => "+@party3rd['Beacons'].to_s+"\n\tOther => "+@party3rd['Other'].to_s+
-			"\n- Total Size: "+sizeStats['sum'].to_s+" Bytes\n\tAverage per req: "+
+			"\n- Total Size: "+sizeStats['sum'].to_i.to_s+" Bytes\n\tAverage per req: "+
 			sizeStats['avg'].to_s+" Bytes"+"\n\nADVERTISING STATS\n- AdRelated traffic from mobile devices: "+@numOfMobileAds.to_s+"/"+
-			@party3rd['Advertising'].to_s+"\n- Prices Detected "+(@numericPrices+@hashedPrices).to_s+"\n\tHashed Price tags found: "+@hashedPrices.to_s+
-			"\n\tNumeric Price tags found: "+@numericPrices.to_s+"\n- Advertising reqs Total size: "+(Utilities.makeStats(@adSize)["sum"]).to_s+
-			"\n- Cookie Synchronizations detected: "+cooksyncs.to_s+"\n- Unique Advertisers: "+@advertisers.size.to_s+
-			"\n------------\n"#-Impressions detected "+@totalImps.to_s+"\n"
+			@party3rd['Advertising'].to_s+"\n- Advertising reqs Total size: "+(Utilities.makeStats(@adSize)["sum"]).to_s+"\n"
+			if @defines.options['tablesDB'][@defines.tables["priceTable"].keys[0]]
+				s+="- Prices Detected "+(@numericPrices+@hashedPrices).to_s+"\n\tHashed Price tags found: "+@hashedPrices.to_s+
+						"\n\tNumeric Price tags found: "+@numericPrices.to_s+"\n"
+			end
+			if @defines.options['tablesDB'][@defines.tables["csyncTable"].keys[0]]
+				s+="- Cookie Synchronizations detected: "+cooksyncs.to_s+"\n- Unique Advertisers: "+@advertisers.size.to_s+"\n"
+			end
+			s+="------------\n"#-Impressions detected "+@totalImps.to_s+"\n"
 
 
 			if db!=nil

@@ -12,8 +12,16 @@ module Format
 			h['IPport']=part[0].split(":").last
 		    h['uIP']=part[1]
 		    h['url']=part[2]
+			if h['url']==nil
+				Utilities.warning "EMPTY URL: "+line
+				return nil
+			end
 		    h['ua']=part[3]
 			h['host']=Utilities.calculateHost(h['url'],part[4])
+			if h['host']==nil
+				Utilities.warning "ERROR IN HOST: "+line
+				return nil
+			end
 			h['type']=filter.getTypeOfContent(h['url'],nil)
 		    h['tmstp']=part[5]
 		    h['status']=part[6]
@@ -23,10 +31,7 @@ module Format
 			h['mob']=nil
 			h['browser']=-1
 			h['device']=nil
-			if h['host']==nil
-				Utilities.warning "ERROR IN HOST: "+part[4]+" url: "+h['url']
-				return nil
-			end
+
 		elsif dataset==2
 			#id	NodeIP	UserIP	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss	PortNumber	HTTP_Verb	ToCrawl	Path	HTTPReferer	UserAgent	Host	Cookie	OrigReq	ToCrawl_v2	ContentType
 			h['uIP']=part[2]
