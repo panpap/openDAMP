@@ -129,7 +129,7 @@ module Utilities
 
 	def Utilities.calculateHost(uri,host)
 		return -1 if uri==-1
-		url=URI.unescape(uri)
+		url=URI.unescape(uri.force_encoding("ISO-8859-1"))
 		firstPart=url.split("?").first
 		if firstPart.include? "www."
 			temp=firstPart.split("www.")
