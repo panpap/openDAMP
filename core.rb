@@ -402,6 +402,10 @@ end
 				time=row['tmstp']
 				dsp,ssp,adx,publisher,adSize,carrier,adPosition=@filters.lookForRTBentitiesAndSize(row['url'],domainStr)
 				interest,pubPopularity=@convert.analyzePublisher(publisher)
+				if interest!=-1
+					temp=Hash[interest.sort_by{|k,v| k}].to_s
+					interest=temp.gsub(/[{}]/,"")
+				end
 				upToKnowCM=@trace.users[@curUser].csync.size
 				location=@convert.getGeoLocation(row['uIP'])
 				params=[type,time,domainStr,priceTag,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, carrier, adPosition,location,@convert.getTod(time),publisher,interest,pubPopularity,row['IPport'],ssp,dsp,adx,row['mob'],row['dev'],row['browser'],row['url'],id]

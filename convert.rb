@@ -102,14 +102,23 @@ private
 
 	def hostToInterest(pubHost)
 		return nil if pubHost==nil
-puts "HERE" if publisher=="springwalk"
-		ints=@interests[pubHost]
-		if ints==nil
+		if not pubHost.include? "."
 			str=""
-			@interests.keys.any? {|word| str=pubHost.downcase.include?(word)}
+			@interests.keys.each {|word| (str=word;break) if word.downcase.include?(pubHost) }
 			ints=@interests[str]
+		else
+			ints=@interests[pubHost]
+			if ints==nil
+				str=""
+				@interests.keys.any? {|word| str=pubHost.downcase.include?(word)}
+				ints=@interests[str]
+			end
+			if ints==nil
+				str=""
+				@interests.keys.any? {|word| (str=word;break) if word.downcase.include?(pubHost) }
+				ints=@interests[str]
+			end
 		end
-(puts "|"+ints+"|";abort) if publisher=="springwalk"
 		return -1 if ints==nil
 		return ints 
 	end
