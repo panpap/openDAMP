@@ -102,6 +102,7 @@ private
 
 	def hostToInterest(pubHost)
 		return nil if pubHost==nil
+puts "HERE" if publisher=="springwalk"
 		ints=@interests[pubHost]
 		if ints==nil
 			str=""
