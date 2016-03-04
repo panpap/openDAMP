@@ -395,7 +395,7 @@ end
 			else
 				type="encrypted"
 				alfa,digit=Utilities.digitAlfa(paramVal)
-				return false if (alfa<2 or digit<2) or priceVal<15
+				return false if (alfa<2 or digit<2) or priceVal.size<15
 			end
 			if @database!=nil
 				id=Digest::SHA256.hexdigest (row.values.join("|")+priceTag+"|"+priceVal.to_s+"|"+type)
