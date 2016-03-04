@@ -109,6 +109,7 @@ puts "HERE" if publisher=="springwalk"
 			@interests.keys.any? {|word| str=pubHost.downcase.include?(word)}
 			ints=@interests[str]
 		end
+(puts "|"+ints+"|";abort) if publisher=="springwalk"
 		return -1 if ints==nil
 		return ints 
 	end
