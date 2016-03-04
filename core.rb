@@ -287,7 +287,10 @@ publisher=nil
 		type3rd=@filters.getCategory(url,host,@curUser)
 		adCat=type3rd.eql? "Advertising"
 		isAd,noOfparam=beaconImprParamCkeck(row,url,publisher,adCat)
-		if type3rd!=nil	and not @isBeacon #	3rd PARTY CONTENT
+if isAd==true and adCat==false
+	type3rd="Advertising"
+end
+		if type3rd!=nil	or isAd and not @isBeacon #	3rd PARTY CONTENT
 			collector(type3rd,row)
 			@trace.party3rd[type3rd]+=1
 			if not type3rd.eql? "Content"
@@ -340,7 +343,7 @@ publisher=nil
 		@trace.users[@curUser].pubVisits[domain]+=1
 		topics=nil
 		topics,alexaRank=@convert.analyzePublisher(domain)
-		if topics!=nil
+		if topics!=nil and topics!=-1
 			if @trace.users[@curUser].interests==nil
 				@trace.users[@curUser].interests=Hash.new(0)
 			end
@@ -375,7 +378,7 @@ publisher=nil
 		end
 	end
 
-    def detectPrice(row,keyVal,numOfPrices,numOfparams,adSize, adPosition,publisher,isAdCat)     	# Detect possible price in parameters and returns URL Parameters in String
+    def detectPrice(row,keyVal,numOfPrices,numOfparams,publisher,isAdCat)     	# Detect possible price in parameters and returns URL Parameters in String
 		domainStr=row['host']
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
@@ -385,28 +388,23 @@ publisher=nil
 			type=""
 			priceVal,enc=@convert.calcPriceValue(paramVal,isAdCat)
 			return false if priceVal==nil
-
+			done=-1
 			if enc
 				type="numeric"
+				return false if priceVal.to_f<0
 			else
 				type="encrypted"
 				alfa,digit=Utilities.digitAlfa(paramVal)
-				return false if (alfa<2 or digit<2)
+				return false if (alfa<2 or digit<2) or priceVal<15
 			end
-			done=-1
 			if @database!=nil
 				id=Digest::SHA256.hexdigest (row.values.join("|")+priceTag+"|"+priceVal.to_s+"|"+type)
 				time=row['tmstp']
-				adx=-1,ssp=-1,dsp=-1;
-				bidderStr=row['url'].split("bidder_name=")
-				if bidderStr.size>1
-					dsp=bidderStr.last.split("&").first
-				end
-#CARRIER
+				dsp,ssp,adx,publisher,adSize,carrier,adPosition=@filters.lookForRTBentitiesAndSize(row['url'],domainStr)
 				interest,pubPopularity=@convert.analyzePublisher(publisher)
 				upToKnowCM=@trace.users[@curUser].csync.size
 				location=@convert.getGeoLocation(row['uIP'])
-				params=[type,time,domainStr,priceTag.downcase,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, adPosition,location,@convert.getTod(time),interest,pubPopularity,row['IPport'],ssp,dsp,-1,row['mob'],row['dev'],row['browser'],row['url'],id]
+				params=[type,time,domainStr,priceTag,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, carrier, adPosition,location,@convert.getTod(time),publisher,interest,pubPopularity,row['IPport'],ssp,dsp,adx,row['mob'],row['dev'],row['browser'],row['url'],id]
 				done=@database.insert(@defines.tables['priceTable'],params)
 			end
 			if @database==nil or done>-1
@@ -438,19 +436,18 @@ publisher=nil
 	def checkParams(row,url,publisher,adCat)
      	return 0,false if (url.last==nil)
 		isAd=false
-adSize=-1
-adPosition=-1
         fields=url.last.split('&')
 		numOfPrices=0
         for field in fields do
             keyVal=field.split("=")
-            if(not @filters.is_GarbageOrEmpty?(keyVal))
-puts "AAAAAAAAAAAAA "+keyVal.to_s+" "+@filters.has_PriceKeyword?(keyVal).to_s if row["tmstp"]=="1425167849209"
-				isAd=true if(@filters.is_Ad_param?(keyVal))
-				if detectPrice(row,keyVal,numOfPrices,fields.length,adSize, adPosition,publisher,(adCat or isAd))
-					numOfPrices+=1
-					Utilities.warning ("Price Detected in Beacon\n"+row['url']) if @isBeacon
-					isAd=true
+            if(not @filters.is_GarbageOrEmpty?(keyVal)) and not url.first.include? "google" and not url.first.include? "eltenedor.es" and not url.first.include? "gosquared.com" and not url.first.include? "yaencontre.com" and not url.first.include? "bmw.es" and not url.first.include? "bing.com" and not url.first.include? "onswingers.com" and not url.first.include? "tusclasesparticulares.com" and not url.first.include? "ucm.es" and not url.first.include? "noticias3d.com" and not url.first.include? "loopme.me" and not url.first.include? "amap.com" and not url.first.include? "anyclip.com" and not url.first.include? "promorakuten.es" and not url.first.include? "scmspain.com"
+				#isAd=true if(@filters.is_Ad_param?(keyVal))
+				if @options['tablesDB'][@defines.tables["priceTable"].keys.first]
+					if detectPrice(row,keyVal,numOfPrices,fields.length,publisher,(adCat or isAd))
+						numOfPrices+=1
+						Utilities.warning ("Price Detected in Beacon\n"+row['url']) if @isBeacon
+						isAd=true
+					end
 				end
 			end
 		end

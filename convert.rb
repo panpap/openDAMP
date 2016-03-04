@@ -7,7 +7,7 @@ class Convert
 		@resouces=@defines.resourceFiles
 		@interests=nil
 		@db = MaxMindDB.new(@resouces["geoCity"])
-		if @defines.options['tablesDB'][@defines.tables["visitsTable"].keys[0]]
+		if @defines.options['tablesDB'][@defines.tables["visitsTable"].keys[0]] or @defines.options['tablesDB'][@defines.tables["priceTable"].keys[0]]
 			loadInterests
 		end
 	end
@@ -101,6 +101,7 @@ class Convert
 private
 
 	def hostToInterest(pubHost)
+		return -1 if pubHost==-1
 		return nil if pubHost==nil
 		ints=@interests[pubHost]
 		if ints==nil
@@ -108,7 +109,8 @@ private
 			@interests.keys.any? {|word| str=pubHost.downcase.include?(word)}
 			ints=@interests[str]
 		end
-		return ints
+		return -1 if ints==nil
+		return ints 
 	end
 	
 	def fromIPtoGeo(ip)

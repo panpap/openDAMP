@@ -25,7 +25,7 @@ class Database
 
 	def insert(tbl, params)
 		table=arrayCase(tbl)
-		return if blockOutput(table)
+		return -1 if blockOutput(table)
 		par=prepareStr(params)
 
 		if not @options["database?"]

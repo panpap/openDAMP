@@ -10,6 +10,7 @@ class Filters
 		@lastPub=Hash.new(nil)
 		if @defines!=nil
 			@lists=KeywordsLists.new(@defines.resourceFiles["filterFile"])
+			@rtbMacros=@lists.rtbMacros
 			@db = Database.new(@defines,@defines.beaconDB)
 			@cats=@lists.sameParty.keys
 			@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
@@ -143,6 +144,45 @@ class Filters
        return (@lists.keywords.any? { |word| param[0].downcase.eql?(word)})# and is_numeric?(param[1]))
     end
 
+
+	def lookForRTBentitiesAndSize(urlStr,host)
+		url=urlStr.split("?")
+		equal="="
+		adx=-1;ssp=-1;dsp=-1;size=-1;carrier=-1;position=-1;
+		adx=findInURL(urlStr,@rtbMacros["adx"],host)
+		adx=host if adx==-1
+		position=findInURL(urlStr,@rtbMacros["position"],host)
+		dsp=findInURL(urlStr,@rtbMacros["dsp"],host)
+		dsp="mopub.com" if dsp==-1 and (url.first.include? "notify/mopub" or url.first.include? "won_mopub" or url.first.include? "mopub_nurl" or url.first.include? "mopubwinrtb" or url.first.include? "mopub.web")
+		dsp=url.first.split("/rtbads/").last.split("/").last if dsp==-1 and (url.first.include? "/rtbads/")
+		dsp="rubicon" if dsp==-1 and (url.first.include? "rubicon.web")
+		dsp=url.first.split("taptapnetworks.com/ad/").last if dsp==-1 and (url.first.include? "taptapnetworks.com/ad/")
+		dsp="nexage" if dsp==-1 and (url.first.include? "win/nexagertb")
+		dsp="google" if dsp==-1 and (url.first.include? "win/google")
+		dsp=url.first.split("adsrvr.org/bid/feedback/").last if dsp==-1 and (url.first.include? "adsrvr.org/bid/feedback/")
+		dsp=url.first.split("avazutracking.net/price/").last if dsp==-1 and (url.first.include? "avazutracking.net/price/")
+		dsp=url.first.split("/bid/feedback/").last if dsp==-1 and (url.first.include? "/bid/feedback/")
+		publisher=findInURL(urlStr,@rtbMacros["pubs"],host)
+		ssp=findInURL(urlStr,@rtbMacros["ssp"],host)
+		size=findInURL(urlStr,@rtbMacros["sizes"],host)
+		w=-1;h=-1;
+		carrier=Utilities.getParam(url.last,"carrier",equal)
+		carrier=Utilities.getParam(url.last,"connection",equal) if carrier==-1
+		if size==-1
+			w=Utilities.getParam(url.last,"w",equal)
+			h=Utilities.getParam(url.last,"h",equal)
+			if w>-1 and h>-1 and Utilities.is_numeric?("w") and Utilities.is_numeric?("h")
+				w=Utilities.getParam(url.last,"width",equal)
+				h=Utilities.getParam(url.last,"height",equal)
+			end
+		end
+		if position==-1
+			position=Utilities.getParam(url.last,"pos",equal)
+		end
+		size=w+"x"+h if w!=-1 and h!=-1 and Utilities.is_numeric?("w") and Utilities.is_numeric?("h")
+		return Utilities.calculateHost(dsp,nil),ssp,Utilities.calculateHost(adx,nil),Utilities.calculateHost(publisher,nil),size.to_s.downcase,carrier.to_s.downcase,position.to_s.downcase
+	end	
+
 	def getCategory(urlAll,host,user)
 		url=urlAll[0]
 		rootUrl=url.gsub("/","")
@@ -212,6 +252,21 @@ class Filters
 
 private
 
+	def findInURL(url,array,host)
+		str=URI.unescape(url).split("?").last
+		delimiter="="
+		array.keys.each{ |word| 
+			delimiter=":" if word=="mediasmart.es"
+			if host.downcase.include?(word)
+				if not array[word].kind_of?(String)
+					array[word].each{|param| return Utilities.getParam(str,param,delimiter) if str.downcase.include?(param)}
+				else
+					return Utilities.getParam(str,array[word],delimiter).to_s.downcase if str.downcase.include?(array[word])
+				end
+			end
+		}
+		return -1
+	end
 
 	def externalList(host,lastPublisher)
 		cat=nil

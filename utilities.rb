@@ -112,15 +112,31 @@ module Utilities
 		fp.close
 	end
 
+	def Utilities.getParam(url,params,equal)
+		delimiter="&"
+		delimiter="," if equal==":"
+	#	params.each{|paramName|
+			str=url.split(params+equal)
+			if str.size>1
+				res=str.last.split(delimiter).first.gsub(",","")
+				return res.split(".").first	if (res.include? "." and res.split(".").last.size>4)
+				return res.split(" ").first	if (res.include? " ")
+				return res
+			end
+	#	}
+		return -1
+	end
+
 	def Utilities.calculateHost(url,host)
+		return -1 if url==-1
 		firstPart=url.split("?").first.split("/").first.gsub("%20","").split("%")
 		return nil if firstPart.first==nil or firstPart.first==""
-		firstPart=firstPart.first.split("#").first
+		firstPart=firstPart.first.split("#").first.split(":").first
 		temp=firstPart.split(".")
 		if temp.size>1
 			if Utilities.is_numeric?(temp[temp.size-2]) and Utilities.is_numeric?(temp[temp.size-1])
 				return firstPart
-			elsif (url.include? 'co.jp' or url.include? 'co.uk' or url.include? 'co.in' or url.include? 'com.br' or url.include? 'com.au' or url.include? 'org.br' )
+			elsif (url.include? 'org.es' or url.include? 'co.jp' or url.include? 'com.uy' or url.include? 'com.mx' or url.include? 'com.mk' or url.include? 'edu.mx' or url.include? 'com.es' or url.include? 'com.ar' or url.include? 'com.do' or url.include? 'co.uk' or url.include? 'co.in' or url.include? 'com.br' or url.include? 'com.au' or url.include? 'org.br' or url.include? 'uk.com' or url.include? 'co.nz' or url.include? 'co.id' or url.include? 'co.kr')
 				return temp[temp.size-3]+"."+temp[temp.size-2]+"."+temp[temp.size-1]
 			else
 				return temp[temp.size-2]+"."+temp[temp.size-1]
@@ -136,7 +152,7 @@ module Utilities
 
 	def Utilities.tokenizeHost(host)
 		parts=host.split(".")
-		if (host.include? 'co.jp' or host.include? 'co.uk' or host.include? 'co.in' or host.include? 'com.br' or host.include? 'com.au' or host.include? 'org.br' )
+		if (host.include? 'org.es' or host.include? 'co.jp' or host.include? 'com.uy' or host.include? 'com.mx' or host.include? 'com.mk' or host.include? 'edu.mx' or host.include? 'com.es' or host.include? 'com.ar' or host.include? 'com.do' or host.include? 'co.uk' or host.include? 'co.in' or host.include? 'com.br' or host.include? 'com.au' or host.include? 'org.br' or host.include? 'uk.com' or host.include? 'co.nz' or host.include? 'co.id' or host.include? 'co.kr')
 			tld=parts[parts.size-2]+"."+parts[parts.size-1]
             domain=parts[parts.size-3]
 		else
