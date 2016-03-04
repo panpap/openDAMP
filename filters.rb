@@ -171,7 +171,7 @@ class Filters
 		if size==-1
 			w=Utilities.getParam(url.last,"w",equal)
 			h=Utilities.getParam(url.last,"h",equal)
-			if w>-1 and h>-1 and Utilities.is_numeric?("w") and Utilities.is_numeric?("h")
+			if w!=-1 and h!=-1 and Utilities.is_numeric?("w") and Utilities.is_numeric?("h")
 				w=Utilities.getParam(url.last,"width",equal)
 				h=Utilities.getParam(url.last,"height",equal)
 			end
