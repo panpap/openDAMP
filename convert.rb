@@ -58,7 +58,7 @@ class Convert
 
 	def analyzePublisher(publisher)
 		interest=-1;alexaRank=-1
-		return interest,alexaRank if publisher==nil
+		return interest,alexaRank if publisher==nil or publisher==-1
 		interests=hostToInterest(publisher)
 		alexaRank=-1
 		#Utilities.warning "ALEXA RANK IS NOT IMPLEMENTED"
@@ -101,7 +101,6 @@ class Convert
 private
 
 	def hostToInterest(pubHost)
-		return -1 if pubHost==-1
 		return nil if pubHost==nil
 		ints=@interests[pubHost]
 		if ints==nil

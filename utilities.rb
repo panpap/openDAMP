@@ -119,7 +119,7 @@ module Utilities
 			str=url.split(params+equal)
 			if str.size>1
 				res=str.last.split(delimiter).first.gsub(",","")
-				return res.split(".").first	if (res.include? "." and res.split(".").last.size>4)
+				return res.split(".").first	if (res.include? "." and not res.include?"http://" and res.split(".").last.size>4 and res.split(".").size<3 and res.split(".").size>1)
 				return res.split(" ").first	if (res.include? " ")
 				return res
 			end
@@ -127,9 +127,15 @@ module Utilities
 		return -1
 	end
 
-	def Utilities.calculateHost(url,host)
-		return -1 if url==-1
-		firstPart=url.split("?").first.split("/").first.gsub("%20","").split("%")
+	def Utilities.calculateHost(uri,host)
+		return -1 if uri==-1
+		url=URI.unescape(uri)
+		firstPart=url.split("?").first
+		if firstPart.include? "www."
+			temp=firstPart.split("www.")
+			firstPart=temp.last
+		end
+		firstPart=firstPart.split("/").first.gsub("%20","").split("%")
 		return nil if firstPart.first==nil or firstPart.first==""
 		firstPart=firstPart.first.split("#").first.split(":").first
 		temp=firstPart.split(".")

@@ -137,6 +137,7 @@ private
 				table=command.split("INTO ")[1].split("VALUES")[0].gsub("'","")
 				if @alerts[table]==nil or @alerts[table]==0
 					Utilities.warning "not unique: "+table+"\n"+command+"("+params+")"
+					@alerts[table]+=1
 					return 0
 				end
 				@alerts[table]+=1
@@ -144,6 +145,7 @@ private
 				table=e.to_s.split(": ")[1].split(".")[0]
 				if @alerts[table]==nil or @alerts[table]==0
 					Utilities.warning "UNIQUE constraint failed: "+table+"\n"+command+"("+params+")"
+					@alerts[table]+=1
 					return 0
 				end
 				@alerts[table]+=1

@@ -1,6 +1,6 @@
 {
 	"browserOnly?": false,
-	"isThereHeader?": true,
+	"isThereHeader?": false,
 	"printToSTDOUT?": true,
 	"detectBeacons?": false,
 	"resultToFiles": {
