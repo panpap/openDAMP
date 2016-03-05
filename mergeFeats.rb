@@ -12,7 +12,7 @@ def printer(fw,arrayAttrs,data,host)
 		header=col.split(":").last
 		cell=data[header]
 		if cell==nil
-			puts "AAAAAAAAAAA "+host
+			puts "AAAAAAAAAAA "+header
 		else
 			if header=="uniqLocations"
 				locations=cell.gsub("%22","").gsub("{","").gsub("}","").split(",")
