@@ -406,6 +406,10 @@ end
 					temp=Hash[interest.sort_by{|k,v| k}].to_s
 					interest=temp.gsub(/[{}]/,"")
 				end
+				dsp=-1 if dsp==nil
+				adx=-1 if adx==nil
+				ssp=-1 if ssp==nil
+				publisher=-1 if publisher==nil
 				upToKnowCM=@trace.users[@curUser].csync.size
 				location=@convert.getGeoLocation(row['uIP'])
 				params=[type,time,domainStr,priceTag,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, carrier, adPosition,location,@convert.getTod(time),publisher,interest,pubPopularity,row['IPport'],ssp,dsp,adx,row['mob'],row['dev'],row['browser'],row['url'],id]
