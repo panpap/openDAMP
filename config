@@ -11,7 +11,7 @@
 		"cmIDcount.csv": false,
 		"cmHosts.csv": false
 	},
-	"database?": false,
+	"database?": true,
 	"tablesDB": {
 		"publishers": false,
 		"beacons": false,
@@ -20,7 +20,7 @@
 		"userResults": false,
 		"prices": true,
 		"traceResults": false,
-		"csyncResults": false,
+		"csyncResults": true,
 		"userVisits": false,
 		"userFiletypes": false,
 		"advertisers": false

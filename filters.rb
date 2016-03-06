@@ -165,7 +165,7 @@ class Filters
 				w=findInURL(urlStr,"width",nil,true)
 				h=findInURL(urlStr,"height",nil,true)
 			end
-			size=w+"x"+h if w!=-1 and h!=-1 and Utilities.is_numeric?("w") and Utilities.is_numeric?("h")
+			size=w+"x"+h if w!=-1 and h!=-1 and Utilities.is_numeric?(w) and Utilities.is_numeric?(h)
 		end
 		if position==-1
 			position=findInURL(urlStr,"pos",nil,true)
@@ -245,8 +245,8 @@ private
 	def findInURL(uri,array,host,lookForsize)
 		delimiter="&"; equal="=";
 		equal=":" if host=="mediasmart.es"
-		url=uri.split("?").last
-		url=URI.unescape(url.force_encoding("ISO-8859-1"))
+		url=uri.force_encoding("ISO-8859-1").split("?").last
+		url=URI.unescape(url)
 		delimiter="," if equal==":"
 		paramsArray=nil
 		if host==nil
@@ -255,16 +255,17 @@ private
 			array.keys.each{ |word| (paramsArray=array[word];break) if host.downcase.include?(word)}
 		end
 		if paramsArray!=nil
-			url.split(delimiter).each{|param| paramName=param.split(equal) 
-				if paramName.size==2
+			url.split(delimiter).each{|param| paramName=param.split(equal)
+				if paramName.size>1
 					if not paramsArray.kind_of?(String)
-						if paramsArray.any?{|param| paramName.first.downcase.include?(param)}
-							res=Utilities.prepareParam(paramName.last).downcase
+						if paramsArray.any?{|param| param==paramName.first.downcase}
+							res=Utilities.prepareParam(paramName[1]).downcase
+							return -1 if paramName.size<2
 							return res if lookForsize or not Utilities.is_numeric?(res) 
 						end
 					else
-						if paramName.first.downcase.include? paramsArray
-							res=Utilities.prepareParam(paramName.last).downcase
+						if paramsArray==paramName.first.downcase
+							res=Utilities.prepareParam(paramName[1]).downcase
 							return -1 if paramName.size<2
 							return res if lookForsize or not Utilities.is_numeric?(res)
 						end

@@ -113,11 +113,15 @@ module Utilities
 	end
 
 	def Utilities.prepareParam(paramVal)
-		res=paramVal.gsub(",","")
-		if res.include? "http"
-			tmp=res.split "://"
-			res=tmp.last
+		res=paramVal
+		if paramVal.include? "http"
+			res=paramVal.split("://").last
 		end
+		if res.include? "/"
+			tmp=res.split "/"
+			res=tmp.first
+		end	
+		res=res.gsub(",","")		
 		return res.split(".").first	if (res.include? "." and res.split(".").last.size>4 and res.split(".").size<3 and res.split(".").size>1)
 		return res
 	end
