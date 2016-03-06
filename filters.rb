@@ -146,40 +146,30 @@ class Filters
 
 
 	def lookForRTBentitiesAndSize(urlStr,host)
-		url=urlStr.split("?")
-		equal="="
 		adx=-1;ssp=-1;dsp=-1;size=-1;carrier=-1;position=-1;
-		adx=findInURL(urlStr,@rtbMacros["adx"],host)
+		adx=findInURL(urlStr,@rtbMacros["adx"],host,false)
 		adx=host if adx==-1
-		position=findInURL(urlStr,@rtbMacros["position"],host)
-		dsp=findInURL(urlStr,@rtbMacros["dsp"],host)
-		dsp="mopub.com" if dsp==-1 and (url.first.include? "notify/mopub" or url.first.include? "won_mopub" or url.first.include? "mopub_nurl" or url.first.include? "mopubwinrtb" or url.first.include? "mopub.web")
-		dsp=url.first.split("/rtbads/").last.split("/").last if dsp==-1 and (url.first.include? "/rtbads/")
-		dsp="rubicon" if dsp==-1 and (url.first.include? "rubicon.web")
-		dsp=url.first.split("taptapnetworks.com/ad/").last if dsp==-1 and (url.first.include? "taptapnetworks.com/ad/")
-		dsp="nexage" if dsp==-1 and (url.first.include? "win/nexagertb")
-		dsp="google" if dsp==-1 and (url.first.include? "win/google")
-		dsp=url.first.split("adsrvr.org/bid/feedback/").last if dsp==-1 and (url.first.include? "adsrvr.org/bid/feedback/")
-		dsp=url.first.split("avazutracking.net/price/").last if dsp==-1 and (url.first.include? "avazutracking.net/price/")
-		dsp=url.first.split("/bid/feedback/").last if dsp==-1 and (url.first.include? "/bid/feedback/")
-		publisher=findInURL(urlStr,@rtbMacros["pubs"],host)
-		ssp=findInURL(urlStr,@rtbMacros["ssp"],host)
-		size=findInURL(urlStr,@rtbMacros["sizes"],host)
+		position=findInURL(urlStr,@rtbMacros["position"],host,false)
+		dsp=findInURL(urlStr,@rtbMacros["dsp"],host,false)
+		dsp=secondChanceDSP(urlStr) if dsp==-1
+		publisher=findInURL(urlStr,@rtbMacros["pubs"],host,false)
+		ssp=findInURL(urlStr,@rtbMacros["ssp"],host,false)
+		size=findInURL(urlStr,@rtbMacros["sizes"],host,false)
 		w=-1;h=-1;
-		carrier=Utilities.getParam(url.last,"carrier",equal)
-		carrier=Utilities.getParam(url.last,"connection",equal) if carrier==-1
+		carrier=findInURL(urlStr,"carrier",nil,false)
+		carrier=findInURL(urlStr,"connection",nil,false) if carrier==-1
 		if size==-1
-			w=Utilities.getParam(url.last,"w",equal)
-			h=Utilities.getParam(url.last,"h",equal)
+			w=findInURL(urlStr,"w",nil,true)
+			h=findInURL(urlStr,"h",nil,true)
 			if w!=-1 and h!=-1 and Utilities.is_numeric?("w") and Utilities.is_numeric?("h")
-				w=Utilities.getParam(url.last,"width",equal)
-				h=Utilities.getParam(url.last,"height",equal)
+				w=findInURL(urlStr,"width",nil,true)
+				h=findInURL(urlStr,"height",nil,true)
 			end
+			size=w+"x"+h if w!=-1 and h!=-1 and Utilities.is_numeric?("w") and Utilities.is_numeric?("h")
 		end
 		if position==-1
-			position=Utilities.getParam(url.last,"pos",equal)
+			position=findInURL(urlStr,"pos",nil,true)
 		end
-		size=w+"x"+h if w!=-1 and h!=-1 and Utilities.is_numeric?("w") and Utilities.is_numeric?("h")
 		return Utilities.calculateHost(dsp,nil),ssp,Utilities.calculateHost(adx,nil),Utilities.calculateHost(publisher,nil),size.to_s.downcase,carrier.to_s.downcase,position.to_s.downcase
 	end	
 
@@ -252,21 +242,50 @@ class Filters
 
 private
 
-	def findInURL(url,array,host)
-		str=URI.unescape(url).split("?").last
-		delimiter="="
-		array.keys.each{ |word| 
-			delimiter=":" if word=="mediasmart.es"
-			if host.downcase.include?(word)
-				if not array[word].kind_of?(String)
-					array[word].each{|param| res=Utilities.getParam(str,param,delimiter); return res if str.downcase.include?(param) and not Utilities.is_numeric?(res)}
+	def findInURL(uri,array,host,lookForsize)
+		delimiter="&"; equal="=";
+		equal=":" if host=="mediasmart.es"
+		url=uri.split("?").last
+		url=URI.unescape(url.force_encoding("ISO-8859-1"))
+		delimiter="," if equal==":"
+		paramsArray=nil
+		if host==nil
+			paramsArray=array
+		else
+			array.keys.each{ |word| (paramsArray=array[word];break) if host.downcase.include?(word)}
+		end
+		if paramsArray!=nil
+			url.split(delimiter).each{|param| paramName=param.split(equal)
+				if not paramsArray.kind_of?(String)
+					if paramsArray.any?{|param| paramName.first.downcase.include?(param)}
+						res=Utilities.prepareParam(paramName.last).downcase
+						return res if lookForsize or not Utilities.is_numeric?(res) 
+					end
 				else
-					res=Utilities.getParam(str,array[word],delimiter).to_s.downcase
-					return res if str.downcase.include?(array[word]) and not Utilities.is_numeric?(res)
+					if paramName.first.downcase.include? paramsArray
+						res=Utilities.prepareParam(paramName.last).downcase
+						return -1 if paramName.size<2
+						return res if lookForsize or not Utilities.is_numeric?(res)
+					end
 				end
-			end
-		}
+			}
+		end
 		return -1
+	end
+
+	def secondChanceDSP(urlStr)
+		url=urlStr.split("?").first
+		dsp=-1
+		dsp="mopub.com" if (url.include? "notify/mopub" or url.include? "won_mopub" or url.include? "mopub_nurl" or url.include? "mopubwinrtb" or url.include? "mopub.web")
+		dsp=url.split("/rtbads/").last.split("/").last if dsp==-1 and (url.include? "/rtbads/")
+		dsp="rubicon" if dsp==-1 and (url.include? "rubicon.web")
+		dsp=url.split("taptapnetworks.com/ad/").last if dsp==-1 and (url.include? "taptapnetworks.com/ad/")
+		dsp="nexage" if dsp==-1 and (url.include? "win/nexagertb")
+		dsp="google" if dsp==-1 and (url.include? "win/google")
+		dsp=url.split("adsrvr.org/bid/feedback/").last if dsp==-1 and (url.include? "adsrvr.org/bid/feedback/")
+		dsp=url.split("avazutracking.net/price/").last if dsp==-1 and (url.include? "avazutracking.net/price/")
+		dsp=url.split("/bid/feedback/").last if dsp==-1 and (url.include? "/bid/feedback/")
+		return dsp
 	end
 
 	def externalList(host,lastPublisher)

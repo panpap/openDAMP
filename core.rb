@@ -28,9 +28,9 @@ class Core
 		Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
 		Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
 		Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
+		@database=Database.new(@defines,nil)
 		if @options["database?"]
 			@defines.puts "and database tables..."
-			@database=Database.new(@defines,nil)
 			@defines.tables.values.each{|fields| @database.create(fields.keys.first,fields.values.first)}
 		end
 	end

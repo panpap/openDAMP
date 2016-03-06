@@ -27,10 +27,10 @@ class Database
 		table=arrayCase(tbl)
 		return -1 if blockOutput(table)
 		par=prepareStr(params)
-
 		if not @options["database?"]
-			@farray[table]=File.new(@defines.dirs['rootDir']+table+".csv",'w') if @farray[table]==nil
+			@farray[table]=File.new(@defines.dirs['rootDir']+table+".csv",'a') if @farray[table]==nil
 			@farray[table].puts par
+			return 1
 		else
 			return execute("INSERT INTO '#{table}' VALUES ",par)
 		end

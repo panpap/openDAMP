@@ -112,25 +112,14 @@ module Utilities
 		fp.close
 	end
 
-	def Utilities.getParam(uri,params,equal)
-		delimiter="&"
-		url=URI.unescape(uri.force_encoding("ISO-8859-1"))
-		delimiter="," if equal==":"
-		url.split(delimiter).each{|param| paramName=param.split(equal).first
-			if paramName==params+equal
-				str=url.split(params+equal)
-				if str.size>1
-					res=str.last.split(delimiter).first.gsub(",","")
-					if res.include? "http"
-						tmp=res.split? "://"
-						res=tmp.last
-					end
-					return res.split(".").first	if (res.include? "." and res.split(".").last.size>4 and res.split(".").size<3 and res.split(".").size>1)
-					return res
-				end
-			end
-		}
-		return -1
+	def Utilities.prepareParam(paramVal)
+		res=paramVal.gsub(",","")
+		if res.include? "http"
+			tmp=res.split "://"
+			res=tmp.last
+		end
+		return res.split(".").first	if (res.include? "." and res.split(".").last.size>4 and res.split(".").size<3 and res.split(".").size>1)
+		return res
 	end
 
 	def Utilities.calculateHost(uri,host)
@@ -194,7 +183,7 @@ module Utilities
     end
 
 	def Utilities.warning(str)
-		puts "---> "+caller[0][/`([^']*)'/, 1]+": WARNING: "+str
+		STDERR.puts "---> "+caller[0][/`([^']*)'/, 1]+": WARNING: "+str
 	end
 
 	def Utilities.error(str)

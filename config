@@ -1,7 +1,7 @@
 {
 	"browserOnly?": false,
 	"isThereHeader?": false,
-	"printToSTDOUT?": true,
+	"printToSTDOUT?": false,
 	"detectBeacons?": false,
 	"resultToFiles": {
 		"devices.csv": false,
@@ -11,7 +11,7 @@
 		"cmIDcount.csv": false,
 		"cmHosts.csv": false
 	},
-	"database?": true,
+	"database?": false,
 	"tablesDB": {
 		"publishers": false,
 		"beacons": false,
@@ -20,7 +20,7 @@
 		"userResults": false,
 		"prices": true,
 		"traceResults": false,
-		"csyncResults": true,
+		"csyncResults": false,
 		"userVisits": false,
 		"userFiletypes": false,
 		"advertisers": false
