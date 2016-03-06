@@ -26,8 +26,14 @@ def printer(fw,arrayAttrs,data,host)
 					if not found
 						fw.print "0\t"
 					end}
-			elsif header=="interests"
-				cell.gsub("%22","").gsub("{","").gsub("}","").split(",").each{|interest| fw.print interest.split("=>").last+"\t"}
+			elsif header=="interests" or header=="interest"
+				if cell=="-1"
+					for i in 0..@@interestNum
+						fw.print "0\t"
+					end
+				else
+					cell.gsub("%22","").gsub("{","").gsub("}","").split(",").each{|interest| fw.print interest.split("=>").last+"\t"}
+				end
 			else
 				fw.print cell.to_s+"\t"
 			end
@@ -70,9 +76,18 @@ users=db.getAll(defines.tables["userTable"].keys.first,nil,nil,nil,true)
 @@cities=Array.new
 users.each{|user| user['uniqLocations'].split(",").each{|c| @@cities.push(c.split("%22")[1])}}
 @@cities=@@cities.uniq
+@@interestNum=0
 fw=File.new(writeFile,"w")
-columns.each{|cell| 
-	if cell.include? "user:uniqLocations" 
+puts "print headers..."
+columns.each{|cell|
+	if cell.include? "price:interest"
+		cell.split("\t").each{|col| 
+			if col=="price:interest"
+				interests.first['interests'].split(",").each{|c| @@interestNum+=1;fw.print c.split("%22")[1]+"\t"}
+			else
+				fw.print col+"\t"
+		end}
+	elsif cell.include? "user:uniqLocations" 
 		cell.split("\t").each{|col| 
 			if col=="user:uniqLocations"
 				@@cities.each{|c| fw.print c+"\t"}
@@ -80,11 +95,12 @@ columns.each{|cell|
 				fw.print col+"\t"
 			end}
 	elsif cell.include? "user:interests"
-		interests.first['interests'].split(",").each{|c| fw.print c.split("%22")[1]+"\t"}
+		interests.first['interests'].split(",").each{|c| @@interestNum+=1;fw.print c.split("%22")[1]+"\t"}
 	else
 		fw.print cell
 	end
 	};	fw.puts ;
+puts "print columns..."
 prices.each do |row|
     userInterest=getBinding(interests,row['userId'],"userID")
 	advertiser=getBinding(advertisers,row['host'],"host")

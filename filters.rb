@@ -259,9 +259,10 @@ private
 			delimiter=":" if word=="mediasmart.es"
 			if host.downcase.include?(word)
 				if not array[word].kind_of?(String)
-					array[word].each{|param| return Utilities.getParam(str,param,delimiter) if str.downcase.include?(param)}
+					array[word].each{|param| res=Utilities.getParam(str,param,delimiter); return res if str.downcase.include?(param) and not Utilities.is_numeric?(res)}
 				else
-					return Utilities.getParam(str,array[word],delimiter).to_s.downcase if str.downcase.include?(array[word])
+					res=Utilities.getParam(str,array[word],delimiter).to_s.downcase
+					return res if str.downcase.include?(array[word]) and not Utilities.is_numeric?(res)
 				end
 			end
 		}

@@ -112,18 +112,24 @@ module Utilities
 		fp.close
 	end
 
-	def Utilities.getParam(url,params,equal)
+	def Utilities.getParam(uri,params,equal)
 		delimiter="&"
+		url=URI.unescape(uri.force_encoding("ISO-8859-1"))
 		delimiter="," if equal==":"
-	#	params.each{|paramName|
-			str=url.split(params+equal)
-			if str.size>1
-				res=str.last.split(delimiter).first.gsub(",","")
-				return res.split(".").first	if (res.include? "." and not res.include?"http://" and res.split(".").last.size>4 and res.split(".").size<3 and res.split(".").size>1)
-				return res.split(" ").first	if (res.include? " ")
-				return res
+		url.split(delimiter).each{|param| paramName=param.split(equal).first
+			if paramName==params+equal
+				str=url.split(params+equal)
+				if str.size>1
+					res=str.last.split(delimiter).first.gsub(",","")
+					if res.include? "http"
+						tmp=res.split? "://"
+						res=tmp.last
+					end
+					return res.split(".").first	if (res.include? "." and res.split(".").last.size>4 and res.split(".").size<3 and res.split(".").size>1)
+					return res
+				end
 			end
-	#	}
+		}
 		return -1
 	end
 

@@ -59,6 +59,10 @@ class Convert
 	def analyzePublisher(publisher)
 		interest=-1;alexaRank=-1
 		return interest,alexaRank if publisher==nil or publisher==-1
+		if publisher.include? " "
+			temp=publisher
+			publisher=temp.split(" ").first
+		end
 		interests=hostToInterest(publisher)
 		alexaRank=-1
 		#Utilities.warning "ALEXA RANK IS NOT IMPLEMENTED"
