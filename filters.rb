@@ -255,20 +255,21 @@ private
 			array.keys.each{ |word| (paramsArray=array[word];break) if host.downcase.include?(word)}
 		end
 		if paramsArray!=nil
-			url.split(delimiter).each{|param| paramName=param.split(equal)
-				if not paramsArray.kind_of?(String)
-					if paramsArray.any?{|param| paramName.first.downcase.include?(param)}
-						res=Utilities.prepareParam(paramName.last).downcase
-						return res if lookForsize or not Utilities.is_numeric?(res) 
+			url.split(delimiter).each{|param| paramName=param.split(equal) 
+				if paramName.size==2
+					if not paramsArray.kind_of?(String)
+						if paramsArray.any?{|param| paramName.first.downcase.include?(param)}
+							res=Utilities.prepareParam(paramName.last).downcase
+							return res if lookForsize or not Utilities.is_numeric?(res) 
+						end
+					else
+						if paramName.first.downcase.include? paramsArray
+							res=Utilities.prepareParam(paramName.last).downcase
+							return -1 if paramName.size<2
+							return res if lookForsize or not Utilities.is_numeric?(res)
+						end
 					end
-				else
-					if paramName.first.downcase.include? paramsArray
-						res=Utilities.prepareParam(paramName.last).downcase
-						return -1 if paramName.size<2
-						return res if lookForsize or not Utilities.is_numeric?(res)
-					end
-				end
-			}
+				end}
 		end
 		return -1
 	end
