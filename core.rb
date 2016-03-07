@@ -92,7 +92,7 @@ class Core
 			end		#FILTER ROW
 		end
 		cat=filterRow(row)
-		cookieSyncing(row,cat) if @options['tablesDB'][@defines.tables["csyncTable"].keys.first]
+		cookieSyncing(row,cat) if cat!=nil and @options['tablesDB'][@defines.tables["csyncTable"].keys.first]
 		return true
 	end
 
@@ -276,20 +276,42 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		return mob,dev,browser
 	end		
 
+	@@lastSeenTmpstp=nil
+	def isItDuplicate?(row)
+		if @@lastSeenTmpstp==row['tmstp'] #same row
+			return false
+		else
+			@@lastSeenTmpstp=row['tmstp']
+		end
+		url=row['url'].split("?")
+		return false if url.size==1
+		footPrnt=Digest::SHA256.hexdigest(url.last)
+		if @trace.paramDups[footPrnt]==nil
+			@trace.paramDups[footPrnt]=Hash.new
+			@trace.paramDups[footPrnt]["url"]=row['url'] 
+			@trace.paramDups[footPrnt]["count"]=0
+			@trace.paramDups[footPrnt]['tmpstp']=Array.new
+		end
+		@trace.paramDups[footPrnt]["count"]+=1
+		@trace.paramDups[footPrnt]["tmpstp"].push(row['tmstp'])
+		return true if @trace.paramDups[footPrnt]["count"]>1 # It is indeed duplicate	
+		return false
+	end
+
 	def filterRow(row)
 		firstSeenUser?(row)
 		type3rd=nil
 		@isBeacon=false
 		url=row['url'].split("?")
-		host=row['host']		
+		host=row['host']
 		@trace.sizes.push(row['dataSz'].to_i)
-publisher=nil
+		publisher=nil
 		type3rd=@filters.getCategory(url,host,@curUser)
 		adCat=type3rd.eql? "Advertising"
 		isAd,noOfparam=beaconImprParamCkeck(row,url,publisher,adCat)
-if isAd==true and adCat==false
-	type3rd="Advertising"
-end
+		if isAd==true and adCat==false
+			type3rd="Advertising"
+		end
 		if type3rd!=nil	or isAd and not @isBeacon #	3rd PARTY CONTENT
 			collector(type3rd,row)
 			@trace.party3rd[type3rd]+=1
@@ -383,6 +405,7 @@ end
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
+			return false if isItDuplicate?(row)
 			priceTag=keyVal[0]
 			paramVal=keyVal[1]
 			type=""

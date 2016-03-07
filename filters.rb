@@ -9,7 +9,7 @@ class Filters
 		@latency=Array.new
 		@lastPub=Hash.new(nil)
 		if @defines!=nil
-			@lists=KeywordsLists.new(@defines.resourceFiles["filterFile"])
+			@lists=KeywordsLists.new(@defines.resourceFiles["filterFile"],@defines)
 			@rtbMacros=@lists.rtbMacros
 			@db = Database.new(@defines,@defines.beaconDB)
 			@cats=@lists.sameParty.keys
@@ -254,6 +254,7 @@ private
 		else
 			array.keys.each{ |word| (paramsArray=array[word];break) if host.downcase.include?(word)}
 		end
+#this loop must be merged with the priceDetection procedure in core.rb
 		if paramsArray!=nil
 			url.split(delimiter).each{|param| paramName=param.split(equal)
 				if paramName.size>1

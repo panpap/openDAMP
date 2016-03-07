@@ -54,12 +54,12 @@ class Operations
 							@func.cookieSyncing(row,nil)
 						end
 					end
+					count+=1
 				end
 			end
 			rescue => e 
 				Utilities.error "Exception: "+e.to_s+"\n"+line+"\n"+e.backtrace.join("\n").to_s
 			end
-			count+=1
         }
 		@defines.puts "\t"+(count-1).to_s+" rows have been loaded successfully!"
 		if function==1 or function==0

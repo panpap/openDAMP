@@ -18,7 +18,7 @@ class Defines
 		@resources="resources/"
 		@resourceFiles={"filterFile"=>@resources+"disconnect_merged.json","interestsFile"=>@resources+"interestBitmaps.json",
 					"geoCity"=>@resources+"GeoLite2-City.mmdb","geoCountry"=>@resources+"GeoLite2-Country.mmdb",
-				}
+				"adCompanies"=>@resources+"adCompanies.csv"}
 
 		if @traceFile!=nil and File.exist?(@traceFile)
 			if @traceFile.include? "/" 

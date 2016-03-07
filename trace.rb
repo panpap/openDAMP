@@ -1,7 +1,7 @@
 load 'entities.rb'
 
 class Trace
-	attr_accessor :adSize, :cooksyncs, :fromBrowser, :beacons, :party3rd,:restNumOfParams, :adNumOfParams, :devs, :numericPrices, :mobDev, 
+	attr_accessor :adSize, :paramDups, :cooksyncs, :fromBrowser, :beacons, :party3rd,:restNumOfParams, :adNumOfParams, :devs, :numericPrices, :mobDev, 
 				:numOfMobileAds, :totalImps, :users, :hashedPrices, :sizes, :totalParamNum, :advertisers
 
 	def initialize(defs)
@@ -20,6 +20,7 @@ class Trace
 		@adNumOfParams=Array.new
 		@restNumOfParams=Array.new
 		@totalImps=0
+		@paramDups=Hash.new
 		@cooksyncs=0;
 		@adSize=Array.new
 		@party3rd={"Advertising"=>0,"Social"=>0,"Analytics"=>0,"Content"=>0, "Other"=>0, "Beacons"=>0}
@@ -79,6 +80,7 @@ class Trace
 					db.insert(advertiserTable, params)
 				}				
 			end
+			printDuplicates()
 			return s
 		else
 			header="Total users in trace;Traffic from mobile devices;Traffic originated from Browser;Browser-prices;"+
@@ -191,3 +193,13 @@ class Trace
 	end
 end
 
+#--------------------------------------------------------------------------------
+
+private
+
+def printDuplicates
+	puts "printing Duplicates..."
+	fw=File.new(@defines.dirs["rootDir"]+"duplicates.csv",'w')
+	@paramDups.each{|key, value| fw.puts value['count'].to_s+"\t"+value['url'].to_s+"\t"+value['tmpstp'].to_s if value['count']>1}
+	fw.close
+end

@@ -6,14 +6,25 @@ class Convert
 		@defines=defs
 		@resouces=@defines.resourceFiles
 		@interests=nil
+		@adCompanies=nil
 		@db = MaxMindDB.new(@resouces["geoCity"])
 		if @defines.options['tablesDB'][@defines.tables["visitsTable"].keys[0]] or @defines.options['tablesDB'][@defines.tables["priceTable"].keys[0]]
 			loadInterests
 		end
+		loadAdCompanies if @defines.options['tablesDB'][@defines.tables["priceTable"].keys[0]]
+	end
+
+	def loadAdCompanies
+		@defines.puts "Loading list of ad-Companies..."
+		@adCompanies=Hash.new
+		File.foreach(@defines.resourceFiles["adCompanies"]) {|line| parts=line.split("\t");
+			@adCompanies[parts.first.split("/").first]=parts.last}
 	end
 
 	def advertiserType(host)
-		return -1
+		key=nil
+		@adCompanies.keys.each{|company| (key=company;break) if company.downcase.include?(host)}
+		return @adCompanies[key].to_s
 	end
 
 	def calcPriceValue(val,adCat)

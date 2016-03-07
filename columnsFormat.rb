@@ -1,11 +1,12 @@
 module Format
 
 	def Format.columnsFormat(line,dataset,option,filter)
-	begin
-		part=line.chop.split("\t") 
-	rescue 
-		part=line.chop.force_encoding("iso-8859-1").split("\t")
-	end
+		return nil if line.include? "/awazzaredirect/" # Duplicate removal
+		begin
+			part=line.chop.split("\t") 
+		rescue 
+			part=line.chop.force_encoding("iso-8859-1").split("\t")
+		end
 		h=Hash.new(-1)
 		if dataset==1
 			#IP_Port	UserIP	URL	UserAgent	Host	Timestamp	ResponseCode	ContentLength	DeliveredData	Duration	HitOrMiss
