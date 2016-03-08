@@ -9,8 +9,8 @@
 		"sizes3rd.csv": false,
 		"adParamsNum.csv": false,
 		"restParamsNum.csv": false,
-		"cmIDcount.csv": false,
-		"cmHosts.csv": false
+		"cmIDcount.csv": true,
+		"cmHosts.csv": true
 	},
 	"database?": true,
 	"tablesDB": {
@@ -19,9 +19,9 @@
 		"impressions": false,
 		"advertisements": false,
 		"userResults": false,
-		"prices": true,
+		"prices": false,
 		"traceResults": true,
-		"csyncResults": false,
+		"csyncResults": true,
 		"userVisits": false,
 		"userFiletypes": false,
 		"advertisers": false

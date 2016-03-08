@@ -112,6 +112,12 @@ class Trace
 		options=@defines.options['resultToFiles']
 		count=0
 		arr=Array.new
+		if options[@defines.files['cmIDcount'].split("/").last] and not File.size?@defines.files['cmIDcount']
+			fcm1=File.new(@defines.files["cmIDcount"],"w")
+		end
+		if options[@defines.files['cmHost'].split("/").last] and not File.size?@defines.files['cmHost']
+			fcm2=File.new(@defines.files["cmHost"],"w")
+		end
 		for id,user in users do	
 #puts count.to_s+" users were stored..."+(Time.now).to_i.to_s #if count%10==0
 			#ADVERTISEMENTS
@@ -125,16 +131,8 @@ class Trace
 			#COOKIE SYNC
 			if user.csync!=nil and allowOptions[@defines.tables["csyncTable"].keys[0]]				
 				user.csync.each{|elem| db.insert(@defines.tables['csyncTable'], elem)}
-				if options[@defines.files['cmIDcount'].split("/").last] and not File.size?@defines.files['cmIDcount']
-					fw=File.new(@defines.files["cmIDcount"],"w")
-					user.csyncIDs.each{|cookieID, count| fw.puts count.to_s+"\t"+cookieID+"\t"+id.to_s}
-					fw.close
-				end
-				if options[@defines.files['cmHost'].split("/").last] and not File.size?@defines.files['cmHost']
-					fw=File.new(@defines.files["cmHost"],"w")
-					user.csyncHosts.each{|hosts, array| fw.puts id.to_s+"\t"+hosts+"\t"+array.size.to_s+"\t"+array.to_s}
-					fw.close
-				end
+				user.csyncIDs.each{|cookieID, count| fcm1.puts count.to_s+"\t"+cookieID+"\t"+id.to_s} if fcm1!=nil
+				user.csyncHosts.each{|hosts, array| fcm2.puts id.to_s+"\t"+hosts+"\t"+array.size.to_s+"\t"+array.to_s} if fcm2!=nil
 			end
 			#PUBLISHERS
 			if user.publishers!=nil and allowOptions[@defines.tables["publishersTable"].keys[0]]
@@ -190,6 +188,8 @@ class Trace
 			arr.each {|t| t.join}					
 		end
 		puts "Total Dumping time "+((Time.now) - start).to_s+" seconds"
+		fcm1.close if fcm1!=nil
+		fcm2.close if fcm2!=nil
 	end
 end
 
