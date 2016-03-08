@@ -22,7 +22,7 @@ class Convert
 	end
 
 	def advertiserType(host)
-		key=nil
+		key=-1
 		@adCompanies.keys.each{|company| (key=company;break) if company.downcase.include?(host)}
 		return @adCompanies[key].to_s
 	end
@@ -69,7 +69,7 @@ class Convert
 
 	def analyzePublisher(publisher)
 		interest=-1;alexaRank=-1
-		return interest,alexaRank if publisher==nil or publisher==-1
+		return interest,alexaRank if publisher==nil or publisher==-1 or publisher=="encrypted"
 		if publisher.include? " "
 			temp=publisher
 			publisher=temp.split(" ").first

@@ -247,6 +247,7 @@ private
 		equal=":" if host=="mediasmart.es"
 		url=uri.force_encoding("ISO-8859-1").split("?").last
 		url=URI.unescape(url)
+		encryptedTag="ecrypted"
 		delimiter="," if equal==":"
 		paramsArray=nil
 		if host==nil
@@ -262,12 +263,14 @@ private
 						if paramsArray.any?{|param| param==paramName.first.downcase}
 							res=Utilities.prepareParam(paramName[1]).downcase
 							return -1 if paramName.size<2
+							return encryptedTag if is_it_Encrypted?(res)
 							return res if lookForsize or not Utilities.is_numeric?(res) 
 						end
 					else
 						if paramsArray==paramName.first.downcase
 							res=Utilities.prepareParam(paramName[1]).downcase
 							return -1 if paramName.size<2
+							return encryptedTag if is_it_Encrypted?(res)
 							return res if lookForsize or not Utilities.is_numeric?(res)
 						end
 					end
@@ -308,6 +311,12 @@ private
 			end
 		end
 		return cat,domain,tld
+	end
+
+	def is_it_Encrypted?(str)
+		alfa,digit=Utilities.digitAlfa(str)
+		return true if alfa>4 and digit>4 and str.size>10
+		return false
 	end
 
     def is_1pixel_image?(url)

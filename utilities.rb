@@ -134,6 +134,9 @@ module Utilities
 			temp=firstPart.split("www.")
 			firstPart=temp.last
 		end
+		if firstPart.include? "http"
+			firstPart=firstPart.split("://").last
+		end
 		firstPart=firstPart.split("/").first.gsub("%20","").split("%")
 		return nil if firstPart.first==nil or firstPart.first==""
 		firstPart=firstPart.first.split("#").first.split(":").first
@@ -279,14 +282,14 @@ module Utilities
 
 
 	def Utilities.produceConfigFile(configFile,files,tables)
-		defaultOptions={"browserOnly?"=>true,"isThereHeader?"=>true,"printToSTDOUT?"=>true, "detectBeacons?"=>true,'resultToFiles'=>
+		defaultOptions={"browserOnly?"=>false,"isThereHeader?"=>true,"removeDuplicates?"=>true,"printToSTDOUT?"=>true, "detectBeacons?"=>true,'resultToFiles'=>
 			{files[0]=>false, files[1]=>false,
 			files[2]=>false, files[3]=>false,files[4]=>false,files[5]=>false},"database?"=>true,
 			'tablesDB'=>{tables["publishersTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>false,
 			tables["impTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>true,
 			tables["adsTable"].keys[0]=>true, tables["userTable"].keys[0]=>true,
 			tables["priceTable"].keys[0]=>true,	tables["traceTable"].keys[0]=>true,
-			tables["csyncTable"].keys[0]=>true,tables["visitsTable"].keys[0]=>true,tables["userFilesTable"].keys[0]=>false,
+			tables["csyncTable"].keys[0]=>true,tables["visitsTable"].keys[0]=>false,tables["userFilesTable"].keys[0]=>false,
 			tables["advertiserTable"].keys[0]=>true}}
 		File.open(configFile,"w") do |f|
 		  f.write(JSON.pretty_generate(defaultOptions, :indent => "\t"))

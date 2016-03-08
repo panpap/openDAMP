@@ -198,6 +198,7 @@ end
 private
 
 def printDuplicates
+	return if not @defines.options["removeDuplicates?"]
 	puts "printing Duplicates..."
 	fw=File.new(@defines.dirs["rootDir"]+"duplicates.csv",'w')
 	@paramDups.each{|key, value| fw.puts value['count'].to_s+"\t"+value['url'].to_s+"\t"+value['tmpstp'].to_s if value['count']>1}

@@ -278,6 +278,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 
 	@@lastSeenTmpstp=nil
 	def isItDuplicate?(row)
+		return false if not @options["removeDuplicates?"]
 		if @@lastSeenTmpstp==row['tmstp'] #same row
 			return false
 		else
@@ -364,7 +365,6 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		@trace.users[@curUser].pubVisits[domain]=0 if @trace.users[@curUser].pubVisits[domain]==nil
 		@trace.users[@curUser].pubVisits[domain]+=1
 		topics=nil
-		topics,alexaRank=@convert.analyzePublisher(domain)
 		if topics!=nil and topics!=-1
 			if @trace.users[@curUser].interests==nil
 				@trace.users[@curUser].interests=Hash.new(0)
@@ -400,7 +400,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		end
 	end
 
-    def detectPrice(row,keyVal,numOfPrices,numOfparams,publisher,isAdCat)     	# Detect possible price in parameters and returns URL Parameters in String
+    def detectPrice(row,keyVal,numOfPrices,numOfparams,publisher,isAdCat,https)     	# Detect possible price in parameters and returns URL Parameters in String
 		domainStr=row['host']
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
@@ -435,7 +435,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 				publisher=-1 if publisher==nil
 				upToKnowCM=@trace.users[@curUser].csync.size
 				location=@convert.getGeoLocation(row['uIP'])
-				params=[type,time,domainStr,priceTag,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, carrier, adPosition,location,@convert.getTod(time),publisher,interest,pubPopularity,row['IPport'],ssp,dsp,adx,row['mob'],row['dev'],row['browser'],row['url'],id]
+				params=[type,time,domainStr,priceTag,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, carrier, adPosition,location,@convert.getTod(time),publisher,interest,pubPopularity,row['IPport'],ssp,dsp,adx,row['mob'],row['dev'],row['browser'],https,row['url'],id]
 				done=@database.insert(@defines.tables['priceTable'],params)
 			end
 			if @database==nil or done>-1
@@ -469,12 +469,14 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		isAd=false
         fields=url.last.split('&')
 		numOfPrices=0
+		https=-1
+		https=url.first.split(":").last if url.first.include?(":")
         for field in fields do
             keyVal=field.split("=")
-            if(not @filters.is_GarbageOrEmpty?(keyVal)) and not url.first.include? "google" and not url.first.include? "eltenedor.es" and not url.first.include? "gosquared.com" and not url.first.include? "yaencontre.com" and not url.first.include? "bmw.es" and not url.first.include? "bing.com" and not url.first.include? "onswingers.com" and not url.first.include? "tusclasesparticulares.com" and not url.first.include? "ucm.es" and not url.first.include? "noticias3d.com" and not url.first.include? "loopme.me" and not url.first.include? "amap.com" and not url.first.include? "anyclip.com" and not url.first.include? "promorakuten.es" and not url.first.include? "scmspain.com"
+            if(not @filters.is_GarbageOrEmpty?(keyVal)) and not url.first.include? "google" and not url.first.include? "eltenedor.es" and not url.first.include? "gosquared.com" and not url.first.include? "yaencontre.com" and not url.first.include? "bmw.es" and not url.first.include? "bing.com" and not url.first.include? "onswingers.com" and not url.first.include? "tusclasesparticulares.com" and not url.first.include? "ucm.es" and not url.first.include? "noticias3d.com" and not url.first.include? "loopme.me" and not url.first.include? "amap.com" and not url.first.include? "anyclip.com" and not url.first.include? "promorakuten.es" and not url.first.include? "scmspain.com" and not url.first.include? "shoppingshadow.com"
 				#isAd=true if(@filters.is_Ad_param?(keyVal))
 				if @options['tablesDB'][@defines.tables["priceTable"].keys.first]
-					if detectPrice(row,keyVal,numOfPrices,fields.length,publisher,(adCat or isAd))
+					if detectPrice(row,keyVal,numOfPrices,fields.length,publisher,(adCat or isAd),https)
 						numOfPrices+=1
 						Utilities.warning ("Price Detected in Beacon\n"+row['url']) if @isBeacon
 						isAd=true

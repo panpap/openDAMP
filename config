@@ -1,6 +1,7 @@
 {
 	"browserOnly?": false,
 	"isThereHeader?": false,
+	"removeDuplicates?": true,
 	"printToSTDOUT?": true,
 	"detectBeacons?": false,
 	"resultToFiles": {
@@ -23,6 +24,6 @@
 		"csyncResults": false,
 		"userVisits": false,
 		"userFiletypes": false,
-		"advertisers": true
+		"advertisers": false
 	}
 }

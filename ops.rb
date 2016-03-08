@@ -19,7 +19,7 @@ class Operations
 	def dispatcher(function,str)	
 		@func.makeDirsFiles
 		@defines.puts "> Loading Trace... "+@defines.traceFile
-		count=0
+		count=0;real=0
 		count=1 if not @defines.options['isThereHeader?']
 		#atts=@options['headers']
 		atts=["IPport", "uIP", "url", "ua", "host", "tmstp", "status", "length", "dataSz", "dur"]		
@@ -54,14 +54,15 @@ class Operations
 							@func.cookieSyncing(row,nil)
 						end
 					end
-					count+=1
-				end
+					real+=1
+				end				
 			end
 			rescue => e 
 				Utilities.error "Exception: "+e.to_s+"\n"+line+"\n"+e.backtrace.join("\n").to_s
 			end
+			count+=1
         }
-		@defines.puts "\t"+(count-1).to_s+" rows have been loaded successfully!"
+		@defines.puts "\t"+(real-1).to_s+" rows have been loaded successfully!"
 		if function==1 or function==0
 			atts.each{|a| f[a].close if f[a]!=nil; Utilities.countInstances(@defines.dirs['dataDir']+a); }
 		end

@@ -12,7 +12,7 @@ def printer(fw,arrayAttrs,data,host)
 		header=col.split(":").last
 		cell=data[header]
 		if cell==nil
-			puts "AAAAAAAAAAA "+header
+			puts "SOMETHING WENT WRONG! "+header
 		else
 			if header=="uniqLocations"
 				locations=cell.gsub("%22","").gsub("{","").gsub("}","").split(",")
@@ -28,7 +28,7 @@ def printer(fw,arrayAttrs,data,host)
 					end}
 			elsif header=="interests" or header=="interest"
 				if cell=="-1"
-					for i in 0..@@interestNum
+					for i in 1..@@interestNum
 						fw.print "0\t"
 					end
 				else
@@ -95,7 +95,7 @@ columns.each{|cell|
 				fw.print col+"\t"
 			end}
 	elsif cell.include? "user:interests"
-		interests.first['interests'].split(",").each{|c| @@interestNum+=1;fw.print c.split("%22")[1]+"\t"}
+		interests.first['interests'].split(",").each{|c| fw.print c.split("%22")[1]+"\t"}
 	else
 		fw.print cell
 	end
