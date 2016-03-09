@@ -29,7 +29,14 @@ class Convert
 
 	def calcPriceValue(val,adCat)
 		if Utilities.is_numeric? (val)
-  			# If the price is microdollars
+ 			# If the price is microdollars
+			if val.downcase.include? "e"
+				parts=val.downcase.split("e")
+				if parts.size>1 and parts.last.size>5
+					Utilities.warning "Weird price with huge exponential number "+val
+					return nil, false
+				end
+			end
 			value=val.to_f
    			if(value>100000)
        			value=value/1e6;

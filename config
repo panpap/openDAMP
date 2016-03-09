@@ -19,7 +19,7 @@
 		"impressions": false,
 		"advertisements": false,
 		"userResults": false,
-		"prices": false,
+		"prices": true,
 		"traceResults": true,
 		"csyncResults": true,
 		"userVisits": false,
