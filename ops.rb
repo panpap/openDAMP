@@ -62,7 +62,8 @@ class Operations
 			end
 			count+=1
         }
-		@defines.puts "\t"+(real-1).to_s+" rows have been loaded successfully!"
+		real-=1 if real>0
+		@defines.puts "\t"+real.to_s+" rows have been loaded successfully!"
 		if function==1 or function==0
 			atts.each{|a| f[a].close if f[a]!=nil; Utilities.countInstances(@defines.dirs['dataDir']+a); }
 		end

@@ -83,7 +83,7 @@ columns.each{|cell|
 	if cell.include? "price:interest"
 		cell.split("\t").each{|col| 
 			if col=="price:interest"
-				interests.first['interests'].split(",").each{|c| @@interestNum+=1;fw.print c.split("%22")[1]+"\t"}
+				interests.first['interests'].split(",").each{|c| @@interestNum+=1;fw.print "price:"+c.split("%22")[1]+"\t"}
 			else
 				fw.print col+"\t"
 		end}
@@ -95,7 +95,7 @@ columns.each{|cell|
 				fw.print col+"\t"
 			end}
 	elsif cell.include? "user:interests"
-		interests.first['interests'].split(",").each{|c| fw.print c.split("%22")[1]+"\t"}
+		interests.first['interests'].split(",").each{|c| fw.print "user:"+c.split("%22")[1]+"\t"}
 	else
 		fw.print cell
 	end

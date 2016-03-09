@@ -44,6 +44,7 @@ module Format
 			h['IPport']=part[9].split(":").last
 			h['verb']=part[10]
 			h['host']=part[15].split("://").last
+			return nil if h['host']==nil
 			h['mob']=nil
 			h['browser']=-1
 			h['httpRef']=part[13]
@@ -55,6 +56,7 @@ module Format
 			else
 				puts "--------> UKNOWN HTTP VERB: "+h['verb']
 			end
+			return nil if h['url'].size<4
 			h['type']=filter.getTypeOfContent(h['url'],nil)
             h['ua']=part[14]		
 		else

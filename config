@@ -1,6 +1,6 @@
 {
 	"browserOnly?": false,
-	"isThereHeader?": false,
+	"isThereHeader?": true,
 	"removeDuplicates?": true,
 	"printToSTDOUT?": true,
 	"detectBeacons?": false,
