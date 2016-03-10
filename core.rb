@@ -175,7 +175,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		if 	@trace.users[@curUser].csyncHosts[prevHost+">"+curHost]==nil
 			@trace.users[@curUser].csyncHosts[prevHost+">"+curHost]=Array.new
 		end
-		@trace.users[@curUser].csyncHosts[prevHost+">"+curHost].push(ids)
+		@trace.users[@curUser].csyncHosts[prevHost+">"+curHost].push(confirmed)
 		@trace.users[@curUser].csyncIDs[paramPair.last]+=1
 		@trace.cooksyncs+=1
 	end

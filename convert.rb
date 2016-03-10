@@ -23,7 +23,7 @@ class Convert
 
 	def advertiserType(host)
 		key=-1
-		@adCompanies.keys.each{|company| (key=company;break) if company.downcase.include?(host)}
+		@adCompanies.keys.each{|company| (key=company;break) if host.downcase.include?(company)}
 		return @adCompanies[key].to_s
 	end
 

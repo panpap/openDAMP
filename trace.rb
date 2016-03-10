@@ -114,9 +114,11 @@ class Trace
 		arr=Array.new
 		if options[@defines.files['cmIDcount'].split("/").last] and not File.size?@defines.files['cmIDcount']
 			fcm1=File.new(@defines.files["cmIDcount"],"w")
+			fcm1.puts "userID\tpair that shared the information (uni-directional)\t" 
 		end
 		if options[@defines.files['cmHost'].split("/").last] and not File.size?@defines.files['cmHost']
 			fcm2=File.new(@defines.files["cmHost"],"w")
+			fcm2.puts "appearances\tcookieID"
 		end
 		for id,user in users do	
 #puts count.to_s+" users were stored..."+(Time.now).to_i.to_s #if count%10==0

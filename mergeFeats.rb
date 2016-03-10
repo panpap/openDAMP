@@ -16,23 +16,25 @@ def printer(fw,arrayAttrs,data,host)
 		else
 			if header=="uniqLocations"
 				locations=cell.gsub("%22","").gsub("{","").gsub("}","").split(",")
-				@@cities.uniq.each{|city| found=false; locations.each{|loc|  loc=loc.gsub(" ","")
-					if loc.include? city
-						found=true
-						fw.print loc.split("=>").last+"\t"
-						break
+				@@cities.uniq.each{|city| found=false; locations.each{|loc|  loc=loc.gsub(" ",""); puts loc
+					if loc!=nil;
+						if loc.include? city
+							found=true
+							fw.print loc.split("=>").last+"\t" if locations.size>0
+							break
+						end
 					end
 					}
-					if not found
+					if not found and locations.size>0
 						fw.print "0\t"
 					end}
-			elsif header=="interests" or header=="interest"
+			elsif (header=="interests" or header=="interest")
 				if cell=="-1"
 					for i in 1..@@interestNum
 						fw.print "0\t"
 					end
 				else
-					cell.gsub("%22","").gsub("{","").gsub("}","").split(",").each{|interest| fw.print interest.split("=>").last+"\t"}
+					cell.gsub("%22","").gsub("{","").gsub("}","").split(",").each{|interest| fw.print interest.split("=>").last+"\t" if interest!=nil and interest!="nil";}
 				end
 			else
 				fw.print cell.to_s+"\t"
@@ -77,25 +79,29 @@ users=db.getAll(defines.tables["userTable"].keys.first,nil,nil,nil,true)
 users.each{|user| user['uniqLocations'].split(",").each{|c| @@cities.push(c.split("%22")[1])}}
 @@cities=@@cities.uniq
 @@interestNum=0
+@@locations=0
 fw=File.new(writeFile,"w")
 puts "print headers..."
 columns.each{|cell|
 	if cell.include? "price:interest"
 		cell.split("\t").each{|col| 
 			if col=="price:interest"
-				interests.first['interests'].split(",").each{|c| @@interestNum+=1;fw.print "price:"+c.split("%22")[1]+"\t"}
+				interests.first['interests'].split(",").each{|c| (@@interestNum+=1;fw.print "price:"+c.split("%22")[1]+"\t") if c!="nil"}
+				if @@interestNum==0
+					prices.each{|pub| (pub["interest"].to_s.split(",").each{|c| @@interestNum+=1; fw.print c.split("%22")[1]+"\t"};break) if pub["interest"]!="-1"}
+				end
 			else
 				fw.print col+"\t"
 		end}
 	elsif cell.include? "user:uniqLocations" 
 		cell.split("\t").each{|col| 
 			if col=="user:uniqLocations"
-				@@cities.each{|c| fw.print c+"\t"}
+				@@cities.each{|c| (@@locations+=1;fw.print c+"\t") if c!=nil}
 			else
 				fw.print col+"\t"
 			end}
 	elsif cell.include? "user:interests"
-		interests.first['interests'].split(",").each{|c| fw.print "user:"+c.split("%22")[1]+"\t"}
+		interests.first['interests'].split(",").each{|c| fw.print "user:"+c.split("%22")[1]+"\t" if c!="nil"}
 	else
 		fw.print cell
 	end
