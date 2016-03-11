@@ -1,6 +1,7 @@
 # PDB HTTP Trace Analyzer
 
 Operations of Analyzer:
+
 1. Categorization of websites resources (Advertising, Analytics, Social, 3rd party content, Rest) by using external sources (for now I use Disconnect plugins blacklist I have 
 also the one of Adblocker Plus and Ghostery) and a list of ours that I created after manual inspection.
 2. Web Beacon detection by checking the pixel size of the fetched resources. (it replays each HTTP request - 
