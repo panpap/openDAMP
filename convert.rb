@@ -23,8 +23,11 @@ class Convert
 
 	def advertiserType(host)
 		key=-1
-		@adCompanies.keys.each{|company| (key=company;break) if host.downcase.include?(company)}
-		return @adCompanies[key].to_s
+		host=host.split(" ").first if host.include?(" ")
+		@adCompanies.keys.each{|company| (key=company;break) if host.downcase.include?(company) or company.downcase.include?(host)}
+		res=@adCompanies[key].to_s
+		return res if res!="" and res!=nil
+		return -1 
 	end
 
 	def calcPriceValue(val,adCat)
@@ -94,17 +97,17 @@ class Convert
 		end
 		tod=Time.at(time.to_i)#.strftime("%H:%M:%S.%L_%d-%m-%Y")
 		if tod.hour>=00 and tod.hour<=03
-			return "00:00-03:00"
+			return "00:00-03:00",tod.wday
 		elsif tod.hour>=4 and tod.hour<=7
-			return "04:00-07:00"
+			return "04:00-07:00",tod.wday
 		elsif tod.hour>=8 and tod.hour<=11
-			return "08:00-11:00"
+			return "08:00-11:00",tod.wday
 		elsif tod.hour>=12 and tod.hour<=15
-			return "12:00-15:00"
+			return "12:00-15:00",tod.wday
 		elsif tod.hour>=16 and tod.hour<=19
-			return "16:00-19:00"
+			return "16:00-19:00",tod.wday
 		elsif tod.hour>=20 and tod.hour<=23
-			return "20:00-23:00"
+			return "20:00-23:00",tod.wday
 		else
 			Utilities.warning "Miscalculation of Time"
 			return tod.strftime("%H:%M:%S_%d-%m-%Y")

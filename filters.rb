@@ -26,6 +26,12 @@ class Filters
 		@db.close if db
 	end
 
+	def is_it_ID?(paramPair)
+		alfa,digit=Utilities.digitAlfa(paramPair.last)
+		return true if paramPair.last!=nil and not (paramPair.last.size<17 or (["http","utf","www","text","image"].any? { |word| paramPair.last.downcase.include?(word)})) and digit>3 and alfa>4 and not paramPair.first.include? "url" and not paramPair.last.include? "%" and not paramPair.last.include? "." and not paramPair.last.include? ";" and not paramPair.first.size>20 and not paramPair.last.include? "/" and not paramPair.last.include? "," and not paramPair.first=="X-Plex-Token"
+		return false
+	end
+
 	def getTypeOfContent(url,httpContent)
 		#Find content type from filetype
 		type=-1
@@ -156,6 +162,7 @@ class Filters
 		publisher=findInURL(urlStr,@rtbMacros["pubs"],host,false)
 		ssp=findInURL(urlStr,@rtbMacros["ssp"],host,false)
 		size=findInURL(urlStr,@rtbMacros["sizes"],host,false)
+		size=-1 if size!=-1 and (size.include? "." or not size.downcase.include? "x")
 		w=-1;h=-1;
 		carrier=findInURL(urlStr,"carrier",nil,false)
 		carrier=findInURL(urlStr,"connection",nil,false) if carrier==-1
@@ -171,7 +178,11 @@ class Filters
 		if position==-1
 			position=findInURL(urlStr,"pos",nil,true)
 		end
-		return Utilities.calculateHost(dsp,nil),ssp,Utilities.calculateHost(adx,nil),Utilities.calculateHost(publisher,nil),size.to_s.downcase,carrier.to_s.downcase,position.to_s.downcase
+		dsp=Utilities.calculateHost(dsp,nil).split(".").first if dsp!=-1
+		ssp=Utilities.calculateHost(ssp,nil).split(".").first if ssp!=-1
+		adx=Utilities.calculateHost(adx,nil).split(".").first if adx!=-1
+		publisher=Utilities.calculateHost(publisher,nil).split(".").first if publisher!=-1
+		return dsp, ssp, adx, publisher, size.to_s.downcase, carrier.to_s.downcase, position.to_s.downcase
 	end	
 
 	def getCategory(urlAll,host,user)
@@ -327,7 +338,7 @@ private
 			return (isthere.to_s == "1")
 		else	# no... wget it
 			begin
-				pixels=FastImage.size("http://"+url)
+				pixels=FastImage.size("http://"+url, :timeout=>0.7)
 			    if pixels==[1,1]         # 1x1 pixel
 					@db.insert(@defines.beaconDBTable,[url,1])
 			        return true

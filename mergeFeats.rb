@@ -84,7 +84,7 @@ end
 
 filename=ARGV[0]
 columns=["price:timestamp\tprice:type\tprice:priceValue\tprice:priceTag\tprice:host\tprice:bytes\tprice:upToKnowCM\tprice:numOfParams\tprice:adSize\tprice:carrier\tprice:adPosition\tprice:userLocation\tprice:TOD\tprice:day\tprice:publisher\tprice:interest\tprice:url\tprice:pubPopularity\tprice:associatedSSP\tprice:associatedDSP\tprice:typeOfDSP\tprice:associatedADX\tprice:mob\tprice:browser\tprice:device\tprice:userId\t", #PRICE-RELATED
-"user:totalRows\tuser:numOfLocations\tuser:uniqLocations\tuser:totalBytes\tuser:avgBytesPerReq\tuser:sumDuration\tuser:avgDurationOfReq\tuser:numOfCookieSyncs\tuser:publishersVisited\t","user:interests\t", #USER-RELATED
+"user:totalRows\tuser:numOfLocations\tuser:uniqLocations\tuser:totalBytes\tuser:avgBytesPerReq\tuser:sumDuration\tuser:avgDurationOfReq\tuser:numOfCookieSyncs\tuser:publishersVisited\tuser:beacons\t","user:interests\t", #USER-RELATED
 "adv:numOfReqs\tadv:numOfUsers\tadv:avgReqPerUser\tadv:totalDurOfReqs\tadv:avgDurOfReqs\tadv:totalBytesDelivered\tadv:type\t"] #ADVERTISERS-RELATED
 trace=""
 path=""
