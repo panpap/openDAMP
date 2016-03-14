@@ -16,7 +16,7 @@ def printer(fw,arrayAttrs,data,host)
 		else
 			if header=="uniqLocations"
 				locations=cell.gsub("%22","").gsub("{","").gsub("}","").split(",")
-				@@cities.uniq.each{|city| found=false; locations.each{|loc|  loc=loc.gsub(" ",""); puts loc
+				@@cities.uniq.each{|city| found=false; locations.each{|loc|  loc=loc.gsub(" ","");
 					if loc!=nil;
 						if loc.include? city
 							found=true
@@ -28,6 +28,46 @@ def printer(fw,arrayAttrs,data,host)
 					if not found and locations.size>0
 						fw.print "0\t"
 					end}
+			elsif col=="adv:type"
+				if cell==""
+					for i in 1..@@adTypes.size
+						fw.print "0\t"
+					end
+				else
+					adTypes=cell.gsub("{","").gsub("}","").gsub(" ","").split(",")
+					@@adTypes.uniq.each{|advertiser| found=false; adTypes.each{|ad| 
+						if ad!=nil;
+							if ad.include? advertiser
+								found=true
+								fw.print "1\t" if adTypes.size>0
+								break
+							end
+						end
+						}
+						if not found and adTypes.size>0
+							fw.print "0\t"
+						end}
+				end
+			elsif col=="price:typeOfDSP"
+				if cell==""
+					for i in 1..@@dspTypes.size
+						fw.print "0\t"
+					end
+				else
+					adTypes=cell.gsub("{","").gsub("}","").gsub(" ","").split(",")
+					@@dspTypes.uniq.each{|advertiser| found=false; adTypes.each{|ad| 
+						if ad!=nil;
+							if ad.include? advertiser
+								found=true
+								fw.print "1\t" if adTypes.size>0
+								break
+							end
+						end
+						}
+						if not found and adTypes.size>0
+							fw.print "0\t"
+						end}
+				end
 			elsif (header=="interests" or header=="interest")
 				if cell=="-1"
 					for i in 1..@@interestNum
@@ -43,7 +83,7 @@ def printer(fw,arrayAttrs,data,host)
 end
 
 filename=ARGV[0]
-columns=["price:type\tprice:priceValue\tprice:priceTag\tprice:host\tprice:bytes\tprice:upToKnowCM\tprice:numOfParams\tprice:adSize\tprice:carrier\tprice:adPosition\tprice:userLocation\tprice:TOD\tprice:publisher\tprice:interest\tprice:url\tprice:pubPopularity\tprice:associatedSSP\tprice:associatedDSP\tprice:associatedADX\tprice:mob\tprice:browser\tprice:device\t", #PRICE-RELATED
+columns=["price:timestamp\tprice:type\tprice:priceValue\tprice:priceTag\tprice:host\tprice:bytes\tprice:upToKnowCM\tprice:numOfParams\tprice:adSize\tprice:carrier\tprice:adPosition\tprice:userLocation\tprice:TOD\tprice:day\tprice:publisher\tprice:interest\tprice:url\tprice:pubPopularity\tprice:associatedSSP\tprice:associatedDSP\tprice:typeOfDSP\tprice:associatedADX\tprice:mob\tprice:browser\tprice:device\tprice:userId\t", #PRICE-RELATED
 "user:totalRows\tuser:numOfLocations\tuser:uniqLocations\tuser:totalBytes\tuser:avgBytesPerReq\tuser:sumDuration\tuser:avgDurationOfReq\tuser:numOfCookieSyncs\tuser:publishersVisited\t","user:interests\t", #USER-RELATED
 "adv:numOfReqs\tadv:numOfUsers\tadv:avgReqPerUser\tadv:totalDurOfReqs\tadv:avgDurOfReqs\tadv:totalBytesDelivered\tadv:type\t"] #ADVERTISERS-RELATED
 trace=""
@@ -76,7 +116,13 @@ advertisers=db.getAll(defines.tables["advertiserTable"].keys.first,nil,nil,nil,t
 interests=db.getAll(defines.tables["visitsTable"].keys.first,nil,nil,nil,true)
 users=db.getAll(defines.tables["userTable"].keys.first,nil,nil,nil,true)
 @@cities=Array.new
+@@adTypes=Array.new
+@@dspTypes=Array.new
 users.each{|user| user['uniqLocations'].split(",").each{|c| @@cities.push(c.split("%22")[1])}}
+prices.each{|price| price['typeOfDSP'].gsub("{","").gsub("}","").gsub(" ","").split(",").each{|c| @@dspTypes.push(c) if c!="-1"}}
+advertisers.each{|adv| adv['type'].gsub("{","").gsub("}","").gsub(" ","").split(",").each{|c| @@adTypes.push(c)}}
+@@adTypes=@@adTypes.uniq
+@@dspTypes=@@dspTypes.uniq
 @@cities=@@cities.uniq
 @@interestNum=0
 @@locations=0
@@ -90,6 +136,8 @@ columns.each{|cell|
 				if @@interestNum==0
 					prices.each{|pub| (pub["interest"].to_s.split(",").each{|c| @@interestNum+=1; fw.print c.split("%22")[1]+"\t"};break) if pub["interest"]!="-1"}
 				end
+			elsif col=="price:typeOfDSP"
+				@@dspTypes.each{|c| (fw.print "dsp:"+c+"\t") if c!=nil}
 			else
 				fw.print col+"\t"
 		end}
@@ -100,8 +148,15 @@ columns.each{|cell|
 			else
 				fw.print col+"\t"
 			end}
-	elsif cell.include? "user:interests"
+	elsif cell=="user:interests"
 		interests.first['interests'].split(",").each{|c| fw.print "user:"+c.split("%22")[1]+"\t" if c!="nil"}
+	elsif cell.include? "adv:type"
+		cell.split("\t").each{|col| 
+			if col=="adv:type"
+				@@adTypes.each{|c| (fw.print "adx:"+c+"\t") if c!=nil}
+			else
+				fw.print col+"\t"
+			end}
 	else
 		fw.print cell
 	end
