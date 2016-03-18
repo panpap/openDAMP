@@ -1,6 +1,6 @@
 {
 	"browserOnly?": false,
-	"isThereHeader?": true,
+	"isThereHeader?": false,
 	"removeDuplicates?": true,
 	"printToSTDOUT?": true,
 	"detectBeacons?": true,
@@ -9,21 +9,21 @@
 		"sizes3rd.csv": false,
 		"adParamsNum.csv": false,
 		"restParamsNum.csv": false,
-		"cmIDcount.csv": true,
-		"cmHosts.csv": true
+		"cmIDcount.csv": false,
+		"cmHosts.csv": false
 	},
 	"database?": true,
 	"tablesDB": {
 		"publishers": false,
-		"beacons": true,
+		"beacons": false,
 		"impressions": false,
 		"advertisements": false,
 		"userResults": true,
 		"prices": true,
 		"traceResults": true,
 		"csyncResults": true,
-		"userVisits": true,
+		"userVisits": false,
 		"userFiletypes": false,
-		"advertisers": true
+		"advertisers": false
 	}
 }

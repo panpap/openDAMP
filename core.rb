@@ -299,12 +299,12 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		return false
 	end
 
-	def cateforizeReq(row,url)	
+	def categorizeReq(row,url)	
 		publisher=nil
 		host=row['host']
 		type3rd=@filters.getCategory(url,host,@curUser)
         @isBeacon=false
-        noOfparam, isAd=checkForRTB(row,url,publisher,(type3rd.eql? "Advertising"))      #check ad in URL params
+        params, isAd=checkForRTB(row,url,publisher,(type3rd.eql? "Advertising"))      #check ad in URL params
         if isAd==false	#noRTB
 	        if @filters.is_Beacon?(row['url'],row['type'],true) 		#findBeacon in URL
         	    beaconSave(url.first,row)
@@ -317,7 +317,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		if isAd==true
 			type3rd="Advertising"
 		end
-		return type3rd,noOfparam
+		return type3rd,params
 	end
 
 	def filterRow(row)
@@ -326,7 +326,8 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		@isBeacon=false
 		url=row['url'].split("?")
 		@trace.sizes.push(row['dataSz'].to_i)
-		type3rd,noOfparam=cateforizeReq(row,url)	
+		type3rd,params=categorizeReq(row,url)
+		noOfparam=params.size
 		if type3rd!=nil and type3rd!="Beacons" # 3rd PARTY CONTENT
 			collector(type3rd,row)
 			@trace.party3rd[type3rd]+=1
@@ -480,13 +481,13 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 				if @options['tablesDB'][@defines.tables["priceTable"].keys.first]
 					if detectPrice(row,keyVal,numOfPrices,fields.length,publisher,(adCat or isAd),https)
 						numOfPrices+=1
-						Utilities.warning ("Price Detected in Beacon\n"+row['url']) if @isBeacon
+					#	Utilities.warning ("Price Detected in Beacon\n"+row['url']) if @isBeacon
 						isAd=true
 					end
 				end
 			end
 		end
-		return fields.length,isAd
+		return fields,isAd
 	end
 			
 	def beaconSave(url,row)         #findBeacons

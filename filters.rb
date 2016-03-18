@@ -280,8 +280,9 @@ private
 						end
 					else
 						if paramsArray==paramName.first.downcase
-							res=Utilities.prepareParam(paramName[1]).downcase
-							return -1 if paramName.size<2
+							res=Utilities.prepareParam(paramName[1])
+							return -1 if paramName.size<2 or res==nil
+							res=res.downcase
 							return encryptedTag if is_it_Encrypted?(res)
 							return res if lookForsize or not Utilities.is_numeric?(res)
 						end

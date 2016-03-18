@@ -114,11 +114,20 @@ module Utilities
 
 	def Utilities.prepareParam(paramVal)
 		res=paramVal
+		if res.include? "%"
+			tmp=res.split "%"
+			res=tmp.first
+			return nil if res==""
+		end
 		if paramVal.include? "http"
 			res=paramVal.split("://").last
 		end
 		if res.include? "/"
 			tmp=res.split "/"
+			res=tmp.first
+		end
+		if res.include? "&"
+			tmp=res.split "&"
 			res=tmp.first
 		end	
 		res=res.gsub(",","")		
@@ -142,7 +151,7 @@ module Utilities
 		firstPart=firstPart.first.split("#").first.split(":").first
 		temp=firstPart.split(".")
 		if temp.size>1
-			if Utilities.is_numeric?(temp[temp.size-2]) and Utilities.is_numeric?(temp[temp.size-1])
+			if Utilities.is_numeric?(temp[temp.size-2]) and Utilities.is_numeric?(temp[temp.size-1])	#ip case
 				return firstPart
 			elsif (url.include? 'org.es' or url.include? 'co.jp' or url.include? 'com.uy' or url.include? 'com.mx' or url.include? 'com.mk' or url.include? 'edu.mx' or url.include? 'com.es' or url.include? 'com.ar' or url.include? 'com.do' or url.include? 'co.uk' or url.include? 'co.in' or url.include? 'com.br' or url.include? 'com.au' or url.include? 'org.br' or url.include? 'uk.com' or url.include? 'co.nz' or url.include? 'co.id' or url.include? 'co.kr')
 				return temp[temp.size-3]+"."+temp[temp.size-2]+"."+temp[temp.size-1]
