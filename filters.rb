@@ -333,13 +333,16 @@ private
 	end
 
     def is_1pixel_image?(url)
+		last=url.split("/").last
+		return false if last.include? ".js" or last.include? ".css" or last.include? ".htm"
 		isthere=@db.get(@defines.beaconDBTable,"singlePixel","url",url)
 		if isthere!=nil		# I've already seen that url 
 			return (isthere.first.to_s == "1") if isthere.kind_of?(Array)
 			return (isthere.to_s == "1")
 		else	# no... wget it
 			begin
-				pixels=FastImage.size("http://"+url, :timeout=>0.7)
+				url="http://"+url if not url.include? "://"
+				pixels=FastImage.size(url, :timeout=>0.7)
 			    if pixels==[1,1]         # 1x1 pixel
 					@db.insert(@defines.beaconDBTable,[url,1])
 			        return true

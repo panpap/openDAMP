@@ -17,7 +17,7 @@
 		"publishers": false,
 		"beacons": true,
 		"impressions": false,
-		"advertisements": false,
+		"advertisements": true,
 		"userResults": true,
 		"prices": true,
 		"traceResults": true,
