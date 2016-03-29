@@ -57,7 +57,7 @@ class Filters
 				end
 			end
 		end
-		if httpContent!=nil
+		if httpContent!=nil and httpContent!=""
 			#Fallback to HTTP content field
 			t1=httpContent.split(";")[0]
 			type=t1.split(":")[0].gsub(" ","").downcase

@@ -60,7 +60,8 @@ class Database
 				return @db.get_first_row "SELECT "+what+" FROM '#{table}' WHERE "+param+"="+val
 			end
 		rescue SQLite3::Exception => e 
-			Utilities.error "SQLite Exception during GET! "+e.to_s+"\n"+table+" "+param+" "+value
+abort "AAAAAAAAAAAAa "+value+"\n"+(val.is_a? String).to_s
+			Utilities.error "SQLite Exception during GET! "+e.to_s+"\n"+table+" "+param+" "+value+"\n\n"+e.backtrace.join("\n").to_s
 		end
 	end
 
@@ -109,7 +110,7 @@ private
 	def prepareStr(input)
 		res=""
 		if input.is_a? String 
-			res='"'+input+'"'
+			res='"'+input.gsub('"',"%22")+'"'
 		else
 			input.each{ |s| 
 				if s.is_a? String

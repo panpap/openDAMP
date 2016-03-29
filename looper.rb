@@ -1,19 +1,22 @@
-root=ARGV[0]
-Dir.mkdir "outsDir/" unless File.exists?("outsDir/")
-puts "Give proper input" if root==nil
-countries=Dir.entries(root) rescue countries=Array.new
-for country in countries
-        puts "Country: "+country
-        sites=Dir.entries(root+country) rescue sites=Array.new
-        for file in sites
-                if file.include? ".out"
-                        puts "Processing "+file+" from "+country
-                        name=country+"_"+file.split(".")[0]
-                        system("ruby parser.rb -o "+root+country+"/"+file)
-                end
-        end
-	puts sites.size.to_s+" sites were processed"
+def processFile(file,folder,root)
+    puts "Processing "+file+" from "+folder
+    name=folder+"_"+file.split(".")[0]
+    system("ruby parser.rb -o "+root+folder+"/"+file)
 end
-puts countries.size.to_s+" country folders were parsed"
-system("mv outsDir/ groupDir/")
 
+
+root=ARGV[0]
+Dir.mkdir "groupDir/" unless File.exists?("groupDir/")
+puts "Give proper input" if root==nil
+folders=Dir.entries(root).select {|f| f!="." and f!=".."} rescue folders=Array.new
+sitesCrawled=0
+for folder in folders
+	sitesDir=Dir.entries(root+folder) rescue sitesDir=Array.new
+	if sitesDir.size!=0
+		for file in sitesDir.select {|f| f.include? ".csv" or f.include? ".out"}
+			processFile(file,folder,root)
+			sitesCrawled+=1
+		end
+	end 
+end
+puts sitesDir.size.to_s+" folders were parsed "+sitesCrawled.to_s+" sitesDir were processed"
