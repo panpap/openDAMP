@@ -2,7 +2,7 @@
 	"browserOnly?": false,
 	"isThereHeader?": false,
 	"removeDuplicates?": true,
-	"printToSTDOUT?": true,
+	"printToSTDOUT?": false,
 	"detectBeacons?": true,
 	"resultToFiles": {
 		"devices.csv": false,

@@ -383,6 +383,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 			@trace.users[@curUser].fileTypes[contenType][type].push(row['dataSz'].to_i)
 		end
 	end
+
 	def perUserAnalysis
 		if @database!=nil
 			@defines.print "> Dumping per user results to "
@@ -508,6 +509,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		tmpstp=row['tmstp'];u=row['url']
 		id=Digest::SHA256.hexdigest (row.values.join("|"))
 		@trace.beacons.push([tmpstp,row['IPport'],u,type,row['mob'],row['dev'],row['browser'],id])
+		collector("Beacons",row)
 	end
 
 	def ad_detected(row,noOfparam,url)

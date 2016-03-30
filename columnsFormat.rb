@@ -92,6 +92,7 @@ module Format
 		#	end
 			h['host']=Utilities.calculateHost(h['url'],nil)
 			h['type']=filter.getTypeOfContent(h['url'],part[3])
+			h['type']="other" if h['type']==-1
 			h['tmstp']=part[4]
 			h['tmstp']=DateTime.rfc3339(part[4]).to_time.to_i if part[4].include?(":")
 			h['dur']=part[5]
