@@ -178,10 +178,14 @@ class Filters
 		if position==-1
 			position=findInURL(urlStr,"pos",nil,true)
 		end
-		dsp=Utilities.calculateHost(dsp,nil).split(".").first if dsp!=-1
-		ssp=Utilities.calculateHost(ssp,nil).split(".").first if ssp!=-1
-		adx=Utilities.calculateHost(adx,nil).split(".").first if adx!=-1
-		publisher=Utilities.calculateHost(publisher,nil).split(".").first if publisher!=-1
+		temp=Utilities.calculateHost(dsp,nil)
+		dsp=temp.split(".").first if dsp!=-1 and temp!=nil
+		temp=Utilities.calculateHost(ssp,nil)
+		ssp=temp.split(".").first if ssp!=-1 and temp!=nil
+		temp=Utilities.calculateHost(adx,nil)
+		adx=temp.split(".").first if adx!=-1 and temp!=nil
+		temp=Utilities.calculateHost(publisher,nil)
+		publisher=temp.split(".").first if publisher!=-1 and temp!=nil
 		return dsp, ssp, adx, publisher, size.to_s.downcase, carrier.to_s.downcase, position.to_s.downcase
 	end	
 
@@ -259,7 +263,6 @@ private
 		equal=":" if host=="mediasmart.es"
 		url=uri.force_encoding("ISO-8859-1").split("?").last
 		url=URI.unescape(url)
-		
 		encryptedTag="ecrypted"
 		delimiter="," if equal==":"
 		paramsArray=nil

@@ -148,7 +148,7 @@ module Utilities
 	def Utilities.calculateHost(uri,host)
 		return -1 if uri==-1 or uri==nil or uri=="" or uri==" "
 		url=URI.unescape(uri.force_encoding("ISO-8859-1"))
-									abort "lalala "+url.to_s
+		puts  url
 		firstPart=url.split("?").first
 		if firstPart.include? "www."
 			temp=firstPart.split("www.")
@@ -158,7 +158,9 @@ module Utilities
 			firstPart=firstPart.split("://").last
 		end
 		firstPart=firstPart.split("/").first.gsub("%20","")	if firstPart.include? "/"#.split("%")
-		firstPart=firstPart.split("#").first.split(":").first
+		firstPart=firstPart.split("#") if firstPart.include? "#"
+		firstPart=firstPart.first if firstPart.kind_of?(Array) and firstPart.size>1
+		firstPart=firstPart.split(":").first if firstPart.include? ":"
 		temp=firstPart.split(".")
 		if temp.size>1
 			if Utilities.is_numeric?(temp[temp.size-2]) and Utilities.is_numeric?(temp[temp.size-1])	#ip case
