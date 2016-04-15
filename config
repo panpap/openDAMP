@@ -1,9 +1,9 @@
 {
 	"browserOnly?": false,
-	"isThereHeader?": false,
+	"isThereHeader?": true,
 	"removeDuplicates?": true,
-	"printToSTDOUT?": false,
-	"detectBeacons?": true,
+	"printToSTDOUT?": true,
+	"detectBeacons?": false,
 	"resultToFiles": {
 		"devices.csv": false,
 		"sizes3rd.csv": false,
@@ -15,15 +15,15 @@
 	"database?": true,
 	"tablesDB": {
 		"publishers": false,
-		"beacons": true,
+		"beacons": false,
 		"impressions": false,
-		"advertisements": true,
+		"advertisements": false,
 		"userResults": true,
 		"prices": true,
 		"traceResults": true,
-		"csyncResults": true,
+		"csyncResults": false,
 		"userVisits": false,
-		"userFiletypes": true,
+		"userFiletypes": false,
 		"advertisers": true
 	}
 }

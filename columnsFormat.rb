@@ -63,24 +63,25 @@ module Format
             h['ua']=part[14]	
 	
 		elsif dataset==3
-			h['uIP']=part[0]+":"+part[11]
-			h['verb']=part[1]
+			h['IPport']=(part[1]+":"+part[16]).split(":").last
+			h['uIP']=part[2]
+			h['verb']=part[4]
 			if not( ["get","delete","put","post","head","options","connect"].any? { |word| h['verb'].downcase.eql?(word)})
 				Utilities.warning  "--------> UKNOWN HTTP VERB: "+h['verb']; 
 				return nil
 			end
 			h['host']=part[13]
-			h['httpRef']=part[4]
-			h['status']=part[5]
-			h['length']=part[6]
-		    h['dataSz']=part[7]
- 			h['dur']=part[8]
-			h['ua']=part[10]
-			h['tmstp']=[12]
+			h['httpRef']=part[6]
+			h['status']=part[7]
+			h['length']=part[8]
+		    h['dataSz']=part[9]
+ 			h['dur']=part[10]
+			h['ua']=part[12]
+			h['tmstp']=part[17]
 			if (["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})
-				h['url']=h['host']+part[2]	#host+path
+				h['url']=h['host']+part[5]	#host+path
 			elsif h['verb'].downcase=="connect" 
-				h['url']=part[2].split("://").last
+				h['url']=part[5].split("://").last
 			else
 				Utilities.warning  "--------> UKNOWN HTTP VERB: "+h['verb']
 			end
