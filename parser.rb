@@ -64,6 +64,7 @@ OptionParser.new { |opts|
 
 	opts.on('-g', '--config', 'Config') do
 	#	puts "> Install needed gems"
+	#	sustem("sudo apt-get install ruby1.9.1-dev")
 	#	system("sudo gem install ipaddress maxminddb fastimage json sqlite3")
 		puts "> Config file check"
 		ops=Operations.new(ARGV[0])

@@ -259,6 +259,7 @@ private
 		equal=":" if host=="mediasmart.es"
 		url=uri.force_encoding("ISO-8859-1").split("?").last
 		url=URI.unescape(url)
+		
 		encryptedTag="ecrypted"
 		delimiter="," if equal==":"
 		paramsArray=nil
