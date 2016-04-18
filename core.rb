@@ -438,6 +438,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 				publisher=-1 if publisher==nil
 				upToKnowCM=@trace.users[@curUser].csync.size
 				location=@convert.getGeoLocation(row['uIP'])
+				location=-1 if location==nil 
 				tod,day=@convert.getTod(time)
 				params=[type,time,domainStr,priceTag,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, carrier, adPosition,location,tod,day,publisher,interest,pubPopularity,row['IPport'],ssp,dsp,typeOfDSP,adx,row['mob'],row['dev'],row['browser'],https,row['url'],id]
 				done=@database.insert(@defines.tables['priceTable'],params)

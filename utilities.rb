@@ -129,9 +129,9 @@ module Utilities
 			res=tmp.first
 			return nil if res==""
 		end
-		if paramVal.include? "//"
-			res=paramVal.split("//").last
-		end		
+		if res.include? "//"
+			res=res.split("//").last
+		end	
 		if res.include? "/"
 			tmp=res.split "/"
 			res=tmp.first
