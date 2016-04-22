@@ -119,7 +119,7 @@ users=db.getAll(defines.tables["userTable"].keys.first,nil,nil,nil,true)
 @@adTypes=Array.new
 @@dspTypes=Array.new
 users.each{|user| user['uniqLocations'].split(",").each{|c| @@cities.push(c.split("%22")[1])}}
-prices.each{|price| price['typeOfDSP'].gsub("{","").gsub("}","").gsub(" ","").split(",").each{|c| @@dspTypes.push(c) if c!="-1"}}
+#prices.each{|price| price['typeOfDSP'].gsub("{","").gsub("}","").gsub(" ","").split(",").each{|c| @@dspTypes.push(c) if c!="-1"}}
 advertisers.each{|adv| adv['type'].gsub("{","").gsub("}","").gsub(" ","").split(",").each{|c| @@adTypes.push(c)}}
 @@adTypes=@@adTypes.uniq
 @@dspTypes=@@dspTypes.uniq
