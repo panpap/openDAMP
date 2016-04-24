@@ -71,7 +71,7 @@ module Format
 				return nil
 			end
 			h['host']=part[13]
-			if h['host']==".." or h['host']=="" or h['host']=="." or h['host'].size<3
+			if h['host'].include? ".." or h['host']=="" or h['host']=="." or h['host'].size<3
 				return nil
 			end
 			h['httpRef']=part[6]

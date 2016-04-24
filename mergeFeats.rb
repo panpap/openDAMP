@@ -119,7 +119,7 @@ users=db.getAll(defines.tables["userTable"].keys.first,nil,nil,nil,true)
 @@adTypes=Array.new
 @@dspTypes=Array.new
 users.each{|user| user['uniqLocations'].split(",").each{|c| @@cities.push(c.split("%22")[1])}}
-#prices.each{|price| price['typeOfDSP'].gsub("{","").gsub("}","").gsub(" ","").split(",").each{|c| @@dspTypes.push(c) if c!="-1"}}
+prices.each{|price| price['typeOfDSP'].gsub("{","").gsub("}","").gsub(" ","").split(",").each{|c| @@dspTypes.push(c) if c!="-1"}}
 advertisers.each{|adv| adv['type'].gsub("{","").gsub("}","").gsub(" ","").split(",").each{|c| @@adTypes.push(c)}}
 @@adTypes=@@adTypes.uniq
 @@dspTypes=@@dspTypes.uniq
@@ -128,7 +128,7 @@ advertisers.each{|adv| adv['type'].gsub("{","").gsub("}","").gsub(" ","").split(
 @@locations=0
 fw=File.new(writeFile,"w")
 puts "print headers..."
-columns.each{|cell|
+columns.each{|cell| 	
 	if cell.include? "price:interest"
 		cell.split("\t").each{|col| 
 			if col=="price:interest"
@@ -148,12 +148,12 @@ columns.each{|cell|
 			else
 				fw.print col+"\t"
 			end}
-	elsif cell=="user:interests"
+	elsif cell.include? "user:interests"
 		interests.first['interests'].split(",").each{|c| fw.print "user:"+c.split("%22")[1]+"\t" if c!="nil"}
 	elsif cell.include? "adv:type"
 		cell.split("\t").each{|col| 
 			if col=="adv:type"
-				@@adTypes.each{|c| (fw.print "adx:"+c+"\t") if c!=nil}
+				@@adTypes.each{|c| (fw.print "adv:"+c+"\t") if c!=nil}
 			else
 				fw.print col+"\t"
 			end}
