@@ -408,7 +408,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 			paramVal=keyVal[1]
 			type=""
 			priceVal,enc=@convert.calcPriceValue(paramVal,isAdCat)
-			return false if priceVal==nil
+			return false if priceVal==nil or priceVal.infinite?
 			done=-1
 			if enc
 				type="numeric"
