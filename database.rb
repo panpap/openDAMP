@@ -114,12 +114,12 @@ private
 		else
 			input.each{ |s| 
 				if s.is_a? String
-					str='"'+s.gsub("\n","").gsub('"',"%22")+'"'
+					str='"'+s.gsub("\n","").gsub('"',"%22")+'"'.force_encoding("iso-8859-1")
 				else
-					str=s.to_s
+					str=s.to_s.force_encoding("iso-8859-1")
 				end
 				if res!=""
-					res=res+","+str
+					res=res+","+str.force_encoding("iso-8859-1")
 				else
 					res=str
 				end}
