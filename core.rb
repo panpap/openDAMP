@@ -402,6 +402,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		domainStr=row['host']
 		domain,tld=Utilities.tokenizeHost(domainStr)
 		host=domain+"."+tld
+		return false if host.include? "badoocdn.com"  or host.include? "contextweb" or host.include? "technoratimedia.com"
 		if (@filters.is_inInria_PriceTagList?(host,keyVal) or @filters.has_PriceKeyword?(keyVal)) 		# Check for Keywords and if there aren't any make ad-hoc heuristic check
 			return false if isItDuplicate?(row)
 			priceTag=keyVal[0]
