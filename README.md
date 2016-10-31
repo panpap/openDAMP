@@ -1,4 +1,4 @@
-# Web Ads Analyzer
+# Weblog Ads Analyzer
 
 Operations of Analyzer:
 
