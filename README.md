@@ -17,7 +17,7 @@ on the traffic of different users.
 7. Extraction of user's IPs and calculation of her overall geographic movement (by using offline geoIP database of maxmind)
 8. In case of RTB related traffic, it first filters out possible duplicates from browser retransmissions and by 
 using a list of keywords it extracts bidder (i.e. DSP), bid price, charge price (separation of encrypted and unencrypted ones), 
-publisher, T.O.D, geolocation of the user, Cookie Synchronizations up to that moment, ad slot size, carrier, ad exchange platform and (rarely) the associated SSP.
+publisher, time of day, geolocation of the user, Cookie Synchronizations up to that moment, ad slot size, carrier, ad exchange platform and (rarely) the associated SSP.
 9. Estimation of each publishers type of content.
 10. Estimation of the user's interests by extracting the publishers she has visited along with the type of 
 content they distribute.
