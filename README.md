@@ -1,4 +1,4 @@
-# Web Ads Analysis
+# Web Ads Analyzer
 
 Operations of Analyzer:
 
