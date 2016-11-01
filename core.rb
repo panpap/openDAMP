@@ -306,7 +306,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
         @isBeacon=false
         params, isAd=checkForRTB(row,url,publisher,(type3rd.eql? "Advertising"))      #check ad in URL params
         if isAd==false	#noRTB
-	        if @filters.is_Beacon?(row['url'],row['type'],true) 		#findBeacon in URL
+	        if @filters.is_Beacon?(row['url'],row['type']) 		#findBeacon in URL
         	    beaconSave(url.first,row)
 				collectAdvertiser(row) if type3rd=="Advertising" #adRelated Beacon
 				type3rd="Beacons"

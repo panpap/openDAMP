@@ -82,12 +82,33 @@ class Filters
  #       return (@lists.beacon_key.any? {|word| params[0].downcase.include?(word)})
  #   end
 
-    def is_Beacon?(url,type,force)
+    def is_Beacon?(url,type)
+		safe=["css","flow","cap","asp","ad","vf","bs", "js","xml","jsp","php","aspx","html","htm","swf","json","txt","fcgi","ashx"]
 		return false if not @defines.options["detectBeacons?"]
-		if ([".jpeg", ".gif", ".png" ,".bmp"].any? {|word| url.downcase.include?(word)}) or type=="image" or force
-		    return is_1pixel_image?(url)
+		if url.include? "?" and not url.include? "/?"
+			parts=url.split("?")[0].split("/")
+			file=parts[parts.size-1]
+			if file!=nil and file!=""
+				parts=file.split(".")
+				last=parts[1]
+				return false if last!=nil and (safe.any? {|word| last.downcase.include?(word)}) 
+				return false if parts[0].length>8
+			end	
 		end
+	#	if ([".jpeg", ".gif", ".pixel", ".png",".sbxx",".bmp",".gifctl"].any? {|word| url.downcase.include?(word)}) or type=="image"
+	fw=File.new(@defines.traceFile+"BEACONS","a")
+	fw.puts url
+	fw.close
+#	return false
+#		    return is_1pixel_image?(url)
+#		end
 		if (@lists.beacon_key.any? { |word| url.include?(word)})
+			parts=url.split("/")
+			file=parts[parts.size-1]
+			file=file.split("?")[0] if file.include? "?"
+			parts=url.split(".")
+			last=parts[parts.size-1]
+			return false if last!=nil and (safe.any? {|word| last.downcase.include?(word)}) 
 			return true		
 		end
 		return false

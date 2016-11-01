@@ -1,4 +1,5 @@
 require 'sqlite3'
+load 'utilities.rb'
 
 class Database
 
@@ -60,7 +61,6 @@ class Database
 				return @db.get_first_row "SELECT "+what+" FROM '#{table}' WHERE "+param+"="+val
 			end
 		rescue SQLite3::Exception => e 
-abort "AAAAAAAAAAAAa "+value+"\n"+(val.is_a? String).to_s
 			Utilities.error "SQLite Exception during GET! "+e.to_s+"\n"+table+" "+param+" "+value+"\n\n"+e.backtrace.join("\n").to_s
 		end
 	end
