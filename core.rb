@@ -130,14 +130,15 @@ class Core
 
 	def cookieSyncing(row,cat)
 		firstSeenUser?(row)
-		return if row['status']!=nil and (row['status']=="303" or row['status']=="200" or row['status']=="204" or row['status']=="404" or row['status']=="302" or row['status']=="307")
+		return if row['status']!=nil and (row['status']=="200" or row['status']=="204" or row['status']=="404" or row['status']=="522") # usually 303,302,307 redirect status
 		@params_cs[@curUser]=Hash.new(nil) if @params_cs[@curUser]==nil
 		urlAll=row['url'].split("?")
 		return if (urlAll.last==nil)
 		fields=urlAll.last.split('&')
 		return if fields.size>4 # usually there are very few params_cs (only sessionids)
 		ids=0
-confirmed=0
+		confirmed=0
+puts row['url']+"\t"+row['status']
 		for field in fields do
 			paramPair=field.split("=")
 			if @filters.is_it_ID?(paramPair)

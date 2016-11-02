@@ -28,6 +28,7 @@ class Filters
 
 	def is_it_ID?(paramPair)
 		alfa,digit=Utilities.digitAlfa(paramPair.last)
+		return true if alfa==0
 		return true if paramPair.last!=nil and not (paramPair.last.size<17 or (["http","utf","www","text","image"].any? { |word| paramPair.last.downcase.include?(word)})) and digit>3 and alfa>4 and not paramPair.first.include? "url" and not paramPair.last.include? "%" and not paramPair.last.include? "." and not paramPair.last.include? ";" and not paramPair.first.size>20 and not paramPair.last.include? "/" and not paramPair.last.include? "," and not paramPair.first=="X-Plex-Token"
 		return false
 	end
@@ -93,6 +94,7 @@ class Filters
 		if file!=nil and file!=""
 			parts=file.split(".")
 			last=parts[parts.size-1]
+			return nil if last==nil
 			file.slice!("."+last)
 			return file,last
 		end

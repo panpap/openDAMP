@@ -10,18 +10,18 @@ class Defines
 		@beaconDB="beaconsDB.db"
 		@column_Format={"2monthSorted_trace"=>1,"10k_trace"=>1 ,
 			"2m_trace"=>1, 	
-			"soun1k_trace"=>2,"souneilSorted_trace"=>2,"100k_trace"=>3,"month_201501_10days_filtered_ES_sorted_uniq"=>3
-			"month_201501_20days_filtered_ES_sorted_uniq"=>3,"month_201501_30days_filtered_ES_sorted_uniq"=>3,"month_201502_10days_filtered_ES_sorted_uniq"=>3
-			"month_201502_20days_filtered_ES_sorted_uniq"=>3,"month_201502_30days_filtered_ES_sorted_uniq"=>3,"month_201503_10days_filtered_ES_sorted_uniq"=>3
-			"month_201503_20days_filtered_ES_sorted_uniq"=>3,"month_201503_30days_filtered_ES_sorted_uniq"=>3,"month_201504_10days_filtered_ES_sorted_uniq"=>3
-			"month_201504_20days_filtered_ES_sorted_uniq"=>3,"month_201504_30days_filtered_ES_sorted_uniq"=>3,"month_201505_10days_filtered_ES_sorted_uniq"=>3
-			"month_201505_20days_filtered_ES_sorted_uniq"=>3,"month_201505_30days_filtered_ES_sorted_uniq"=>3,"month_201506_10days_filtered_ES_sorted_uniq"=>3
-			"month_201506_20days_filtered_ES_sorted_uniq"=>3,"month_201506_30days_filtered_ES_sorted_uniq"=>3,"month_201507_10days_filtered_ES_sorted_uniq"=>3
-			"month_201507_20days_filtered_ES_sorted_uniq"=>3,"month_201507_30days_filtered_ES_sorted_uniq"=>3,"month_201508_10days_filtered_ES_sorted_uniq"=>3
-			"month_201508_20days_filtered_ES_sorted_uniq"=>3,"month_201508_30days_filtered_ES_sorted_uniq"=>3,"month_201509_10days_filtered_ES_sorted_uniq"=>3
-			"month_201509_20days_filtered_ES_sorted_uniq"=>3,"month_201509_30days_filtered_ES_sorted_uniq"=>3,"month_201510_10days_filtered_ES_sorted_uniq"=>3
-			"month_201510_20days_filtered_ES_sorted_uniq"=>3,"month_201510_30days_filtered_ES_sorted_uniq"=>3,"month_201511_10days_filtered_ES_sorted_uniq"=>3
-			"month_201511_20days_filtered_ES_sorted_uniq"=>3,"month_201511_30days_filtered_ES_sorted_uniq"=>3,"month_201512_10days_filtered_ES_sorted_uniq"=>3
+			"soun1k_trace"=>2,"souneilSorted_trace"=>2,"100k_trace"=>3,"month_201501_10days_filtered_ES_sorted_uniq"=>3,
+			"month_201501_20days_filtered_ES_sorted_uniq"=>3,"month_201501_30days_filtered_ES_sorted_uniq"=>3,"month_201502_10days_filtered_ES_sorted_uniq"=>3,
+			"month_201502_20days_filtered_ES_sorted_uniq"=>3,"month_201502_30days_filtered_ES_sorted_uniq"=>3,"month_201503_10days_filtered_ES_sorted_uniq"=>3,
+			"month_201503_20days_filtered_ES_sorted_uniq"=>3,"month_201503_30days_filtered_ES_sorted_uniq"=>3,"month_201504_10days_filtered_ES_sorted_uniq"=>3,
+			"month_201504_20days_filtered_ES_sorted_uniq"=>3,"month_201504_30days_filtered_ES_sorted_uniq"=>3,"month_201505_10days_filtered_ES_sorted_uniq"=>3,
+			"month_201505_20days_filtered_ES_sorted_uniq"=>3,"month_201505_30days_filtered_ES_sorted_uniq"=>3,"month_201506_10days_filtered_ES_sorted_uniq"=>3,
+			"month_201506_20days_filtered_ES_sorted_uniq"=>3,"month_201506_30days_filtered_ES_sorted_uniq"=>3,"month_201507_10days_filtered_ES_sorted_uniq"=>3,
+			"month_201507_20days_filtered_ES_sorted_uniq"=>3,"month_201507_30days_filtered_ES_sorted_uniq"=>3,"month_201508_10days_filtered_ES_sorted_uniq"=>3,
+			"month_201508_20days_filtered_ES_sorted_uniq"=>3,"month_201508_30days_filtered_ES_sorted_uniq"=>3,"month_201509_10days_filtered_ES_sorted_uniq"=>3,
+			"month_201509_20days_filtered_ES_sorted_uniq"=>3,"month_201509_30days_filtered_ES_sorted_uniq"=>3,"month_201510_10days_filtered_ES_sorted_uniq"=>3,
+			"month_201510_20days_filtered_ES_sorted_uniq"=>3,"month_201510_30days_filtered_ES_sorted_uniq"=>3,"month_201511_10days_filtered_ES_sorted_uniq"=>3,
+			"month_201511_20days_filtered_ES_sorted_uniq"=>3,"month_201511_30days_filtered_ES_sorted_uniq"=>3,"month_201512_10days_filtered_ES_sorted_uniq"=>3,
 			"month_201512_20days_filtered_ES_sorted_uniq"=>3,"month_201512_30days_filtered_ES_sorted_uniq"=>3} 
 		filenames=["devices.csv","sizes3rd.csv","adParamsNum.csv","restParamsNum.csv","cmIDcount.csv","cmHosts.csv"]
 		@traceFile=filename
