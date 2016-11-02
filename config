@@ -14,7 +14,7 @@
         },
         "database?": true,
         "tablesDB": {
-                "publishers": true,
+                "publishers": false,
                 "beacons": true,
                 "impressions": false,
                 "advertisements": false,
