@@ -129,6 +129,7 @@ class Core
 	end
 
 	def cookieSyncing(row,cat)
+		exclude=["cb","token", "nocache"]
 		firstSeenUser?(row)
 		return if row['status']!=nil and (row['status']=="200" or row['status']=="204" or row['status']=="404" or row['status']=="522") # usually 303,302,307 redirect status
 		@params_cs[@curUser]=Hash.new(nil) if @params_cs[@curUser]==nil
@@ -140,9 +141,9 @@ class Core
 		confirmed=0
 		for field in fields do
 			paramPair=field.split("=")
-			if @filters.is_it_ID?(paramPair)
+			if @filters.is_it_ID?(paramPair) and not (exclude.any? {|word| paramPair.first.downcase==word}) 
 				ids+=1
-				curHost=Utilities.calculateHost(urlAll.first,nil)
+				curHost=Utilities.calculateHost(urlAll.first,nil).split(".")[0] # host without TLD
 confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.eql?(word)}
 				if cat==nil
 					cat=@filters.getCategory(urlAll,curHost,@curUser)
@@ -165,7 +166,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 	def it_is_CM(row,prev,curHost,paramPair,urlAll,ids,curCat,confirmed)
 #prevTimestamp|curTimestamp|hostPrev|prevCat|hostCur|curCat|paramNamePrev|userID|paramNameCur|possibleNumberOfIDs|prevStatus|curStatus|allParamsPrev|allParamsCur
 		prevHost=prev['host']
-		params=[prev['tmstp'],row['tmstp'],prevHost,prev['cat'],curHost,curCat,prev["paramName"], paramPair.last, paramPair.first, prev['status'],row["status"],ids,confirmed,prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s]
+		params=[@curUser,prev['tmstp'],row['tmstp'],prevHost,prev['cat'],curHost,curCat,prev["paramName"], paramPair.last, paramPair.first, prev['status'],row["status"],ids,confirmed,prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s, prev["url"].first+"?"+prev["url"].last,row["url"]]
 		id=Digest::SHA256.hexdigest (params.join("|")+prev['url'].first+"|"+urlAll.first)
 		@trace.users[@curUser].csync.push(params.push(id))
 		if @trace.users[@curUser].csyncIDs[paramPair.last]==nil
