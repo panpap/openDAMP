@@ -94,7 +94,6 @@ class Filters
 			parts=file.split(".")
 			last=parts[parts.size-1]
 			file.slice!("."+last)
-puts file+"\t"+last if url.include? ".min.js"
 			return file,last
 		end
 		return nil
