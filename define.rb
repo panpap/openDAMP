@@ -10,10 +10,11 @@ class Defines
 		@beaconDB="beaconsDB.db"
 		@column_Format={"2monthSorted_trace"=>1,"10k_trace"=>1 ,
 			"2m_trace"=>1, 	#awazza dataset 6million reqs
-			"soun1k_trace"=>2,"souneilSorted_trace"=>2,
+			"soun1k_trace"=>2,"souneilSorted_trace"=>2,"100k_trace"=>3,
 			"201501"=>3,"201502"=>3} 
 		filenames=["devices.csv","sizes3rd.csv","adParamsNum.csv","restParamsNum.csv","cmIDcount.csv","cmHosts.csv"]
 		@traceFile=filename
+		system("rm -r BEACONS_"+@traceFile)
 		traceName=""
 		@siteFile="./sites.csv"
 		@resources="resources/"

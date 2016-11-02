@@ -66,8 +66,7 @@ module Format
 			h['IPport']=(part[1]+":"+part[16]).split(":").last
 			h['uIP']=part[2]
 			h['verb']=part[4]
-			if not( ["get","delete","put","post","head","options","connect"].any? { |word| h['verb'].downcase.eql?(word)})
-				Utilities.warning  "--------> UKNOWN HTTP VERB: "+h['verb']; 
+			if not( ["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})	# remove HTTPS
 				return nil
 			end
 			h['host']=part[13]

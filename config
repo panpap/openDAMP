@@ -1,29 +1,30 @@
 {
-	"browserOnly?": false,
-	"isThereHeader?": false,
-	"removeDuplicates?": true,
-	"printToSTDOUT?": true,
-	"detectBeacons?": true,
-	"resultToFiles": {
-		"devices.csv": false,
-		"sizes3rd.csv": false,
-		"adParamsNum.csv": false,
-		"restParamsNum.csv": false,
-		"cmIDcount.csv": false,
-		"cmHosts.csv": false
-	},
-	"database?": true,
-	"tablesDB": {
-		"publishers": false,
-		"beacons": true,
-		"impressions": false,
-		"advertisements": false,
-		"userResults": true,
-		"prices": false,
-		"traceResults": true,
-		"csyncResults": true,
-		"userVisits": false,
-		"userFiletypes": false,
-		"advertisers": false
-	}
+        "browserOnly?": false,
+        "isThereHeader?": false,
+        "removeDuplicates?": true,
+        "printToSTDOUT?": true,
+        "detectBeacons?": true,
+        "resultToFiles": {
+                "devices.csv": false,
+                "sizes3rd.csv": false,
+                "adParamsNum.csv": false,
+                "restParamsNum.csv": false,
+                "cmIDcount.csv": true,
+                "cmHosts.csv": true
+        },
+        "database?": true,
+        "tablesDB": {
+                "publishers": true,
+                "beacons": true,
+                "impressions": false,
+                "advertisements": false,
+                "userResults": true,
+                "prices": false,
+                "traceResults": true,
+                "csyncResults": true,
+                "userVisits": false,
+                "userFiletypes": false,
+                "advertisers": true
+        }
 }
+

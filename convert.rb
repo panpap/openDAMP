@@ -24,6 +24,7 @@ class Convert
 	def advertiserType(host)
 		key=-1
 		host=host.split(" ").first if host.include?(" ")
+		return -1 if @adCompanies==nil
 		@adCompanies.keys.each{|company| (key=company;break) if host.downcase.include?(company) or company.downcase.include?(host)}
 		res=@adCompanies[key].to_s
 		return res if res!="" and res!=nil
