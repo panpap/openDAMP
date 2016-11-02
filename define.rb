@@ -9,7 +9,7 @@ class Defines
 		@beaconDBTable="beaconURLs"
 		@beaconDB="beaconsDB.db"
 		@column_Format={"2monthSorted_trace"=>1,"10k_trace"=>1 ,
-			"2m_trace"=>1, 	#awazza dataset 6million reqs
+			"2m_trace"=>1, 	
 			"soun1k_trace"=>2,"souneilSorted_trace"=>2,"100k_trace"=>3,"month_201501_10days_filtered_ES_sorted_uniq"=>3
 			"month_201501_20days_filtered_ES_sorted_uniq"=>3,"month_201501_30days_filtered_ES_sorted_uniq"=>3,"month_201502_10days_filtered_ES_sorted_uniq"=>3
 			"month_201502_20days_filtered_ES_sorted_uniq"=>3,"month_201502_30days_filtered_ES_sorted_uniq"=>3,"month_201503_10days_filtered_ES_sorted_uniq"=>3
