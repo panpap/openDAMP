@@ -138,7 +138,6 @@ class Core
 		return if fields.size>4 # usually there are very few params_cs (only sessionids)
 		ids=0
 		confirmed=0
-puts row['url']+"\t"+row['status']
 		for field in fields do
 			paramPair=field.split("=")
 			if @filters.is_it_ID?(paramPair)
