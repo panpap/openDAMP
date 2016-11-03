@@ -25,7 +25,7 @@ class Defines
 			"month_201512_20days_filtered_ES_sorted_uniq"=>3,"month_201512_30days_filtered_ES_sorted_uniq"=>3} 
 		filenames=["devices.csv","sizes3rd.csv","adParamsNum.csv","restParamsNum.csv","cmIDcount.csv","cmHosts.csv"]
 		@traceFile=filename
-		system("rm -r BEACONS_"+@traceFile)
+		system("rm -f BEACONS_"+@traceFile)
 		traceName=""
 		@siteFile="./sites.csv"
 		@resources="resources/"

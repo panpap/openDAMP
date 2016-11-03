@@ -105,6 +105,7 @@ class Filters
 		safe=["css","flow","cap","do","asp","ad","vf","bs", "js","xml","jsp","php","aspx","html","htm","swf","json","txt","fcgi","ashx"]
 		return false if not @defines.options["detectBeacons?"]
 		first,last=getFileType(url)
+		return false if url.include? "instagram" or url.include? "wikimedia"
 		return false if last!=nil and (safe.any? {|word| last.downcase.include?(word)}) 
 		return false if first!=nil and first.length>8 and first.include? "favicon"
 	#	if ([".jpeg", ".gif", ".pixel", ".png",".sbxx",".bmp",".gifctl"].any? {|word| url.downcase.include?(word)}) or type=="image"
