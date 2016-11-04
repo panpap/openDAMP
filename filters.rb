@@ -167,12 +167,12 @@ class Filters
 	end
 
     def is_MobileType?(row)
-        ua=row["ua"].downcase
-		ua2=row["ua"]
+        ua2=row["ua"]
+		ua=ua2.downcase		
 		ret=Hash.new
 		return -1,-1 if row==nil or ua==nil or ua=="-"
-		if @uaMap[ua2]!=nil
-			if ["Windows","Laptop App","Chrome OS","BSD","Linux"].any? { |word| @uaMap[ua2]["uaType"]==word } or @uaMap[ua]["uaType"].include? "Mac OS" 
+		if @uaMap[ua2]!=nil and @uaMap[ua2]["uaType"]!=nil
+			if (["Windows","Laptop App","Chrome OS","BSD","Linux"].any? { |word| @uaMap[ua2]["uaType"]==word } or @uaMap[ua2]["uaType"].include? "Mac OS")
 				return 0,@uaMap[ua2]
 			else 
 				return 1,@uaMap[ua2]
