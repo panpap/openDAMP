@@ -168,17 +168,19 @@ class Filters
 
     def is_MobileType?(row)
         ua=row["ua"].downcase
+		ua2=row["ua"]
 		ret=Hash.new
-		if @uaMap[ua]!=nil
-			if @uaMap[ua]["uaType"]=="Windows" or @uaMap[ua]["uaType"]=="Linux" or @uaMap[ua]["uaType"]=="Chrome OS" or @uaMap[ua]["uaType"]=="BSD" or @uaMap[ua]["uaType"].include? "Mac OS" or @uaMap[ua]["uaType"]=="Laptop App"
-				return 0,@uaMap[ua]
+		return -1,-1 if row==nil or ua==nil or ua=="-"
+		if @uaMap[ua2]!=nil
+			if ["Windows","Laptop App","Chrome OS","BSD","Linux"].any? { |word| @uaMap[ua2]["uaType"]==word } or @uaMap[ua]["uaType"].include? "Mac OS" 
+				return 0,@uaMap[ua2]
 			else 
-				return 1,@uaMap[ua]
+				return 1,@uaMap[ua2]
 			end
 		else
 			ret[ua]={"deviceBrand"=>-1,"deviceModel"=>-1,"osFamily"=>-1,"osName"=>-1,"uaType"=>-1,"uaFamily"=>-1,"uaName"=>-1,"uaCategory"=>-1}
 			mob=0
-        	if (ua.include? "android" or ua.include? "dalvik" or ua.include? "play.google" or ua.include? "agoo-sdk" or ua.include? "okhttp")
+        	if (["android","dalvik","play.google","agoo-sdk","okhttp"].any? {|word| ua.include?(word)})
 				mob=1, ret[ua]["osFamily"]="Android"
 		    # Crossed-checked with https://fingerbank.inverse.ca
 		    elsif ua.include? "iphone"

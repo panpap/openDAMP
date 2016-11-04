@@ -44,7 +44,7 @@ class Core
 			fd=File.new(@defines.files['devices'],'w')
 			@trace.devs.each{|dev| 
 				for k in dev.keys
-					fd.print dev[k]+"\t"
+					fd.print dev[k].to_s+"\t"
 				end
 				fd.puts}
 			fd.close
