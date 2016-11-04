@@ -5,7 +5,7 @@
         "printToSTDOUT?": true,
         "detectBeacons?": true,
         "resultToFiles": {
-                "devices.csv": false,
+                "devices.csv": true,
                 "sizes3rd.csv": false,
                 "adParamsNum.csv": false,
                 "restParamsNum.csv": false,

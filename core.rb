@@ -42,7 +42,11 @@ class Core
 		@defines.puts "> Dumping to files..."
 		if options[@defines.files['devices'].split("/").last] and not File.size?@defines.files['devices']
 			fd=File.new(@defines.files['devices'],'w')
-			@trace.devs.each{|dev| fd.puts dev}
+			@trace.devs.each{|dev| 
+				for k in dev.keys
+					fd.print dev[k]+"\t"
+				end
+				fd.puts}
 			fd.close
 		end
 		if options[@defines.files['restParamsNum'].split("/").last] and not File.size?@defines.files['restParamsNum']
@@ -265,14 +269,16 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 	def reqOrigin(row)
 		#CHECK IF ITS MOBILE USER
 		mob,dev=@filters.is_MobileType?(row)   # check the device type of the request
+
 		if mob==1
 			@trace.mobDev+=1
 		end
 		#CHECK IF ITS ORIGINATED FROM BROWSER
-		browser=@filters.is_Browser?(row)
+		browser=@filters.is_Browser?(row,dev)
 		if browser!= "unknown"
 			@trace.fromBrowser+=1
-		end
+		end		
+#		dev=dev.to_s.gsub("[","").gsub("]","")
         @trace.devs.push(dev)
 		return mob,dev,browser
 	end		

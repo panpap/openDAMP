@@ -15,6 +15,34 @@ class Filters
 			@cats=@lists.sameParty.keys
 			@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
 		end
+		@uaMap=loadUAs()
+	end
+
+	def loadUAs()
+		uaMap=Hash.new
+		f=File.new(@defines.resourceFiles["uaMap"])
+		while line=f.gets
+			parts=line.split("|")
+			key=parts[2]
+			key=parts[2].split("text/")[0]  if parts[2].include? "text/"
+			key=parts[2].split("application/")[0] if parts[2].include? "application/"
+			key=key.rpartition(";")[0] if key.gsub(" ","").gsub("\t","")[-1, 1]==";"
+			if key.gsub(" ","")!="-"
+				if uaMap[key]==nil
+					uaMap[key]=Hash.new
+					uaMap[key]["deviceBrand"]=parts[0]
+					uaMap[key]["deviceModel"]=parts[1]
+					uaMap[key]["osFamily"]=parts[3]
+					uaMap[key]["osName"]=parts[4]
+					uaMap[key]["uaType"]=parts[5]
+					uaMap[key]["uaFamily"]=parts[6]
+					uaMap[key]["uaName"]=parts[7]
+					uaMap[key]["uaCategory"]=parts[8]
+				end
+			end	
+		end
+		f.close
+		return uaMap;
 	end
 
 	def getCats
@@ -127,39 +155,55 @@ class Filters
 		return false
     end
 
-	def is_Browser?(row)
+	def is_Browser?(row,dev)
 		browser="unknown"			# IS APP... DO NOTHING
 		ua=row['ua'].downcase
-		@lists.browsers.any? { |word| browser=word if ua.include?(word) }     # IS BROWSER? 
+		if dev["uaFamily"]==-1
+			@lists.browsers.any? { |word| browser=word if ua.include?(word) }     # IS BROWSER? 
+		else
+			browser=dev["uaFamily"] if (["chrome", "android browser", "dolfin", "uc browser","blackberry webKit", "internet explorer", "firefox", "opera","nokia browser","maxthon","ovi browser","torbrowser","safari","up.browser","zipbrowser","privatebrowser"].any? { |word| dev["uaFamily"].downcase.include?(word)})
+		end
 	    return browser
 	end
 
     def is_MobileType?(row)
         ua=row["ua"].downcase
-        # Crossed-checked with https://fingerbank.inverse.ca
-        if (ua.include? "android" or ua.include? "dalvik" or ua.include? "play.google" or ua.include? "agoo-sdk" or ua.include? "okhttp")
-            return 1, "Android"
-        elsif ua.include? "iphone"
-            return 1, "iPhone"
-        elsif ua.include? "ipad"
-            return 1,"iPad"
-        elsif ua.include? "windows"
-            if ua.include? "arm" or ua.include? "nokia"
-                return 1, "Windows_Mobile"
-            else
-          		return 0,"Windows"
-            end
-        elsif ua.include? "macintosh"
-            return 0,"Macintosh"
-        elsif (ua.include? "linux" or ua.include? "ubuntu")
-            return 0,"Linux"
-        elsif (ua.include? "darwin" or ua.include? "ios" or ua.include? "CFNetwork" or ua.include? "apple.mobile" or ua.include? "com.apple.Map")
-            return 1,"Apple_Mobile"
-        elsif (ua.include? "freebsd" or ua.include? "openbsd")
-            return 0,"BSD"
-        else
-        	return 0,"other"
-        end
+		ret=Hash.new
+		if @uaMap[ua]!=nil
+			if @uaMap[ua]["uaType"]=="Windows" or @uaMap[ua]["uaType"]=="Linux" or @uaMap[ua]["uaType"]=="Chrome OS" or @uaMap[ua]["uaType"]=="BSD" or @uaMap[ua]["uaType"].include? "Mac OS" or @uaMap[ua]["uaType"]=="Laptop App"
+				return 0,@uaMap[ua]
+			else 
+				return 1,@uaMap[ua]
+			end
+		else
+			ret[ua]={"deviceBrand"=>-1,"deviceModel"=>-1,"osFamily"=>-1,"osName"=>-1,"uaType"=>-1,"uaFamily"=>-1,"uaName"=>-1,"uaCategory"=>-1}
+			mob=0
+        	if (ua.include? "android" or ua.include? "dalvik" or ua.include? "play.google" or ua.include? "agoo-sdk" or ua.include? "okhttp")
+				mob=1, ret[ua]["osFamily"]="Android"
+		    # Crossed-checked with https://fingerbank.inverse.ca
+		    elsif ua.include? "iphone"
+		        mob= 1, ret[ua]["osFamily"]="iPhone"
+		    elsif ua.include? "ipad"
+		        mob= 1,ret[ua]["osFamily"]="iPad"
+		    elsif ua.include? "windows"
+		        if ua.include? "arm" or ua.include? "nokia"
+		            mob= 1, ret[ua]["osFamily"]="Windows_Mobile"
+		        else
+		      		mob= 0,ret[ua]["osFamily"]="Windows"
+		        end
+		    elsif ua.include? "macintosh"
+		        mob= 0,ret[ua]["osFamily"]="Macintosh"
+		    elsif (ua.include? "linux" or ua.include? "ubuntu")
+		        mob= 0,ret[ua]["osFamily"]="Linux"
+		    elsif (ua.include? "darwin" or ua.include? "ios" or ua.include? "CFNetwork" or ua.include? "apple.mobile" or ua.include? "com.apple.Map")
+		        mob= 1,ret[ua]["osFamily"]="Apple_Mobile"
+		    elsif (ua.include? "freebsd" or ua.include? "openbsd")
+		        mob= 0,ret[ua]["osFamily"]="BSD"
+		    else
+		    	mob= 0,ret[ua]["osFamily"]="other"
+		    end
+			return mob, ret[ua]
+		end
     end
 
     def is_Impression?(url)

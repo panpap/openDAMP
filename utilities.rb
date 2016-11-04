@@ -278,7 +278,11 @@ module Utilities
 
 	def Utilities.countInstances(file)
 		if (file!=nil and File.exists?(file))
-        	system('sort -g '+file+' | uniq -c | sort -rg  > '+file+"_cnt") #calculate distribution
+			if file.include? "devices"
+				system("cat "+file+" | awk '{print $3}' | sort -g | uniq -c | sort -rg  > "+file+"_cnt") #calculate distribution
+			else
+	        	system('sort -g '+file+' | uniq -c | sort -rg  > '+file+"_cnt") #calculate distribution
+			end
 		end	
 	end
 
