@@ -42,9 +42,10 @@ class Core
 		@defines.puts "> Dumping to files..."
 		if options[@defines.files['devices'].split("/").last] and not File.size?@defines.files['devices']
 			fd=File.new(@defines.files['devices'],'w')
-			@trace.devs.each{|dev| 
-				for k in dev.keys
-					fd.print dev[k].to_s+"\t"
+			@trace.devs.each{|dev| if dev!=-1
+					for k in dev.keys
+						fd.print dev[k].to_s+"\t"
+					end
 				end
 				fd.puts}
 			fd.close
@@ -133,45 +134,58 @@ class Core
 	end
 
 	def cookieSyncing(row,cat)
-		exclude=["cb","token", "nocache"]
 		firstSeenUser?(row)
 		return if row['status']!=nil and (row['status']=="200" or row['status']=="204" or row['status']=="404" or row['status']=="522") # usually 303,302,307 redirect status
 		@params_cs[@curUser]=Hash.new(nil) if @params_cs[@curUser]==nil
 		urlAll=row['url'].split("?")
 		return if (urlAll.last==nil)
-		fields=urlAll.last.split('&')
-		return if fields.size>4 # usually there are very few params_cs (only sessionids)
-		ids=0
-		confirmed=0
-		for field in fields do
-			paramPair=field.split("=")
-			if @filters.is_it_ID?(paramPair) and not (exclude.any? {|word| paramPair.first.downcase==word}) 
-				ids+=1
-				curHost=Utilities.calculateHost(urlAll.first,nil).split(".")[0] # host without TLD
-confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.eql?(word)}
-				if cat==nil
-					cat=@filters.getCategory(urlAll,curHost,@curUser)
-					cat="Other" if cat==nil
-				end
-				if @params_cs[@curUser][paramPair.last]==nil #first seen ID
-					@params_cs[@curUser][paramPair.last]=Array.new
-				else	#have seen that ID before -> possible cookieSync
-					prev=@params_cs[@curUser][paramPair.last].last
-					if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil)
-						it_is_CM(row,prev,curHost,paramPair,urlAll,ids,cat,confirmed)
-					end			
-				end
-				@params_cs[@curUser][paramPair.last].push({"url"=>urlAll,"paramName"=>paramPair.first,"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>curHost})
-			end
+		if not checkCSinParams(urlAll,row,cat)
+			checkCSinURI(urlAll,row,cat)
 		end
 	#	puts row['url']+" "+ids.to_s if ids>0
+	end
+
+	def csyncResults()
+		if @database!=nil
+			@defines.puts "> Dumping Cookie synchronization results..."	
+			@trace.dumpUserRes(@database,nil,nil,@filters,@convert)	
+		end
+	end
+#------------------------------------------------------------------------------------------------
+
+
+	private
+
+	def	checkCSinURI(urlAll,row,cat)
+        curHost=Utilities.calculateHost(urlAll.first,nil).split(".")[0] # host without TLD
+        if cat==nil
+            cat=@filters.getCategory(urlAll,curHost,@curUser)
+            cat="Other" if cat==nil
+        end
+		parts=urlAll.first.split("/")
+		for i in 1..parts.size	#skip actual domain
+			if @filters.is_it_ID?(nil,parts[i])# and (["turn","atwola","tacoda"].any? {|word| urlAll.first.include? word})
+				if @params_cs[@curUser][parts[i]]!=nil
+					 prev=@params_cs[@curUser][parts[i]].last
+					if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil)
+						it_is_CM(row,prev,curHost,[parts[i-1],parts[i]],urlAll,-1,cat,-1)
+					end
+				else	#first seen ID
+					@params_cs[@curUser][parts[i]]=Array.new
+				end
+				@params_cs[@curUser][parts[i]].push({"url"=>urlAll,"paramName"=>parts[i-1],"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>curHost,"httpRef"=>row["httpRef"]})
+			end
+		end
 	end
 
 	def it_is_CM(row,prev,curHost,paramPair,urlAll,ids,curCat,confirmed)
 #prevTimestamp|curTimestamp|hostPrev|prevCat|hostCur|curCat|paramNamePrev|userID|paramNameCur|possibleNumberOfIDs|prevStatus|curStatus|allParamsPrev|allParamsCur
 		prevHost=prev['host']
-		params=[@curUser,prev['tmstp'],row['tmstp'],prevHost,prev['cat'],curHost,curCat,prev["paramName"], paramPair.last, paramPair.first, prev['status'],row["status"],ids,confirmed,prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s, prev["url"].first+"?"+prev["url"].last,row["url"]]
+		params=[@curUser,prev['tmstp'],row['tmstp'],prevHost,prev['cat'],curHost,curCat,prev["paramName"], paramPair.last, paramPair.first, prev['status'],row["status"],ids,confirmed,prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s, prev["url"].first+"?"+prev["url"].last,row["url"], prev['httpRef'], row['httpRef']]
 		id=Digest::SHA256.hexdigest (params.join("|")+prev['url'].first+"|"+urlAll.first)
+		@trace.users[@curUser].csync.push(params.push(row["mob"]))
+		@trace.users[@curUser].csync.push(params.push(row["dev"].to_s))
+		@trace.users[@curUser].csync.push(params.push(row["browser"]))
 		@trace.users[@curUser].csync.push(params.push(id))
 		if @trace.users[@curUser].csyncIDs[paramPair.last]==nil
 			@trace.users[@curUser].csyncIDs[paramPair.last]=0
@@ -185,16 +199,38 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		@trace.cooksyncs+=1
 	end
 
-	def csyncResults()
-		if @database!=nil
-			@defines.puts "> Dumping Cookie synchronization results..."	
-			@trace.dumpUserRes(@database,nil,nil,@filters,@convert)	
-		end
+	def checkCSinParams(urlAll,row,cat)
+		exclude=["cb","token", "nocache"]
+		confirmed=0
+		ids=0
+		found=false
+		fields=urlAll.last.split('&')
+		return if fields.size>4 # usually there are very few params_cs (only sessionids)
+		for field in fields do
+            paramPair=field.split("=")
+            if @filters.is_it_ID?(paramPair.first,paramPair.last) and not (exclude.any? {|word| paramPair.first.downcase==word})
+                ids+=1
+                curHost=Utilities.calculateHost(urlAll.first,nil).split(".")[0] # host without TLD
+confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.eql?(word)} 
+                if cat==nil
+                    cat=@filters.getCategory(urlAll,curHost,@curUser)
+                    cat="Other" if cat==nil
+                end
+                if @params_cs[@curUser][paramPair.last]==nil #first seen ID
+                    @params_cs[@curUser][paramPair.last]=Array.new
+                else    #have seen that ID before -> possible cookieSync
+                    prev=@params_cs[@curUser][paramPair.last].last
+                    if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil)
+                    	it_is_CM(row,prev,curHost,paramPair,urlAll,ids,cat,confirmed)
+						found=true
+                    end
+                end
+				@params_cs[@curUser][paramPair.last].push({"url"=>urlAll,"paramName"=>paramPair.first,"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>curHost,"httpRef"=>row["httpRef"]})
+            end
+        end
+		return found
 	end
-#------------------------------------------------------------------------------------------------
 
-
-	private
 
 	def firstSeenUser?(row)
 		@curUser=row['IPport']
@@ -269,7 +305,6 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 	def reqOrigin(row)
 		#CHECK IF ITS MOBILE USER
 		mob,dev=@filters.is_MobileType?(row)   # check the device type of the request
-
 		if mob==1
 			@trace.mobDev+=1
 		end

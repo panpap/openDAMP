@@ -54,10 +54,11 @@ class Filters
 		@db.close if db
 	end
 
-	def is_it_ID?(paramPair)
-		alfa,digit=Utilities.digitAlfa(paramPair.last)
-		return true if alfa==0 and paramPair.last.size>9
-		return true if paramPair.last!=nil and not (paramPair.last.size<17 or (["http","utf","www","text","image"].any? { |word| paramPair.last.downcase.include?(word)})) and digit>3 and alfa>4 and not paramPair.first.include? "url" and not paramPair.last.include? "%" and not paramPair.last.include? "." and not paramPair.last.include? ";" and not paramPair.first.size>20 and not paramPair.last.include? "/" and not paramPair.last.include? "," and not paramPair.first=="X-Plex-Token"
+	def is_it_ID?(name,value)
+		alfa,digit=Utilities.digitAlfa(value)
+		return true if alfa==0 and value.size>12
+		return false if name!=nil and name=="X-Plex-Token" and name.include? "url" and name.size>20 
+		return true if value!=nil and not (value.size<17 or (["http","utf","www","text","image"].any? { |word| value.downcase.include?(word)})) and digit>3 and alfa>4 and not value.include? "%" and not value.include? "." and not value.include? ";" and not value.include? "/" and not value.include? "," 
 		return false
 	end
 
@@ -156,6 +157,7 @@ class Filters
     end
 
 	def is_Browser?(row,dev)
+		return -1 if dev==-1 or row['ua']==nil or row['ua']=="-"
 		browser="unknown"			# IS APP... DO NOTHING
 		ua=row['ua'].downcase
 		if dev["uaFamily"]==-1
@@ -181,28 +183,38 @@ class Filters
 			ret[ua]={"deviceBrand"=>-1,"deviceModel"=>-1,"osFamily"=>-1,"osName"=>-1,"uaType"=>-1,"uaFamily"=>-1,"uaName"=>-1,"uaCategory"=>-1}
 			mob=0
         	if (["android","dalvik","play.google","agoo-sdk","okhttp"].any? {|word| ua.include?(word)})
-				mob=1, ret[ua]["osFamily"]="Android"
+				mob=1
+				ret[ua]["osFamily"]="Android"
 		    # Crossed-checked with https://fingerbank.inverse.ca
 		    elsif ua.include? "iphone"
-		        mob= 1, ret[ua]["osFamily"]="iPhone"
+		        mob= 1
+				ret[ua]["osFamily"]="iPhone"
 		    elsif ua.include? "ipad"
-		        mob= 1,ret[ua]["osFamily"]="iPad"
-		    elsif ua.include? "windows"
-		        if ua.include? "arm" or ua.include? "nokia"
-		            mob= 1, ret[ua]["osFamily"]="Windows_Mobile"
-		        else
-		      		mob= 0,ret[ua]["osFamily"]="Windows"
-		        end
+		        mob= 1
+				ret[ua]["osFamily"]="iPad"
 		    elsif ua.include? "macintosh"
-		        mob= 0,ret[ua]["osFamily"]="Macintosh"
+		        mob= 0
+				ret[ua]["osFamily"]="Macintosh"
 		    elsif (ua.include? "linux" or ua.include? "ubuntu")
-		        mob= 0,ret[ua]["osFamily"]="Linux"
+		        mob= 0
+				ret[ua]["osFamily"]="Linux"
 		    elsif (ua.include? "darwin" or ua.include? "ios" or ua.include? "CFNetwork" or ua.include? "apple.mobile" or ua.include? "com.apple.Map")
-		        mob= 1,ret[ua]["osFamily"]="Apple_Mobile"
+		        mob= 1
+				ret[ua]["osFamily"]="Apple_Mobile"
 		    elsif (ua.include? "freebsd" or ua.include? "openbsd")
-		        mob= 0,ret[ua]["osFamily"]="BSD"
+		        mob= 0
+				ret[ua]["osFamily"]="BSD"
+			elsif ua.include? "windows"
+		        if ua.include? "arm" or ua.include? "nokia"
+		            mob= 1
+					ret[ua]["osFamily"]="Windows_Mobile"
+		        else
+		      		mob= 0
+					ret[ua]["osFamily"]="WindowsPC"
+		        end
 		    else
-		    	mob= 0,ret[ua]["osFamily"]="other"
+		    	mob= 0
+				ret[ua]["osFamily"]="other"
 		    end
 			return mob, ret[ua]
 		end

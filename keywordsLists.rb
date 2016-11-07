@@ -8,7 +8,7 @@ class KeywordsLists
 			"dsp"=>{"adnxs.com"=>"pubclick","mopub.com"=>"bidder_name","metamx.com"=>"bidder_name","w55c.net"=>"ei","mythings.com"=>"adnclk","taptapnetworks.com"=>"bidid", "mathtag.com"=>"3pck","qservz.com"=>"click3rd","contextweb"=>"cwu"},
 			"adx"=>{"mediasmart.es"=>"exchange","w55c.net"=>"rtbhost"},
 
-			"pubs"=>{"mopub.com"=>"pub_name","metamx.com"=>"pub_name","casalemedia.com" => "n", "rfihub.com"=>["pe","p"], "contextweb.com"=>["referrer","cwr"],"adnxs.com"=>"referrer","w55c.net"=>"s", "rtbfy.com"=>["domain","utm_source"], "taggify.net"=>["refdomain", "domain","utm_source"],"adsrvr.org"=>"td_s","ero-advertising.com"=>"document","amazonaws.com"=>"referer_url_enc","media.net"=>["requrl","domain"],"revsci.net"=>["referrer","domain"],"liverail.com"=>"url","adsrvr.org"=>"td_s","moatads"=>"j","brandsmind.com"=>"ru"},
+			"pubs"=>{"mopub.com"=>"pub_name","metamx.com"=>"pub_name","casalemedia.com" => "n", "rfihub.com"=>["pe","p"], "contextweb.com"=>["referrer","cwr"],"adnxs.com"=>"referrer","w55c.net"=>"s", "rtbfy.com"=>["domain","utm_source"], "taggify.net"=>["refdomain", "domain","utm_source"],"adsrvr.org"=>"td_s","ero-advertising.com"=>"document","amazonaws.com"=>"referer_url_enc","media.net"=>["requrl","domain"],"revsci.net"=>["referrer","domain"],"liverail.com"=>"url","moatads"=>"j","brandsmind.com"=>"ru"},
 
 			"sizes"=>{"turn.com"=>"l","get.it"=>"size","contextweb"=>["cf","dm"],"mediasmart.es"=>"size","amazonaws.com"=>"creative_size", "moatads.com"=>"zMoatSZ","media.net"=>"size","taptica.com"=>"tt_size","technoratimedia.com"=>"sz"},
 			"ssp"=>{"appflood.com"=>"ssp_name"},
@@ -20,7 +20,7 @@ class KeywordsLists
 					".bmp"=>"image",".js"=>"script",".css"=>"styling",".gif"=>"gif",".json"=>"data","xml"=>"data",".mpeg"=>"video",".txt"=>"text",
 					".wav"=>"video", ".swf"=>"video",".mp3"=>"video",".mp4"=>"video",".ttf"=>"styling",".webm"=>"video",".webp"=>"image",
 					".eps"=>"image",".ajax"=>"script",".midi"=>"video",".mid"=>"video",".mpg"=>"video",".tiff"=>"image",".php"=>"html",
-					".php"=>"html",".woff"=>"styling",".mov"=>"video",".qt"=>"video",".asp"=>"html", ".jsp"=>"html", ".pdf"=>"text",".pixel"=>"image",
+					".woff"=>"styling",".mov"=>"video",".qt"=>"video",".asp"=>"html", ".jsp"=>"html", ".pdf"=>"text",".pixel"=>"image",
 					".ppt"=>"text",".pptx"=>"text",".zip"=>"data",".rar"=>"data",".vlc"=>"video",".ram"=>"video",".zlib"=>"video",".pjpeg"=>"image",
 					".dhtml"=>"html",".svg"=>"image",".woff2"=>"styling",".aspx"=>"html",".ashx"=>"html",".img"=>"image",".jsonp"=>"data",
 					".csx"=>"script",".otf"=>"styling",".sjs"=>"script"}
@@ -28,25 +28,25 @@ class KeywordsLists
 		@types={"*" => "other", "none" => "other" ,"application/x-woff" => "styling", "application/font-woff" => "styling", 
 			"application/font-woff2" => "styling", "application/javascript" => "script", "application/json" => "data", 
 			"application/octet-stream" => "video", "application/vnd.ms-fontobject" => "styling" ,"application/x-font-ttf" => "styling", 
-			"application/x-font-woff" => "styling", "application/x-javascript" => "script" , "video/mp4" => "video",
+			"application/x-font-woff" => "styling", "video/mp4" => "video",
 			"application/x-shockwave-flash" => "video" ,"application/x-www-form-urlencoded" => "html", "font/ttf" => "styling", 
 			"font/woff2" => "styling", "image/bmp" => "image", "image/gif" => "gif", "video/webm" => "video",
 			"text/plaincharset=utf-8"  => "text", "text/xml"=>"data", "font/opentype"  => "styling", "font/woff" => "styling" ,
 			"no-cache" => "other", "application/x-font-opentype"  => "styling", "image/jpeg" => "image", "image/jpg" => "image" ,
 			"application/xml" => "data", "application/font-ttf" => "styling", "application/hal+json"=>"data", 
-			"application/x-font-truetype" => "styling", "application/x-gzip"=>"video", "application/xml"=>"data",
+			"application/x-font-truetype" => "styling", "application/x-gzip"=>"video", 
 			"application/x-mpegurl"  => "video", "binary/octet-stream"  => "video", "content/unknown"=>"other", "video/x-msvideo"=>"video",
 			"application/zlib"=>"video", "font/truetype"  => "styling", "image/" => "image", "text/x-js"=>"script", "video/mpeg"  => "video", 
 			"image/pjpeg" => "image", "image/png" => "image" ,"image/svg+xml" => "image", "application/vnd.apple.mpegurl" =>"video",
 			"image/webp" => "image", "text/css" => "styling", "text/css;" => "styling", "application/x-javascript"  => "script" ,
-			"text/html" => "html", "application/ecmascript"  => "script", "font/x-woff"  => "styling", "text/css"  => "styling" ,
+			"text/html" => "html", "application/ecmascript"  => "script", "font/x-woff"  => "styling",
 			"*/*"  => "other", "multipart/mixed" => "other", "text/html-by-ajax" => "html", "application/x-font-otf"  => "styling" ,
 			"text/javascript" => "script", "text/json" => "data", "text/plain" => "text", "text/x-json" => "data"}
 
 		@imps=["impression","_imp","/imp","imp_"]
 
 		@manualCats={"flix360.com"=>"Analytics","exelator.com"=>"Analytics","mythings"=>"Advertising","w55c.net"=>"Advertising","gosquared.com"=>"Analytics","metamx.com"=>"Advertising","1dmp.io"=>"Advertising",
-			"madnetx.com"=>"Advertising", "mpstat.us"=>"Analytics","akamaized.net" => "Content", "gradientx.com"=>"Advertising",
+			"madnetx.com"=>"Advertising", "mpstat.us"=>"Analytics", "gradientx.com"=>"Advertising",
 			"akamai.net" => "Content","adap.tv"=>"Advertising","roixdelivery.com"=>"Advertising","roix.com.br"=>"Advertising",
 			"akamaiedge.net" => "Content","akamaized.net" => "Content","akamaihd.net" => "Content","edgesuite.net" => "Content",
 			"edgekey.net" => "Content","srip.net" => "Content","akamaitechnologies.com" => "Content","akamaitechnologies.fr" => "Content",
@@ -54,7 +54,7 @@ class KeywordsLists
 			"createjs.com"=> "Content","alephd.com" => "Advertising", "ads.yahoo.com" => "Advertising", "igodigital.com"=>"Analytics",
 			"dynamicyield.com"=>"Analytics","bootstrapcdn.com" => "Content","cloudflare.com" => "Content","tiqcdn.com" => "Content",
 			"sonobi.com" => "Advertising", "semasio.net"=>"Analytics", "semasio.com"=>"Analytics","rhythmxchange.com" => "Advertising",
-			"bidswitch.net" => "Advertising", "tiqcdn.com"=>"Content","3lift.com" => "Advertising","triplelift.com" => "Advertising",
+			"bidswitch.net" => "Advertising","3lift.com" => "Advertising","triplelift.com" => "Advertising",
 			"everesttech.net" => "Advertising","1nimo.com" => "Advertising","4dsply.com" => "Advertising","foresee.com"=>"Analytics",
 			"4seeresults.com"=>"Analytics","9cdn.net" => "Content","afsanalytics.com"=>"Analytics","aidata.me"=>"Analytics",
 			"advombat.ru"=>"Analytics","abtasty.com"=>"Analytics","albopa.work" => "Advertising","alicdn.com"=>"Content",
@@ -67,7 +67,7 @@ class KeywordsLists
 			"branch.io"=>"Analytics","centro.net" => "Advertising", "brand-server.com" => "Advertising","brealtime.com" => "Advertising",
 			"bttrack.com" => "Advertising", "burt.io"=>"Analytics","clickagy.com"=>"Analytics","cloudzonetrk.com"=>"Analytics",
 			"cnt.my"=>"Analytics", "track.e7r.com.br"=>"Analytics", "tracker.bt.uol.com.br"=>"Analytics", "isuba.s8.com.br"=>"Content",
-			"iacom.s8.com.br"=>"Content","tracker.bt.uol.com.br"=>"Analytics", "metrics.uol.com.br"=>"Analytics", "clearsale.com.br"=>"Analytics", 				
+			"iacom.s8.com.br"=>"Content", "metrics.uol.com.br"=>"Analytics", "clearsale.com.br"=>"Analytics", 				
 			"clearsalesolutions.com"=>"Analytics","connatix.com" => "Advertising", "connexity.net"=>"Analytics", "ophan.co.uk"=>"Analytics", 
 			"cxpublic.com" => "Content","dataradar.es" => "Content","delicious.com" => "Content","directclicksonly.com"=>"Analytics", 
 			"dmcdn.net" => "Content","cm.dpclk.com"=>"Analytics","dynad.net" => "Advertising", "edgefonts.net" => "Content",
@@ -103,9 +103,8 @@ class KeywordsLists
 			           "win_price","wp","chargeprice","charge_price","cp","extcost","tt_bidprice","bdrct",
 			           "cost","rtbwinprice","rtb_win_price","rtbwp","bidfloor","seatbid","price_paid","maxPriceInUserCurrency"]
 
-		@inria={ "rfihub.net" => "ep","invitemedia.com" => "cost",#,"scorecardresearch.com" => "uid" 
-				"ru4.com" => "_pp","tubemogul.com" => "x_price", "invitemedia.com" => "cost", 
-			"adsrvr.org" => "wp",  
+		@inria={ "rfihub.net" => "ep","invitemedia.com" => "cost",#"scorecardresearch.com" => "uid" 
+				"ru4.com" => "_pp", "adsrvr.org" => "wp", #"tubemogul.com" => "x_price"  
 			"pardot.com" => "title","tubemogul.com" => "price",
 			"adsvana.com" => "_p", "doubleclick.net" => "pr", "ib.adnxs.com" => "add_code", 
 			"turn.com" => "acp", "ams1.adnxs.com" => "pp",  "mathtag.com" => "price",

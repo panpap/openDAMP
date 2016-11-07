@@ -153,10 +153,10 @@ module Utilities
 			temp=firstPart.split("www.")
 			firstPart=temp.last
 		end
+		firstPart=firstPart.split("/").first.gsub("%20","")	if firstPart.include? "/"#.split("%")
 		if firstPart.include? "http"
 			firstPart=firstPart.split("://").last
 		end
-		firstPart=firstPart.split("/").first.gsub("%20","")	if firstPart.include? "/"#.split("%")
 		firstPart=firstPart.split("#") if firstPart.include? "#"
 		firstPart=firstPart.first if firstPart.kind_of?(Array) and firstPart.size>1
 		firstPart=firstPart.split(":").first if firstPart.include? ":"
