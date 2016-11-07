@@ -1,5 +1,5 @@
 {
-        "browserOnly?": false,
+        "mobileOnly?": true,
         "isThereHeader?": false,
         "removeDuplicates?": true,
         "printToSTDOUT?": true,

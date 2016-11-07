@@ -91,7 +91,7 @@ class Core
 			row['mob']=mob
 			row['dev']=dev
 			row['browser']=browser
-			if @options["browserOnly?"] and browser.eql? "unknown"
+			if @options["mobileOnly?"] and mob!=1
 				@skipped+=1
 				return false
 			end		#FILTER ROW

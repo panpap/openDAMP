@@ -306,7 +306,7 @@ module Utilities
 
 
 	def Utilities.produceConfigFile(configFile,files,tables)
-		defaultOptions={"browserOnly?"=>false,"isThereHeader?"=>true,"removeDuplicates?"=>true,"printToSTDOUT?"=>true, "detectBeacons?"=>true,'resultToFiles'=>
+		defaultOptions={"mobileOnly?"=>false,"isThereHeader?"=>true,"removeDuplicates?"=>true,"printToSTDOUT?"=>true, "detectBeacons?"=>true,'resultToFiles'=>
 			{files[0]=>false, files[1]=>false,
 			files[2]=>false, files[3]=>false,files[4]=>false,files[5]=>false},"database?"=>true,
 			'tablesDB'=>{tables["publishersTable"].keys[0]=>false, tables["bcnTable"].keys[0]=>false,
