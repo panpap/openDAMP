@@ -158,6 +158,7 @@ class Core
 
 	def	checkCSinURI(urlAll,row,cat)
         curHost=Utilities.calculateHost(urlAll.first,nil).split(".")[0] # host without TLD
+abort row["url"]+"\n"+curHost
         if cat==nil
             cat=@filters.getCategory(urlAll,curHost,@curUser)
             cat="Other" if cat==nil

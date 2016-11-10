@@ -149,7 +149,7 @@ module Utilities
 		return -1 if uri==-1 or uri==nil or uri=="" or uri==" "
 		url=URI.unescape(uri.force_encoding("ISO-8859-1"))
 		firstPart=url.split("?").first
-		if firstPart.include? "www."
+		if firstPart.include? "www." and not firstPart.include? "/www./"
 			temp=firstPart.split("www.")
 			firstPart=temp.last
 		end
