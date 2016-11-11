@@ -6,6 +6,7 @@ load 'database.rb'
 
 def is_1pixel_image?(url)
 	return url if url==nil
+puts url
 	last=url.split("/").last
 #	isthere=@db.get("beaconURLs","singlePixel","url",url)
 #	if isthere!=nil		# I've already seen that url 
@@ -53,10 +54,10 @@ while line=f.gets
 	begin
 		next	if h[line.chop]!=nil	
 		h[line.chop]=true
-		#puts line.chop+"\typarxei?\t"+@db.get("beaconURLs","imageSize","url",line.chop).to_s
+		puts line.chop+"\typarxei?\t"+@db.get("beaconURLs","imageSize","url",line.chop).to_s
 		next	if @db.get("beaconURLs","imageSize","url",line.chop)!=nil
 		threads[total]=Thread.new{ 
-			puts is_1pixel_image?(line.chop)[1]
+			results[total]=is_1pixel_image?(line.chop)[1]
 			Thread.exit}
 		total+=1
 		if threads.size==10
