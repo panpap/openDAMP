@@ -130,7 +130,8 @@ class Filters
 		return nil
 	end
 
-    def is_Beacon?(url,type)
+    def is_Beacon?(row,type)
+		url=row["url"]
 		safe=["css","flow","cap","do","asp","ad","vf","bs", "js","xml","jsp","php","aspx","html","htm","swf","json","txt","fcgi","ashx"]
 		return false if not @defines.options["detectBeacons?"]
 		first,last=getFileType(url)
@@ -139,7 +140,7 @@ class Filters
 		return false if first!=nil and first.length>8 and first.include? "favicon"
 	#	if ([".jpeg", ".gif", ".pixel", ".png",".sbxx",".bmp",".gifctl"].any? {|word| url.downcase.include?(word)}) or type=="image"
 	fw=File.new("BEACONS_"+@defines.traceFile,"a")
-	fw.puts url
+	fw.puts row.to_s
 	fw.close
 #	return false
 #		    return is_1pixel_image?(url)

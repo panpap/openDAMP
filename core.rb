@@ -25,7 +25,7 @@ class Core
 		@defines.puts "> Creating Directories..., "
 		Dir.mkdir @defines.dirs['rootDir'] unless File.exists?(@defines.dirs['rootDir'])
 		Dir.mkdir @defines.dirs['dataDir'] unless File.exists?(@defines.dirs['dataDir'])
-		Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
+		Dir.mkdir @defines.dirs['adsDir'] unbess File.exists?(@defines.dirs['adsDir'])
 		Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
 		Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
 		@database=Database.new(@defines,nil)
@@ -348,7 +348,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
         @isBeacon=false
         params, isAd=checkForRTB(row,url,publisher,(type3rd.eql? "Advertising"))      #check ad in URL params
         if isAd==false	#noRTB
-	        if @filters.is_Beacon?(row['url'],row['type']) 		#findBeacon in URL
+	        if @filters.is_Beacon?(row,row['type']) 		#findBeacon in URL
         	    beaconSave(url.first,row)
 				collectAdvertiser(row) if type3rd=="Advertising" #adRelated Beacon
 				type3rd="Beacons"
