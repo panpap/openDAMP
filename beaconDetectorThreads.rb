@@ -49,13 +49,17 @@ while line=f.gets
 				Thread.current[:output]=pixels,line if pixels!=nil
 				Thread.exit})
 		if total%1000==0
-			puts "\t"+total.to_s+"/"+totalLines+" lines so far... "+(Time.now - start).to_s+" seconds"
 			start=Time.now
-			sleep(10)
+			for t in threads
+				t.join
+			end
+			puts "\t"+total.to_s+"/"+totalLines+" lines so far... "+(Time.now - start).to_s+" seconds"
 		end
 	rescue ThreadError => e
-		puts "ThreadError "+e+"\n"+total.to_s+" lines"+"\nI'll sleep a little"
-		sleep(20)
+		puts "ThreadError "+e.to_s+"\n"+total.to_s+" lines"
+		for t in threads
+			t.join
+		end
 	end
 	total+=1
 end
