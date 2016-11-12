@@ -94,7 +94,7 @@ h.keys.each{|url|
 		})		
 	end
 	total+=1
-	if threads.size==10
+	if threads.size==1000
 		puts "\t"+total.to_s+"/"+totalLines+" lines so far... "+(Time.now - start).to_s+" seconds" 			
 		while threads.size>0
 			thr=threads.pop
