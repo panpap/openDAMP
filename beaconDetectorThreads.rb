@@ -50,6 +50,12 @@ startScript=Time.now
 filename=ARGV[0]
 @defines=Defines.new(filename.gsub("BEACONS_",""))
 dbname=filename.rpartition("/")[0]+"beaconsDB.db"
+min,max=Process.getrlimit(Process::RLIMIT_NOFILE)
+puts "Initial open sockets boundaries: ["+min.to_s+","+max.to_s+"]"
+puts "Stretching the number of simultaneously open sockets"
+Process.setrlimit(Process::RLIMIT_NOFILE,max,max)
+socketsLimit=Process.getrlimit(Process::RLIMIT_NOFILE)
+puts "Now I can open no more than "+(max/1000*1000).to_s+" sockets simultaneously"
 @db = Database.new(@defines,dbname)
 @db.create("beaconURLs",'imageSize VARCHAR, url VARCHAR PRIMARY KEY')
 results=@db.getAll("beaconURLs",nil,nil,nil,true)
@@ -94,7 +100,7 @@ h.keys.each{|url|
 		})		
 	end
 	total+=1
-	if threads.size==1000
+	if threads.size==(max/1000*1000)
 		puts "\t"+total.to_s+"/"+totalLines+" lines so far... "+(Time.now - start).to_s+" seconds" 			
 		while threads.size>0
 			thr=threads.pop
@@ -109,7 +115,7 @@ while threads.size>0
 	thr.join
 end
 offload()
-puts "THREADS, I found "+@count.to_s+" Beacons from "+total.to_s+" examined URLs from "+totalLines.to_s+" lines of "+filename
+puts "\n-------------RESULTS-------------\n I found "+@count.to_s+" Beacons from "+total.to_s+" examined URLs from "+totalLines.to_s+" lines of "+filename
 puts "Already found: "+found.to_s
 store(@count,filename)
 puts "Finished in "+(Time.now - startScript).to_s+" seconds"
