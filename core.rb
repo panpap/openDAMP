@@ -25,7 +25,7 @@ class Core
 		@defines.puts "> Creating Directories..., "
 		Dir.mkdir @defines.dirs['rootDir'] unless File.exists?(@defines.dirs['rootDir'])
 		Dir.mkdir @defines.dirs['dataDir'] unless File.exists?(@defines.dirs['dataDir'])
-		Dir.mkdir @defines.dirs['adsDir'] unbess File.exists?(@defines.dirs['adsDir'])
+		Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
 		Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
 		Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
 		@database=Database.new(@defines,nil)

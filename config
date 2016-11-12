@@ -21,7 +21,7 @@
                 "userResults": true,
                 "prices": false,
                 "traceResults": true,
-                "csyncResults": true,
+                "csyncResults": false,
                 "userVisits": false,
                 "userFiletypes": false,
                 "advertisers": true
