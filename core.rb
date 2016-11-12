@@ -90,11 +90,14 @@ class Core
 			mob,dev,browser=reqOrigin(row)		#CHECK THE DEVICE TYPE
 			row['mob']=mob
 			row['dev']=dev
-			row['browser']=browser
+			row['browser']=browser	
 			if @options["mobileOnly?"] and mob!=1
 				@skipped+=1
 				return false
 			end		#FILTER ROW
+			if browser!= "unknown"
+				@trace.fromBrowser+=1
+			end	
 		end
 		cat=filterRow(row)
 		cookieSyncing(row,cat) if cat!=nil and @options['tablesDB'][@defines.tables["csyncTable"].keys.first]
@@ -310,9 +313,6 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		end
 		#CHECK IF ITS ORIGINATED FROM BROWSER
 		browser=@filters.is_Browser?(row,dev)
-		if browser!= "unknown"
-			@trace.fromBrowser+=1
-		end		
 #		dev=dev.to_s.gsub("[","").gsub("]","")
         @trace.devs.push(dev)
 		return mob,dev,browser
