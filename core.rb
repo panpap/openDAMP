@@ -413,7 +413,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 	end
 
 	def collector(contenType,row)
-		type=row['type']
+		type=row['types']
 		if @options['tablesDB'][@defines.tables["userTable"].keys.first]
 			@trace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
 			@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)

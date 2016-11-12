@@ -140,7 +140,7 @@ class Trace
 			if user.publishers!=nil and allowOptions[@defines.tables["publishersTable"].keys[0]]
 				user.publishers.each{|row| 
 					tid=Digest::SHA256.hexdigest (row.values.join("|")); 
-					db.insert(@defines.tables['publishersTable'], [row['tmstp'],row['IPport'],row['url'],row['host'],row['mob'],row['dev'],row['browser'],tid])}
+					db.insert(@defines.tables['publishersTable'], [row['tmstp'],row['IPport'],row['url'],row['host'],row['mob'],row['dev']["deviceBrand"],row['dev']["deviceModel"],row['dev']["osFamily"],row['dev']["osName"],row['dev']["uaType"],row['dev']["uaFamily"],row['dev']["uaName"],row['dev']["uaCategory"],row['browser'],tid])}
 			end
 			#3rd PARTY
 			arr[count] = Thread.new {

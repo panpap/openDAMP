@@ -87,7 +87,7 @@ class Defines
 		end
 		
 		#DATABASES
-		@tables={"publishersTable"=>{"publishers"=>'timestamp BIGINT, IP_Port VARCHAR, url VARCHAR , Host VARCHAR, mobile VARCHAR, device INTEGER, browser INTEGER,id VARCHAR PRIMARY KEY'},
+		@tables={"publishersTable"=>{"publishers"=>'timestamp BIGINT, IP_Port VARCHAR, url VARCHAR , Host VARCHAR, mobile VARCHAR, deviceBrand VARCHAR,deviceModel VARCHAR,osFamily VARCHAR,osName VARCHAR,uaType VARCHAR,uaFamily VARCHAR,uaName VARCHAR,uaCategory VARCHAR, browser INTEGER,id VARCHAR PRIMARY KEY'},
 			"impTable"=>{"impressions"=>'id VARCHAR PRIMARY KEY,timestamp BIGINT, IP_Port VARCHAR, UserIP VARCHAR, url VARCHAR, Host VARCHAR, userAgent VARCHAR, status INTEGER, length INTEGER, dataSize INTEGER, duration INTEGER'},
 			"bcnTable"=>{"beacons"=>'timestamp BIGINT, ip_port VARCHAR, url VARCHAR, beaconType VARCHAR, mob INTEGER,device VARCHAR,browser VARCHAR, id VARCHAR PRIMARY KEY'},
 			"advertiserTable"=>{"advertisers"=>'host VARCHAR PRIMARY KEY, numOfReqs BIGINT, numOfUsers BIGINT, avgReqPerUser INTEGER, avgDurOfReqs VARCHAR, totalDurOfReqs VARCHAR, avgSizeOfReqs VARCHAR,totalBytesDelivered BIGINT, type VARCHAR'},

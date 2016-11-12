@@ -43,7 +43,7 @@ class Operations
 						if function==1 or function==0
 							atts.each{|att| (f[att].puts row[att]) if (att!='url' and att!="tmstp") and f[att]!=nil}
 							Utilities.separateTimelineEvents(row,@defines.dirs['userDir']+row['IPport'],@defines.column_Format) #timelines creation
-						end					
+						end	
 						if function==2 or function==0
 							@func.parseRequest(row) 	#categorization,cookie synchronization and prices detection
 						end
