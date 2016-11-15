@@ -78,6 +78,7 @@ module Format
 			h['length']=part[8]
 		    h['dataSz']=part[9]
  			h['dur']=part[10]
+
 			h['ua']=part[12]
 			h['tmstp']=part[17]
 			if (["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})
@@ -87,6 +88,7 @@ module Format
 			else
 				Utilities.warning  "--------> UKNOWN HTTP VERB: "+h['verb']
 			end
+			h['types']=filter.getTypeOfContent(h['url'],nil)
 		else
 			h['uIP']=part[1]
 			h['url']=part[2]

@@ -25,7 +25,7 @@ class Core
 		@defines.puts "> Creating Directories..., "
 		Dir.mkdir @defines.dirs['rootDir'] unless File.exists?(@defines.dirs['rootDir'])
 		Dir.mkdir @defines.dirs['dataDir'] unless File.exists?(@defines.dirs['dataDir'])
-		Dir.mkdir @defines.dirs['adsDir'] unbess File.exists?(@defines.dirs['adsDir'])
+		Dir.mkdir @defines.dirs['adsDir'] unless File.exists?(@defines.dirs['adsDir'])
 		Dir.mkdir @defines.dirs['userDir'] unless File.exists?(@defines.dirs['userDir'])
 		Dir.mkdir @defines.dirs['timelines'] unless File.exists?(@defines.dirs['timelines'])	
 		@database=Database.new(@defines,nil)
@@ -90,11 +90,14 @@ class Core
 			mob,dev,browser=reqOrigin(row)		#CHECK THE DEVICE TYPE
 			row['mob']=mob
 			row['dev']=dev
-			row['browser']=browser
+			row['browser']=browser	
 			if @options["mobileOnly?"] and mob!=1
 				@skipped+=1
 				return false
 			end		#FILTER ROW
+			if browser!= "unknown"
+				@trace.fromBrowser+=1
+			end	
 		end
 		cat=filterRow(row)
 		cookieSyncing(row,cat) if cat!=nil and @options['tablesDB'][@defines.tables["csyncTable"].keys.first]
@@ -310,9 +313,6 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		end
 		#CHECK IF ITS ORIGINATED FROM BROWSER
 		browser=@filters.is_Browser?(row,dev)
-		if browser!= "unknown"
-			@trace.fromBrowser+=1
-		end		
 #		dev=dev.to_s.gsub("[","").gsub("]","")
         @trace.devs.push(dev)
 		return mob,dev,browser
@@ -413,7 +413,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 	end
 
 	def collector(contenType,row)
-		type=row['type']
+		type=row['types']
 		if @options['tablesDB'][@defines.tables["userTable"].keys.first]
 			@trace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
 			@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)

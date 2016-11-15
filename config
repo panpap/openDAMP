@@ -5,12 +5,12 @@
         "printToSTDOUT?": true,
         "detectBeacons?": true,
         "resultToFiles": {
-                "devices.csv": true,
+                "devices.csv": false,
                 "sizes3rd.csv": false,
                 "adParamsNum.csv": false,
                 "restParamsNum.csv": false,
-                "cmIDcount.csv": true,
-                "cmHosts.csv": true
+                "cmIDcount.csv": false,
+                "cmHosts.csv": false
         },
         "database?": true,
         "tablesDB": {
@@ -21,10 +21,10 @@
                 "userResults": true,
                 "prices": false,
                 "traceResults": true,
-                "csyncResults": true,
+                "csyncResults": false,
                 "userVisits": false,
                 "userFiletypes": false,
-                "advertisers": true
+                "advertisers": false
         }
 }
 
