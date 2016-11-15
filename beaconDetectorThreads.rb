@@ -95,7 +95,7 @@ File.foreach(filename) {|line| #slurp file
 total=0
 found=0
 puts "File was read in "+(Time.now - startRead).to_s+ " seconds"
-puts "Will examine "+h.keys.size+" urls"
+puts "Will examine "+h.keys.size.to_s+" urls"
 start=Time.now
 h.keys.each{|url|
 	if @dictionary!=nil and @dictionary[url]!=nil
