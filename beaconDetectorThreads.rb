@@ -63,7 +63,7 @@ socketsLimit=Process.getrlimit(Process::RLIMIT_NOFILE)
 puts "Now I can open no more than "+(max/1000*1000).to_s+" sockets simultaneously"
 @db = Database.new(@defines,dbname)
 @db.create("beacons",'imageSize VARCHAR, url VARCHAR PRIMARY KEY,user VARCHAR, userIP VARCHAR, host VARCHAR, httpRef VARCHAR, status VARCHAR, dataSz VARCHAR, dur VARCHAR, ua VARCHAR, tmstp VARCHAR, type VARCHAR, mob VARCHAR, dev VARCHAR, browser VARCHAR')
-results=@db.getAll("beaconURLs",nil,nil,nil,true)
+results=@db.getAll("beacons",nil,nil,nil,true)
 @dictionary=Hash.new
 for res in results
 	@dictionary[res["url"]]=res["imageSize"]
