@@ -76,6 +76,7 @@ totalLines= `wc -l "#{filename}"`.strip.split(' ')[0]
 h=Hash.new
 threads=Queue.new
 @results=Queue.new
+puts "File loaded start spawinig threads"
 while line=f.gets
 	next	if h[line.chop]!=nil
 	newHash=Hash.new
