@@ -6,6 +6,7 @@ load 'database.rb'
 
 def is_1pixel_image?(url)
 	abort "NULL URL" if url==nil
+	pixels=nil
 	last=url.split("/").last
 #	isthere=@db.get("beaconURLs","singlePixel","url",url)
 #	if isthere!=nil		# I've already seen that url 
@@ -14,15 +15,14 @@ def is_1pixel_image?(url)
 #	else	# no... wget it
 		begin
 			pixels=FastImage.size("http://"+url, :timeout=>2)
-		    return pixels.to_s,url if pixels!=nil
 		rescue Exception => e  
 			if not e.message.include? "Network is unreachable"
 				puts "is_1pixel_image: "+e.message+"\n"+url  
 #				@db.insert("beaconURLs",[url,0])
 			end
 		end				
-#	end			
-    return nil,url
+#	end	
+    return pixels,url
 end
 
 def store(line,filename)
@@ -70,14 +70,13 @@ for res in results
 end
 puts "Loaded previous snapshot of "+@dictionary.size.to_s+" elements"
 #system("rm -f "+filename+"beaconDetectorTHREADS.csv")
-f=File.new(filename)
 totalLines= `wc -l "#{filename}"`.strip.split(' ')[0]
 @count=0
 h=Hash.new
 threads=Queue.new
 @results=Queue.new
-puts "File loaded start spawinig threads"
-while line=f.gets
+startRead=Time.now
+File.foreach(filename) {|line| #slurp file
 	next	if h[line.chop]!=nil
 	newHash=Hash.new
 	url=nil
@@ -92,21 +91,23 @@ while line=f.gets
 	next if url.size>300
 	abort "WRONG! NULL URL" if url==nil
 	h[url]=newHash
-end
-f.close
+}
 total=0
 found=0
+puts "File was read in "+(Time.now - startRead).to_s+ " seconds"
+puts "Will examine "+h.keys.size+" urls"
 start=Time.now
 h.keys.each{|url|
 	if @dictionary!=nil and @dictionary[url]!=nil
 		found+=1
 		next
 	end
-	begin
-	threads.push(Thread.new{  
-		pixel,urlChecked=is_1pixel_image?(url)
-		@results.push([pixel,urlChecked,h[url]])
-	})
+	puts ":ADADA"
+	begin		
+		threads.push(Thread.new{  
+			pixel,urlChecked=is_1pixel_image?(url)
+			@results.push([pixel,urlChecked,h[url]])
+		})
 	rescue ThreadError => e
 		puts "ThreadError "+e.to_s+"\n"+total.to_s+" lines"
 		while threads.size>0
