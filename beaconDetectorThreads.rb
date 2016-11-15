@@ -45,6 +45,10 @@ abort "NULL url "+@results.size if url==nil
 			pixels="-1"
 		end
 abort "NULL user "+@results.size if res['IPport']==nil
+		if res['type']==nil
+			puts "NULL type"+url
+			res['type']==-1
+		end
 		@db.insertBEACON("beacons",[pixels,url,res['IPport'],res['uIP'],res['host'],res['httpRef'],res['status'],res['dataSz'],res['dur'],res['ua'],res['tmstp'],res['type'],res['mob'],res['dev'],res['browser']]) if url!=nil
 		@dictionary[url]=pixels
 	#	puts pixels+" "+url.to_s+" "+res.to_s
@@ -102,7 +106,6 @@ h.keys.each{|url|
 		found+=1
 		next
 	end
-	puts ":ADADA"
 	begin		
 		threads.push(Thread.new{  
 			pixel,urlChecked=is_1pixel_image?(url)
