@@ -54,7 +54,7 @@ end
 startScript=Time.now
 filename=ARGV[0]
 @defines=Defines.new(filename.gsub("BEACONS_",""))
-dbname=filename.rpartition("/")[0]+"/beaconsChecked_"+filename.gsub("BEACONS_".rpartition("/")[1]+"+.db"
+dbname=filename.rpartition("/")[0]+"/beaconsChecked_"+filename.gsub("BEACONS_").rpartition("/")[1]+"+.db"
 min,max=Process.getrlimit(Process::RLIMIT_NOFILE)
 puts "Initial open sockets boundaries: ["+min.to_s+","+max.to_s+"]"
 puts "Stretching the number of simultaneously open sockets"
