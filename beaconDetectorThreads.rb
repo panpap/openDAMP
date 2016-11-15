@@ -47,7 +47,6 @@ abort "NULL url "+@results.size if url==nil
 abort "NULL user "+@results.size if res['IPport']==nil
 		@db.insertBEACON("beacons",[pixels,url,res['IPport'],res['uIP'],res['host'],res['httpRef'],res['status'],res['dataSz'],res['dur'],res['ua'],res['tmstp'],res['type'],res['mob'],res['dev'],res['browser']]) if url!=nil
 		@dictionary[url]=pixels
-puts "end"
 	#	puts pixels+" "+url.to_s+" "+res.to_s
 	end
 end
