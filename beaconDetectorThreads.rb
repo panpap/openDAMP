@@ -54,13 +54,14 @@ while line=f.gets
 	begin
 		next	if h[line.chop]!=nil	
 		h[line.chop]=true
-		puts line.chop+"\typarxei?\t"+@db.get("beaconURLs","imageSize","url",line.chop).to_s
+		#puts line.chop+"\typarxei?\t"+@db.get("beaconURLs","imageSize","url",line.chop).to_s
 		next	if @db.get("beaconURLs","imageSize","url",line.chop)!=nil
-		threads[total]=Thread.new{ 
-			results[total]=is_1pixel_image?(line.chop)[1]
+		threads[total]=Thread.new{ lookup=line.chop
+			results[total]=is_1pixel_image?(lookup)[1]
 			Thread.exit}
 		total+=1
 		if threads.size==10
+puts "0000000000000000000000000000000000000000000"
 			total=0
 			for thr in threads
 				thr.join
