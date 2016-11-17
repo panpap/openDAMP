@@ -2,7 +2,7 @@
     "Copyright 2010-2015 Disconnect, Inc. / This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. / This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. / You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.",
 "categories": {
   "Advertising": [
-
+  {"Turn": {"http://www.turn.com/": ["turn.com"]}},
 		{"madnetex": {"http://madnetex.com/" :["madnetex.com","madnet.ru","madnetx.com"]}},
   {"[x+1]": {"http://www.xplusone.com/": ["ru4.com", "xplusone.com"]}},
   {"2leep.com": {"http://2leep.com/": ["2leep.com"]}},
@@ -2219,7 +2219,6 @@
   {"Trovus": {"http://www.trovus.co.uk/": ["trovus.co.uk"]}},
   {"Trumba": {"http://www.trumba.com/": ["trumba.com"]}},
   {"Tumblr": {"http://www.tumblr.com/": ["tumblr.com"]}},
-  {"Turn": {"http://www.turn.com/": ["turn.com"]}},
   {"TurnTo": {"http://www.turntonetworks.com/": [
     "turnto.com", "turntonetworks.com"
   ]}},

@@ -170,7 +170,7 @@ class Core
 			if @filters.is_it_ID?(nil,parts[i])# and (["turn","atwola","tacoda"].any? {|word| urlAll.first.include? word})
 				if @params_cs[@curUser][parts[i]]!=nil
 					 prev=@params_cs[@curUser][parts[i]].last
-					if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil)
+					if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil) #TODO DOES NOT WORK CORRECT IN CASE OF PIGGYBACKED URLS
 						it_is_CM(row,prev,curHost,[parts[i-1],parts[i]],urlAll,-1,cat,-1)
 					end
 				else	#first seen ID
