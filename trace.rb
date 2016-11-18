@@ -156,6 +156,8 @@ class Trace
 						","+durStats['Content']['avg'].to_s+","+durStats['Other']['avg'].to_s+"]"#+durStats['Beacons']['avg'].to_s
 					sumSizePerCat="["+sizeStats['Advertising']['sum'].to_s+","+sizeStats['Analytics']['sum'].to_s+","+sizeStats['Social']['sum'].to_s+
 						","+sizeStats['Content']['sum'].to_s+","+sizeStats['Other']['sum'].to_s+"]"#+sizeStats['Beacons']['sum'].to_s
+					sumDurPerCat="["+durStats['Advertising']['sum'].to_s+","+durStats['Analytics']['sum'].to_s+","+durStats['Social']['sum'].to_s+
+						","+durStats['Content']['sum'].to_s+","+durStats['Other']['sum'].to_s+"]"#+durStats['Beacons']['avg'].to_s
 					if db!=nil or not @defines.options["database?"]
 						if allowOptions[@defines.tables["userTable"].keys[0]]
 							totalBytes=(sizeStats['Advertising']['sum'].to_i+sizeStats['Analytics']['sum'].to_i+sizeStats['Social']['sum'].to_i+sizeStats['Content']['sum'].to_i+sizeStats['Other']['sum'].to_i)#+sizeStats['Beacons']['sum'].to_i
@@ -166,7 +168,7 @@ class Trace
 							params=[id, totalRows, user.size3rdparty['Advertising'].size, user.size3rdparty['Analytics'].size, user.size3rdparty['Social'].size, 
 								user.size3rdparty['Content'].size, user.size3rdparty['Other'].size, avgDurPerCat, sumSizePerCat, 
 								totalBytes,avgBytesPerReq, sumDuration, avgDurationOfReq, user.hashedPrices.length, user.numericPrices.length, user.imp.length, 
-								user.publishers.size, user.size3rdparty['Beacons'].size,user.csync.size, locations.size, locations.to_s]
+								user.publishers.size, user.size3rdparty['Beacons'].size,user.csync.size, locations.size, locations.to_s,sumDurPerCat]
 							db.insert(@defines.tables['userTable'],params)
 						end		
 						if allowOptions[@defines.tables["userFilesTable"].keys.first]
