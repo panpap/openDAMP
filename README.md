@@ -1,6 +1,6 @@
-# Weblog Ads Analyzer
+# openWAPA
 
-Operations of Analyzer:
+Operations of Weblog Ads and Privacy Analyzer:
 
 1. Categorization of websites resources (Advertising, Analytics, Social, 3rd party content, Rest) by using external sources (for now I use Disconnect plugins blacklist I have 
 also the one of Adblocker Plus and Ghostery) and a list of ours that I created after manual inspection.

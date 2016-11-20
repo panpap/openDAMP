@@ -3,7 +3,7 @@
         "isThereHeader?": false,
         "removeDuplicates?": true,
         "printToSTDOUT?": true,
-        "detectBeacons?": true,
+        "detectBeacons?": false,
         "resultToFiles": {
                 "devices.csv": false,
                 "sizes3rd.csv": false,
@@ -15,7 +15,7 @@
         "database?": true,
         "tablesDB": {
                 "publishers": false,
-                "beacons": true,
+                "beacons": false,
                 "impressions": false,
                 "advertisements": false,
                 "userResults": true,
