@@ -1,0 +1,18 @@
+set terminal postscript enhanced eps  defaultplex \
+   leveldefault  blacktext \
+   dashed dashlength 2.0 linewidth 3.0 butt \
+   palfuncparam 2000,0.003 \
+   "Helvetica" 22
+
+set nokey
+set xtic rotate by -70 scale 0
+set format y "%g %%"
+set auto x
+set xlabel xTitle
+set log y
+set ylabel yTitle
+set style line 1 lc rgb '#0060ad' lt 1 lw 1 pt 7 pi -1 ps 1
+set style data linespoints
+set pointintervalbox 2
+N = system(sprintf("awk 'NR==1{print NF}' %s", fromFile))
+plot for [i=1:N] fromFile u 1:xtic(2) with linespoints ls 1

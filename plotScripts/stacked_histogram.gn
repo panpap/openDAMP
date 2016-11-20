@@ -1,0 +1,22 @@
+set terminal postscript enhanced eps  defaultplex \
+   leveldefault  blacktext \
+   solid dashlength 2.0 linewidth 3.0 butt \
+   palfuncparam 2000,0.003 \
+   "Helvetica" 24 
+set output "trafficBytes.eps"
+set ylabel "% of time per process"
+set xlabel "Average response time (ms)"
+
+set format y "%g %%"
+set key below right
+set key autotitle columnheader
+set yrange [0:100]
+set auto x
+set style data histogram
+set style histogram rowstacked
+set style fill solid border -1
+set boxwidth 0.75
+set xtic rotate by -45 scale 0
+plot 'latencySplit.data' using 2:xtic(1) lc rgb '#b30000', \
+		'' using 3 lc rgb '#186218', \
+		'' using 4 lc rgb '#5c5c5c'
