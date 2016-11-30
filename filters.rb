@@ -316,7 +316,7 @@ class Filters
                 urlParts[1,urlParts.size].each{ |p| t+=p+"/" ""}
                 url=s+t
             end
-            if (@lists.subStrings.any? { |word| url.include?(word)})
+            if (@lists.subStrings.any? { |word| url.include?(word)}) and not url.include? (".adc.") and not url.include? ("www.advantageguildford.com") and not url.include? ("curiosidades.batanga.com") and not url.include? ("apknesia.com")
 				return "Advertising"
 			elsif (@lists.rtbCompanies.any? { |word| url.downcase.include?(word)})
                 return "Advertising"
