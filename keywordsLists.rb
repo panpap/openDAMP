@@ -113,7 +113,7 @@ class KeywordsLists
 			"criteo.com" => "z","casalemedia.com"=>"cp"}
 
 		# ENHANCED BY ADBLOCK EASYLIST
-		@subStrings=["/Ad/","pagead","/adv/","/ad/","ads",".ad","rtb-","adwords","admonitoring","adinteraction",
+		@subStrings=["/Ad/","pagead","/adv/","/ad/",".ad","rtb-","adwords","admonitoring","adinteraction","/ads","videoads",#,"ads/",
 					"adrum","adstat","adviewtrack","adtrk","/Ad","bidwon","/rtb","admantx/","adclick","_ad/","/promos/"] #"market"]	
 
 		@rtbCompanies=["adkmob","green.erne.co","mathtag.com","rubiconproject","bidstalk","openrtb","eyeota",

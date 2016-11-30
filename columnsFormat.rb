@@ -63,6 +63,8 @@ module Format
             h['ua']=part[14]	
 	
 		elsif dataset==3
+#-	nodeIP	userIP	-	verb	url	httpref	HttpStatus	length	dataSz	duration	-	useragent	host	-	type	userID	timestamp	country
+
 			h['IPport']=(part[1]+":"+part[16]).split(":").last
 			h['uIP']=part[2]
 			h['verb']=part[4]
