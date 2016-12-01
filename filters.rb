@@ -303,12 +303,17 @@ class Filters
         parts=host.split(".")
 		# FIND TLD AND DOMAIN
 		domain,tld=Utilities.tokenizeHost(host)
-		# FILTER USING DISCONNECT
+
+		#FIND CATEGORY
 		cat,domain,tld=externalList(host,@lastPub[user])
-        if cat!=nil
+		if @lists.manualCats[host]!=nil
+			return @lists.manualCats[host]
+		elsif (@lists.rtbCompanies.any? { |word| url.downcase.include?(word)})
+            return "Advertising"
+        elsif cat!=nil	# FILTER USING DISCONNECT
 			return cat
         else           
-			 # FILTER USING KEYWORDS
+			# FILTER USING KEYWORDS
             if (tld=="ad") # TLD check REMOVE ".ad" TLDs
                 parts.delete_at(parts.size-1)
                 s="";t="/";
@@ -318,10 +323,6 @@ class Filters
             end
             if (@lists.subStrings.any? { |word| url.include?(word)}) and not url.include? (".adc.") and not url.include? ("www.advantageguildford.com") and not url.include? ("curiosidades.batanga.com") and not url.include? ("apknesia.com")
 				return "Advertising"
-			elsif (@lists.rtbCompanies.any? { |word| url.downcase.include?(word)})
-                return "Advertising"
-			elsif @lists.manualCats[host]!=nil
-				return @lists.manualCats[host]
 			end
             return nil
         end

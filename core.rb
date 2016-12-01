@@ -359,6 +359,15 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		if isAd==true
 			type3rd="Advertising"
 		end
+
+
+
+puts row['IPport'].to_s+"\t"+row['url'].to_s+"\t"+type3rd.to_s+"\t"+row['dataSz'].to_s+"\t"+row['ua'].to_s if row['IPport']=="14339" or row['IPport']=="12337"
+
+
+
+
+
 		return type3rd,params
 	end
 
