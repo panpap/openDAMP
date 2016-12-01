@@ -2,7 +2,7 @@
         "mobileOnly?": true,
         "isThereHeader?": false,
         "removeDuplicates?": true,
-        "printToSTDOUT?": false,
+        "printToSTDOUT?": true,
         "detectBeacons?": false,
         "resultToFiles": {
                 "devices.csv": false,
@@ -18,10 +18,10 @@
                 "beacons": false,
                 "impressions": false,
                 "advertisements": false,
-                "userResults": false,
+                "userResults": true,
                 "prices": false,
                 "traceResults": true,
-                "csyncResults": false,
+                "csyncResults": true,
                 "userVisits": false,
                 "userFiletypes": false,
                 "advertisers": false

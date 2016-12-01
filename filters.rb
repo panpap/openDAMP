@@ -18,6 +18,10 @@ class Filters
 		@uaMap=loadUAs()
 	end
 
+	def priceFalsePositives()
+		return @lists.priceFPList
+	end
+
 	def loadUAs()
 		uaMap=Hash.new
 		f=File.new(@defines.resourceFiles["uaMap"])
@@ -55,10 +59,10 @@ class Filters
 	end
 
 	def is_it_ID?(name,value)
+		exclude=["http","utf","www","ship","sky","sport","email","search","yieldmanager","yieldtrackers","100x75","18c11","175x175","150x150","minutos","728x90","206x272","77x77","creative","deportes","delivery","economia","mexico","gallery","game-mods","md5","query","questions","show","thememarket","thumb","news","webmasters","wiki","nonce","text","image","cb","token", "nocache","x-plex-token","version","sunglasses","ver","title","page","start","url"]
 		alfa,digit=Utilities.digitAlfa(value)
-		return true if alfa==0 and value.size>12
-		return false if name!=nil and name=="X-Plex-Token" and name.include? "url" and name.size>20 
-		return true if value!=nil and not (value.size<17 or (["http","utf","www","text","image"].any? { |word| value.downcase.include?(word)})) and digit>3 and alfa>4 and not value.include? "%" and not value.include? "." and not value.include? ";" and not value.include? "/" and not value.include? "," 
+		return false if name==nil or Utilities.is_numeric?(name) or name.size>15 or name.include? "%" or name.include? ";" or name.include? "." or name.include? "=" or name.include? "/" or (exclude.any? { |word| name.downcase.include?(word)})
+		return true if value!=nil and value.size>12 and not (value.size<17 or (["http","utf","www","text","image","big","small","special","login"].any? { |word| value.downcase.include?(word)})) and not value.include? "%" and not value.include? "." and not value.include? ";" and not value.include? "/" and not value.include? "," 
 		return false
 	end
 
@@ -283,7 +287,7 @@ class Filters
 	end	
 
 	def getCategory(urlAll,host,user)
-		url=urlAll[0]
+		url=urlAll[0] 
 		rootUrl=url.gsub("/","")
 		if rootUrl.count('.')==2
 			tmp=rootUrl.split(".")
@@ -338,8 +342,9 @@ class Filters
 
 	def getRootHost(host,cat) 
 		if cat==nil
-			@cats.each{|c| res=@lists.sameParty[c][host]; if res!=nil
-				return res.split("://").last.gsub("/","").gsub("www.","")
+			@cats.each{|c| res=@lists.sameParty[c][host]; 
+			if res!=nil
+				return res.gsub("http://","").gsub("/","").gsub("www.","")
 			end}
 			return host
 		else
