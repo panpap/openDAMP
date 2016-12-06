@@ -88,7 +88,7 @@ class KeywordsLists
 			"matheranalytics.com"=>"Analytics","media-imdb.com" => "Content","mediavoice.com" => "Advertising","polar.me" => "Advertising",
 			"medium.com" => "Content","micpn.com"=>"Analytics","movableink.com"=>"Analytics","video.microcontenidos.com" => "Content",
 			"mkbwlcdn.com"=>"Analytics","ml314.com"=>"Analytics","bombora.com"=>"Analytics","mmondi.com" => "Advertising","scanscout.com" => "Advertising",
-			"krxd.net" => "Advertising","nr-data.net"=>"Analytics","newrelic.com"=>"Analytics","omnitagjs.com"=>"Analytics",
+			"krxd.net" => "Advertising","nr-data.net"=>"Analytics","newrelic.com"=>"Analytics","omnitagjs.com"=>"Analytics","glispa.com" => "Advertising",
 			"optimatic.com" => "Advertising","pagefair.com"=>"Analytics","perfectmarket.com"=>"Analytics","taboola.com"=>"Analytics",
 			"performgroup.com" => "Content","petametrics.com"=>"Analytics","pippio.com"=>"Analytics","polarmobile.com" => "Advertising",
 			"postrelease.com" => "Advertising","nativo.net" => "Advertising","premiereinteractive.com" => "Advertising","tremorvideo.com" => "Advertising",
@@ -101,7 +101,7 @@ class KeywordsLists
 			"stats.com" => "Content","sub2tech.com"=>"Analytics","sumologic.com"=>"Analytics","taboolasyndication.com"=>"Analytics","dynadmic.com" => "Analytics",
 			"tagsrvcs.com"=>"Analytics","tailtarget.com"=>"Advertising","taptapnetworks.com" => "Advertising","liverail.com" => "Advertising",
 			"zanox.com" => "Advertising","scmspain.com" => "Advertising","schibsted.es"=> "Advertising", "254a.com"=> "Advertising","dyntrk.com" => "Analytics",
-
+			"gltrkk.net" => "Analytics","sponsorpay.com" => "Advertising","fyber.com" => "Advertising",
 		}
 
 		@cookiesync=["match","sync","cm","csync","cm.g.doubleclick.net"]

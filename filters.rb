@@ -59,10 +59,11 @@ class Filters
 	end
 
 	def is_it_ID?(name,value)
-		exclude=["http","utf","www","ship","sky","sport","email","search","yieldmanager","yieldtrackers","100x75","18c11","175x175","150x150","minutos","728x90","206x272","77x77","creative","deportes","delivery","economia","mexico","gallery","game-mods","md5","query","questions","show","thememarket","thumb","news","webmasters","wiki","nonce","text","image","cb","token", "nocache","x-plex-token","version","sunglasses","ver","title","page","start","url"]
+		exclude=["http","utf","www","ship","sky","sport","email","search","yieldmanager","yieldtrackers","100x75","18c11","175x175","150x150","minutos","728x90","206x272","77x77","creative","deportes","delivery","economia","mexico","gallery","game-mods","md5","query","questions","show","thememarket","thumb","news","webmasters","wiki","nonce","text","image","cb","token", "nocache","x-plex-token","version","sunglasses","ver","title","page","start","url","rnd"]
 		alfa,digit=Utilities.digitAlfa(value)
 		return false if name==nil or Utilities.is_numeric?(name) or name.size>15 or name.include? "%" or name.include? ";" or name.include? "." or name.include? "=" or name.include? "/" or (exclude.any? { |word| name.downcase.include?(word)})
-		return true if value!=nil and value.size>12 and not (value.size<17 or (["http","utf","www","text","image","big","small","special","login"].any? { |word| value.downcase.include?(word)})) and not value.include? "%" and not value.include? "." and not value.include? ";" and not value.include? "/" and not value.include? "," 
+		
+		return true if value!=nil and value.size>9 and value.size<200 and not (["http","utf","www","text","image","big","small","special","login"].any? { |word| value.downcase.include?(word)}) and not value.include? "%" and not value.include? "." and not value.include? ";" and not value.include? "/" and not value.include? "," 
 		return false
 	end
 

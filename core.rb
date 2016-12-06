@@ -187,9 +187,11 @@ class Core
 		prevHost=prev['host']
 		params=[@curUser,prev['tmstp'],row['tmstp'],prevHost,prev['cat'],curHost,curCat,prev["paramName"], paramPair.last, paramPair.first, prev['status'],row["status"],ids,confirmed,prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s, prev["url"].first+"?"+prev["url"].last,row["url"], prev['httpRef'], row['httpRef']]
 		id=Digest::SHA256.hexdigest (params.join("|")+prev['url'].first+"|"+urlAll.first)
-		@trace.users[@curUser].csync.push(params.push(row["mob"]))
 		@trace.users[@curUser].csync.push(params.push(row["dev"].to_s))
-		@trace.users[@curUser].csync.push(params.push(row["browser"]))
+		@trace.users[@curUser].csync.push(params.push(prev["browser"].to_s))
+		@trace.users[@curUser].csync.push(params.push(row["browser"].to_s))
+		@trace.users[@curUser].csync.push(params.push(prev["ua"].to_s))
+		@trace.users[@curUser].csync.push(params.push(row["ua"].to_s))
 		@trace.users[@curUser].csync.push(params.push(id))
 		if @trace.users[@curUser].csyncIDs[paramPair.last]==nil
 			@trace.users[@curUser].csyncIDs[paramPair.last]=0
@@ -226,13 +228,15 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
                     prev=@params_cs[@curUser][paramPair.last].last
                     if prev['host'].split(".")[0]!=curHost.split(".")[0] and @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil) 
 						if not urlParts.last.include? prev['host'] 								#CASE OF PIGGYBACKED URLS
-#abort @params_cs[@curUser].to_s+"\n\n"+row['url'] if row['url'].include? "csync"
-                    		it_is_CM(row,prev,curHost,paramPair,urlParts,ids,cat,confirmed)
-							found=true
+							if row['types'].to_s!="video"
+						#puts paramPair.last.size
+                    			it_is_CM(row,prev,curHost,paramPair,urlParts,ids,cat,confirmed)
+								found=true
+							end
 						end
                     end
                 end
-				@params_cs[@curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>curHost,"httpRef"=>row["httpRef"]})
+				@params_cs[@curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>curHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"]})
             end
         end
 		return found
