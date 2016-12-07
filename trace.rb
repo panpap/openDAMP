@@ -101,13 +101,12 @@ class Trace
 		else
 			Utilities.error "Wrong input!"
 		end
-puts userTable.keys.first+" "+userFilesTable.keys.first
 		start = Time.now
 		cats=filters.getCats
 		allowOptions=@defines.options['tablesDB']
 		options=@defines.options['resultToFiles']
 		count=0
-		arr=Array.new
+		threads=Array.new
 		if mode==0
 			if options[@defines.files['cmIDcount'].split("/").last] and not File.size?@defines.files['cmIDcount']
 				fcm1=File.new(@defines.files["cmIDcount"],"w")
@@ -118,7 +117,7 @@ puts userTable.keys.first+" "+userFilesTable.keys.first
 				fcm2.puts "appearances\tcookieID"
 			end
 		end
-		for id,user in users do	
+		for id,user in users do
 #puts count.to_s+" users were stored..."+(Time.now).to_i.to_s #if count%10==0
 			#ADVERTISEMENTS
 			if mode==0
@@ -143,7 +142,7 @@ puts userTable.keys.first+" "+userFilesTable.keys.first
 				end
 			end
 			#3rd PARTY
-			arr[count] = Thread.new {
+			threads[count] = Thread.new {
 				user.size3rdparty.each{|category, sizes| sizeStats[category]=Utilities.makeStats(sizes)} if user.size3rdparty!=nil and sizeStats!=nil
 				user.dur3rd.each{|category, durations| durStats[category]=Utilities.makeStats(durations)} if user.dur3rd!=nil and durStats!=nil
 				if durStats!=nil and sizeStats!=nil
@@ -155,7 +154,7 @@ puts userTable.keys.first+" "+userFilesTable.keys.first
 					sumDurPerCat="["+durStats['Advertising']['sum'].to_s+","+durStats['Analytics']['sum'].to_s+","+durStats['Social']['sum'].to_s+
 						","+durStats['Content']['sum'].to_s+","+durStats['Other']['sum'].to_s+"]"#+durStats['Beacons']['avg'].to_s
 					if db!=nil or not @defines.options["database?"]
-						if allowOptions[userTable.keys.first]
+						if allowOptions[userTable.keys.first] or mode>0
 							totalBytes=(sizeStats['Advertising']['sum'].to_i+sizeStats['Analytics']['sum'].to_i+sizeStats['Social']['sum'].to_i+sizeStats['Content']['sum'].to_i+sizeStats['Other']['sum'].to_i)#+sizeStats['Beacons']['sum'].to_i
 							sumDuration=(durStats['Advertising']['sum'].to_i+durStats['Analytics']['sum'].to_i+durStats['Social']['sum'].to_i+durStats['Content']['sum'].to_i+durStats['Other']['sum'].to_i)#+durStats['Beacons']['sum'].to_i
 							avgBytesPerReq=Utilities.makeStats(user.size3rdparty['Advertising']+user.size3rdparty['Analytics']+user.size3rdparty['Social']+user.size3rdparty['Content']+user.size3rdparty['Other'])['avg']#+user.size3rdparty['Beacons']
@@ -167,7 +166,7 @@ puts userTable.keys.first+" "+userFilesTable.keys.first
 								user.publishers.size, user.size3rdparty['Beacons'].size,user.csync.size, locations.size, locations.to_s,sumDurPerCat]
 							db.insert(userTable,params)
 						end		
-						if allowOptions[userFilesTable.keys.first]
+						if allowOptions[userFilesTable.keys.first]  or mode>0
 							cats.delete("Beacons")
 							fileTypesArray=Utilities.printFileTypeAnalysis(cats,user).split("\t")
 							db.insert(userFilesTable,fileTypesArray.unshift(id))
@@ -187,9 +186,9 @@ puts userTable.keys.first+" "+userFilesTable.keys.first
 			end
 			count+=1
 			}
-			arr.each {|t| t.join}					
+			threads.each {|t| t.join}					
 		end
-		print "Total Dumping time for\t"
+		print "Total Dumping time for "
 		print case mode
 		when 0
 			"overall userResults "
@@ -213,7 +212,7 @@ puts userTable.keys.first+" "+userFilesTable.keys.first
 			#traceresults		
 			params=[totalNumofRows,@users.size,@party3rd['Advertising'],@party3rd['Analytics'],@party3rd['Social'],
 				@party3rd['Content'],@party3rd['Beacons'],@party3rd['Other'],sizeStats['sum'],@mobDev,@fromBrowser,@hashedPrices,@numericPrices,@totalImps]	
-			id=Digest::SHA256.hexdigest (params.join("|"))	
+			id=Digest::SHA256.hexdigest(params.join("|"))	
 			db.insert(traceTable,params.push(id))
 
 			#advertisers
