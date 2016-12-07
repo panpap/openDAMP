@@ -14,6 +14,8 @@ class Core
 		@convert=Convert.new(@defines)
 		@filters=filters	
 		@trace=Trace.new(@defines)
+		@webTrace=Trace.new(@defines)
+		@appTrace=Trace.new(@defines)
 		@options=@defines.options
 		@window=-1
 		@cwd=nil
@@ -42,7 +44,8 @@ class Core
 		@defines.puts "> Dumping to files..."
 		if options[@defines.files['devices'].split("/").last] and not File.size?@defines.files['devices']
 			fd=File.new(@defines.files['devices'],'w')
-			@trace.devs.each{|dev| if dev!=-1
+			@trace.devs.each{|dev| 
+				if dev!=-1
 					for k in dev.keys
 						fd.print dev[k].to_s+"\t"
 					end
@@ -67,7 +70,15 @@ class Core
 		end
 		total=Thread.new {
 			@defines.puts "> Calculating Statistics about detected ads..."
-			@defines.puts @trace.results_toString(@database,@defines.tables['traceTable'],@defines.tables['bcnTable'],@defines.tables['advertiserTable'],@filters.getCats)}
+			@defines.puts @trace.results_toString(0,@database,@defines.tables['traceTable'])
+			@trace.dumpRes(@database,@defines.tables['traceTable'],@defines.tables['bcnTable'],@defines.tables['advertiserTable'])
+			if @defines.options["webVsApp?"]
+				@defines.puts @webTrace.results_toString(1, @database,@defines.tables['webTraceTable'])
+				@webTrace.dumpRes(@database,@defines.tables['webTraceTable'],nil,nil)
+				@defines.puts @appTrace.results_toString(2,@database,@defines.tables['appTraceTable'])
+				@appTrace.dumpRes(@database,@defines.tables['appTraceTable'],nil,nil)
+			end
+		}
 		perUserAnalysis()
 		total.join
 	end
@@ -94,10 +105,17 @@ class Core
 			if @options["mobileOnly?"] and mob!=1
 				@skipped+=1
 				return false
+			else
+				@trace.mobDev+=1
+				if @defines.options["webVsApp?"]
+					if row['browser']!="unknown"
+						@webTrace.mobDev+=1
+					else
+						@appTrace.mobDev+=1
+					end
+				end
 			end		#FILTER ROW
-			if browser!= "unknown"
-				@trace.fromBrowser+=1
-			end	
+			@trace.fromBrowser+=1 if browser!= "unknown"
 		end
 		cat=filterRow(row)
 		cookieSyncing(row,cat) if @options['tablesDB'][@defines.tables["csyncTable"].keys.first]
@@ -126,9 +144,7 @@ class Core
 			while (line = io.gets) do 
 				h=Format.columnsFormat(line,@defines.column_Format)
 				Utilities.separateTimelineEvents(h,user_path+h['IPport'],@defines.column_Format)
-				if firstTime==-1
-					firstTime=h['tmstp'].to_i
-				end
+				firstTime=h['tmstp'].to_i if firstTime==-1
 				applyTimeWindow(firstTime,row,fw)
 			end }
 			fw.close
@@ -142,16 +158,14 @@ class Core
 		@params_cs[@curUser]=Hash.new(nil) if @params_cs[@curUser]==nil
 		urlAll=row['url'].split("?")[0..1]
 		return if (urlAll.last==nil)
-		if not checkCSinParams(urlAll,row,cat)
-			checkCSinURI(urlAll,row,cat)
-		end
+		checkCSinURI(urlAll,row,cat) if not checkCSinParams(urlAll,row,cat)
 	#	puts row['url']+" "+ids.to_s if ids>0
 	end
 
 	def csyncResults()
 		if @database!=nil
 			@defines.puts "> Dumping Cookie synchronization results..."	
-			@trace.dumpUserRes(@database,nil,nil,@filters,@convert)	
+			@trace.dumpUserRes(@database,@filters,@convert,true,0)	
 		end
 	end
 #------------------------------------------------------------------------------------------------
@@ -193,16 +207,18 @@ class Core
 		@trace.users[@curUser].csync.push(params.push(prev["ua"].to_s))
 		@trace.users[@curUser].csync.push(params.push(row["ua"].to_s))
 		@trace.users[@curUser].csync.push(params.push(id))
-		if @trace.users[@curUser].csyncIDs[paramPair.last]==nil
-			@trace.users[@curUser].csyncIDs[paramPair.last]=0
-		end
-		
-		if 	@trace.users[@curUser].csyncHosts[prevHost+">"+curHost]==nil
-			@trace.users[@curUser].csyncHosts[prevHost+">"+curHost]=Array.new
-		end
+		@trace.users[@curUser].csyncIDs[paramPair.last]=0 if @trace.users[@curUser].csyncIDs[paramPair.last]==nil
+		@trace.users[@curUser].csyncHosts[prevHost+">"+curHost]=Array.new if @trace.users[@curUser].csyncHosts[prevHost+">"+curHost]==nil
 		@trace.users[@curUser].csyncHosts[prevHost+">"+curHost].push(confirmed)
 		@trace.users[@curUser].csyncIDs[paramPair.last]+=1
 		@trace.cooksyncs+=1
+		if @defines.options["webVsApp?"]
+			if row['browser']!="unknown"
+				@webTrace.cooksyncs+=1
+			else
+				@appTrace.cooksyncs+=1
+			end
+		end
 	end
 
 	def checkCSinParams(urlParts,row,cat)
@@ -245,8 +261,13 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 
 	def firstSeenUser?(row)
 		@curUser=row['IPport']
-		if @trace.users[@curUser]==nil		#first seen user
-			@trace.users[@curUser]=User.new	
+		@trace.users[@curUser]=User.new	if @trace.users[@curUser]==nil		#first seen user
+		if @defines.options["webVsApp?"]
+			if row['browser']!="unknown" 
+				@webTrace.users[@curUser]=User.new if @webTrace.users[@curUser]==nil
+			else
+				@appTrace.users[@curUser]=User.new if @appTrace.users[@curUser]==nil
+			end
 		end
 		if @trace.users[@curUser].uIPs[row['uIP']]==nil
 			@trace.users[@curUser].uIPs[row['uIP']]=1
@@ -267,6 +288,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 			while line=fr.gets
 				r=Format.columnsFormat(line,@defines.column_Format)
 				mob,dev,browser=reqOrigin(r)
+				@trace.mobDev+=1 if mob==1
 				row['mob']=mob
 				row['dev']=dev
 				row['browser']=browser
@@ -285,9 +307,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 						startBucket=r['tmstp']
 					end
 					@curUser=r['IPport']
-					if @trace.users[@curUser]==nil		#first seen user
-						@trace.users[@curUser]=User.new	
-					end
+					@trace.users[@curUser]=User.new	 if @trace.users[@curUser]==nil		#first seen user
 					filterRow(r)
 					@trace.rows.push(r)
 					fw.puts c.to_s+") BUCKET "+bucket.to_s+"\t"+r['tmstp']+"\t"+r['url']+"\t"+r['ua']
@@ -301,9 +321,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 			end
 			@trace=Trace.new(@defines)
 			fr.close
-			if fw!=nil
-				fw.close
-			end
+			fw.close if fw!=nil
 		end
 	end
 
@@ -316,13 +334,17 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 	def reqOrigin(row)
 		#CHECK IF ITS MOBILE USER
 		mob,dev=@filters.is_MobileType?(row)   # check the device type of the request
-		if mob==1
-			@trace.mobDev+=1
-		end
 		#CHECK IF ITS ORIGINATED FROM BROWSER
 		browser=@filters.is_Browser?(row,dev)
 #		dev=dev.to_s.gsub("[","").gsub("]","")
         @trace.devs.push(dev)
+		if @defines.options["webVsApp?"]
+			if row['browser']!="unknown"
+				@webTrace.devs.push(dev)
+			else
+				@appTrace.devs.push(dev)
+			end
+		end
 		return mob,dev,browser
 	end		
 
@@ -363,9 +385,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 				isRTB=detectImpressions(urlParts,row)
 			end
 		end
-		if isRTB==true
-			type3rd="Advertising"
-		end
+		type3rd="Advertising" if isRTB==true
 		return type3rd,params
 	end
 
@@ -375,23 +395,58 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		@isBeacon=false
 		url=row['url'].split("?")
 		@trace.sizes.push(row['dataSz'].to_i)
+		if @defines.options["webVsApp?"]
+			if row['browser']!="unknown"
+				@webTrace.sizes.push(row['dataSz'].to_i)
+			else
+				@appTrace.sizes.push(row['dataSz'].to_i)
+			end
+		end
 		type3rd,params=categorizeReq(row,url)
 		noOfparam=params.size
 		if type3rd!=nil and type3rd!="Beacons" # 3rd PARTY CONTENT
 			collector(type3rd,row)
 			@trace.party3rd[type3rd]+=1
+			if @defines.options["webVsApp?"]
+				if row['browser']!="unknown"
+					@webTrace.party3rd[type3rd]+=1
+				else
+					@appTrace.party3rd[type3rd]+=1
+				end
+			end
 			if not type3rd.eql? "Content"
 				if type3rd.eql? "Advertising"
 					ad_detected(row,noOfparam,url)
 				else # SOCIAL or ANALYTICS or OTHER type
 					@trace.restNumOfParams.push(noOfparam.to_i)
+					if @defines.options["webVsApp?"]
+						if row['browser']!="unknown"
+							@webTrace.restNumOfParams.push(noOfparam.to_i)
+						else
+							@appTrace.restNumOfParams.push(noOfparam.to_i)
+						end
+					end
 				end
 			else	#CONTENT type
 				@trace.restNumOfParams.push(noOfparam.to_i)
+				if @defines.options["webVsApp?"]
+					if row['browser']!="unknown"
+						@webTrace.restNumOfParams.push(noOfparam.to_i)
+					else
+						@appTrace.restNumOfParams.push(noOfparam.to_i)
+					end
+				end
 			end
 		else	# Rest
 			type3rd="Other"
 			@trace.party3rd[type3rd]+=1
+			if @defines.options["webVsApp?"]
+				if row['browser']!="unknown"
+					@webTrace.party3rd[type3rd]+=1
+				else
+					@appTrace.party3rd[type3rd]+=1
+				end
+			end
 			if (row['browser']!="unknown") and (@options['tablesDB'][@defines.tables["publishersTable"].keys[0]] or @options['tablesDB'][@defines.tables["userTable"].keys[0]])
 				@trace.users[@curUser].publishers.push(row)
 			end
@@ -411,9 +466,7 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 			@trace.users[@curUser].pubVisits[domain]+=1
 			topics=nil
 			if topics!=nil and topics!=-1
-				if @trace.users[@curUser].interests==nil
-					@trace.users[@curUser].interests=Hash.new(0)
-				end
+				@trace.users[@curUser].interests=Hash.new(0) if @trace.users[@curUser].interests==nil
 				topics.each{|key, value| @trace.users[@curUser].interests[key]+=value}
 			end
 		end
@@ -424,6 +477,15 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 		if @options['tablesDB'][@defines.tables["userTable"].keys.first]
 			@trace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
 			@trace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)
+			if @defines.options["webVsApp?"]
+				if row['browser']!="unknown"
+					@webTrace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
+					@webTrace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)					
+				else
+					@appTrace.users[@curUser].size3rdparty[contenType].push(row['dataSz'].to_i)
+					@appTrace.users[@curUser].dur3rd[contenType].push(row['dur'].to_i)
+				end
+			end
 		end
 		if type!=-1 and @options['tablesDB'][@defines.tables["userFilesTable"].keys.first]
 			if @trace.users[@curUser].fileTypes[contenType]==nil
@@ -441,9 +503,11 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 			else
 				@defines.puts "files..."
 			end
-			durStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
-			sizeStats={"Advertising"=>{},"Beacons"=>{},"Social"=>{},"Analytics"=>{},"Content"=>{},"Other"=>{}}
-			@trace.dumpUserRes(@database,durStats,sizeStats,@filters,@convert)
+			@trace.dumpUserRes(@database,@filters,@convert,false,0)
+			if @defines.options["webVsApp?"]
+				@webTrace.dumpUserRes(@database,@filters,@convert,false,1)
+				@appTrace.dumpUserRes(@database,@filters,@convert,false,2)
+			end
 		end
 	end
 
@@ -491,16 +555,34 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 				location=@convert.getGeoLocation(row['uIP'])
 				location=-1 if location==nil 
 				tod,day=@convert.getTod(time)
-				params=[type,time,domainStr,priceTag,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, carrier, adPosition,location,tod,day,publisher,interest,pubPopularity,row['IPport'],ssp,dsp,typeOfDSP,adx,row['mob'],row['dev'],row['browser'],https,row['url'],id]
+				params=[type,time,domainStr,priceTag,priceVal, row['dataSz'].to_i, upToKnowCM, numOfparams, adSize, carrier, adPosition,location,tod,day,publisher,interest,pubPopularity,row['IPport'],ssp,dsp,typeOfDSP,adx,row['mob'],row['dev'].to_s,row['browser'],https,row['url'],id]
 				done=@database.insert(@defines.tables['priceTable'],params)
 			end
 			if @database==nil or done>-1
 				if enc
 					@trace.users[@curUser].numericPrices.push(priceVal)
 					@trace.numericPrices+=1
+					if @defines.options["webVsApp?"]
+						if row['browser']!="unknown"
+							@webTrace.users[@curUser].numericPrices.push(priceVal)
+							@webTrace.numericPrices+=1
+						else
+							@appTrace.users[@curUser].numericPrices.push(priceVal)
+							@appTrace.numericPrices+=1
+						end
+					end
 				else
 					@trace.users[@curUser].hashedPrices.push(priceVal)
 					@trace.hashedPrices+=1
+					if @defines.options["webVsApp?"]
+						if row['browser']!="unknown"
+							@webTrace.users[@curUser].hashedPrices.push(priceVal)
+							@webTrace.hashedPrices+=1
+						else
+							@appTrace.users[@curUser].hashedPrices.push(priceVal)
+							@appTrace.hashedPrices+=1
+						end
+					end
 				end
 			end
 			return true
@@ -558,6 +640,13 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
         	type=last
 		end
 		@trace.party3rd["Beacons"]+=1
+		if @defines.options["webVsApp?"]
+			if row['browser']!="unknown"
+				@webTrace.party3rd["Beacons"]+=1
+			else
+				@appTrace.party3rd["Beacons"]+=1
+			end
+		end
 		tmpstp=row['tmstp'];u=row['url']
 		id=Digest::SHA256.hexdigest (row.values.join("|"))
 		@trace.beacons.push([tmpstp,row['IPport'],u,type,row['mob'],row['dev'],row['browser'],id])
@@ -567,11 +656,23 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 	def ad_detected(row,noOfparam,url)
         @trace.users[@curUser].ads.push(row)
 		@trace.adSize.push(row['dataSz'].to_i)
+		if @defines.options["webVsApp?"]
+			if row['browser']!="unknown"
+				@webTrace.users[@curUser].ads.push(row)
+				@webTrace.adSize.push(row['dataSz'].to_i)
+			else
+				@appTrace.users[@curUser].ads.push(row)
+				@appTrace.adSize.push(row['dataSz'].to_i)
+			end
+		end
 		collectAdvertiser(row)
-   #     @trace.users[@curUser].adNumOfParams.push(noOfparam.to_i)
 		@trace.adNumOfParams.push(noOfparam.to_i)
-		if(row['mob']!=-1)
-			@trace.numOfMobileAds+=1
+		if @defines.options["webVsApp?"]
+			if row['browser']!="unknown"
+				@webTrace.adNumOfParams.push(noOfparam.to_i)
+			else
+				@appTrace.adNumOfParams.push(noOfparam.to_i)
+			end
 		end
 	end
 

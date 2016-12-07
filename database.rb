@@ -113,10 +113,13 @@ private
 
 	def blockOutput(tbl)
 		table=arrayCase(tbl)
-		return false if @defines==nil
+		part=table.split("_")
+		return true if @defines==nil
+		return true if part.first==@defines.beaconDBTable and @defines.options["detectBeacons?"]==false
+		return true if (part.last.include? "web" or part.last.include? "app") and @defines.options["webVsApp?"]==false
 		blockOptions=@defines.options['tablesDB']
-		return false if blockOptions[table]==nil
-		return (not blockOptions[table])
+		return false if blockOptions[part.first]==nil
+		return (not blockOptions[part.first])
 	end
 
 	def prepareStr(input)

@@ -11,9 +11,11 @@ class Filters
 		if @defines!=nil
 			@lists=KeywordsLists.new(@defines.resourceFiles["filterFile"],@defines)
 			@rtbMacros=@lists.rtbMacros
-			@db = Database.new(@defines,@defines.beaconDB)
+			if @defines.options["detectBeacons?"]==true
+				@db = Database.new(@defines,@defines.beaconDB) 
+				@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
+			end
 			@cats=@lists.sameParty.keys
-			@db.create(@defines.beaconDBTable,'url VARCHAR PRIMARY KEY, singlePixel BOOLEAN')
 		end
 		@uaMap=loadUAs()
 	end
@@ -63,7 +65,7 @@ class Filters
 		alfa,digit=Utilities.digitAlfa(value)
 		return false if name==nil or Utilities.is_numeric?(name) or name.size>15 or name.include? "%" or name.include? ";" or name.include? "." or name.include? "=" or name.include? "/" or (exclude.any? { |word| name.downcase.include?(word)})
 		
-		return true if value!=nil and value.size>9 and value.size<200 and not (["http","utf","www","text","image","big","small","special","login"].any? { |word| value.downcase.include?(word)}) and not value.include? "%" and not value.include? "." and not value.include? ";" and not value.include? "/" and not value.include? "," 
+		return true if value!=nil and value.size>9 and value.size<200 and not (["http","utf","www","mediamathinc","text","comments","desk","page","changes","image","big","small","special","lotame_user","your_account","login"].any? { |word| value.downcase.include?(word)}) and not value.include? "%" and not value.include? "." and not value.include? ";" and not value.include? "/" and not value.include? "," 
 		return false
 	end
 
@@ -308,7 +310,6 @@ class Filters
         parts=host.split(".")
 		# FIND TLD AND DOMAIN
 		domain,tld=Utilities.tokenizeHost(host)
-
 		#FIND CATEGORY
 		cat,domain,tld=externalList(host,@lastPub[user])
 		if @lists.manualCats[host]!=nil

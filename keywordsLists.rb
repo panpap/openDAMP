@@ -1,5 +1,5 @@
 class KeywordsLists
-	attr_accessor :beacon_key, :rtbMacros, :sameParty, :adCompaniesCat, :filetypes,:disconnect, :cookiesync, :types, :imps, :manualCats, :keywords, :inria, :adInParam, :rtbCompanies, :subStrings, :browsers
+	attr_accessor :beacon_key, :rtbMacros, :sameParty, :priceFPList, :adCompaniesCat, :filetypes,:disconnect, :cookiesync, :types, :imps, :manualCats, :keywords, :inria, :adInParam, :rtbCompanies, :subStrings, :browsers
 	
 	def initialize(external,defs)
 		@defines=defs
@@ -65,7 +65,7 @@ class KeywordsLists
 			"bleacherreport.net" => "Content", "active-agent.com" => "Advertising", "affec.tv" => "Advertising", "dpclk.com" => "Advertising",
 			"angsrvr.com" => "Advertising", "bidswitch.net" => "Advertising",  "bidswitch.com" => "Advertising", "fidelity-media.com" => "Advertising", 
 			"ibillboard.com" => "Advertising","kavanga.ru" => "Advertising", "hgads.com" => "Advertising", "smartstream.tv" => "Advertising", 
-			"univide.com" => "Advertising","acxiom-online.com" => "Analyitics", "dianzicheng.club" => "Advertising","gradientx.net"=>"Analytics", 
+			"univide.com" => "Advertising","acxiom-online.com" => "Analytics", "dianzicheng.club" => "Advertising","gradientx.net"=>"Analytics", 
 			"beanstock.co" => "Advertising", "hstpnetwork.com" => "Advertising", "beatchucknorris.com" => "Advertising", "metrigo.com" => "Advertising",
 			"bidr.io" => "Advertising", "bidtellect.com" => "Advertising", "bidtellectual.com" => "Advertising", "adgrx.com" => "Advertising",
 			"blogsmithmedia.com" => "Content","blueconic.net"=>"Analytics","blueknow.com"=>"Analytics","bnc.lt"=>"Analytics",
@@ -93,7 +93,7 @@ class KeywordsLists
 			"performgroup.com" => "Content","petametrics.com"=>"Analytics","pippio.com"=>"Analytics","polarmobile.com" => "Advertising",
 			"postrelease.com" => "Advertising","nativo.net" => "Advertising","premiereinteractive.com" => "Advertising","tremorvideo.com" => "Advertising",
 			"pressdisplay.com" => "Content","proxistore.com" => "Advertising","pubnative.net" => "Advertising","pubted.com" => "Advertising",
-			"qmerce.com" => "Content","qualtrics.com"=>"Analytics","rackcdn.com" => "Content","rackspacecloud.com" => "Content",
+			"qmerce.com" => "Content","qualtrics.com"=>"Analytics","rackcdn.com" => "Content","rackspacecloud.com" => "Content","applift.com"=>"Analytics",
 			"qubitproducts.com"=>"Analytics","realtime.co" => "Content","renr.es" => "Content","revee.com"=>"Analytics","videohub.tv" => "Advertising",
 			"richmediastudio.com" => "Advertising","richmetrics.com"=>"Analytics","burtcorp.com"=>"Analytics","smaato.net" => "Advertising",
 			"sekindo.com" => "Advertising","sharethrough.com" => "Advertising","simplereach.com"=>"Analytics","siteblindado.com" => "Content",
@@ -101,7 +101,8 @@ class KeywordsLists
 			"stats.com" => "Content","sub2tech.com"=>"Analytics","sumologic.com"=>"Analytics","taboolasyndication.com"=>"Analytics","dynadmic.com" => "Analytics",
 			"tagsrvcs.com"=>"Analytics","tailtarget.com"=>"Advertising","taptapnetworks.com" => "Advertising","liverail.com" => "Advertising",
 			"zanox.com" => "Advertising","scmspain.com" => "Advertising","schibsted.es"=> "Advertising", "254a.com"=> "Advertising","dyntrk.com" => "Analytics",
-			"gltrkk.net" => "Analytics","sponsorpay.com" => "Advertising","fyber.com" => "Advertising",
+			"gltrkk.net" => "Analytics","sponsorpay.com" => "Advertising","fyber.com" => "Advertising","epartner.es" => "Advertising", "affili.net" => "Advertising",
+			"himediagroup.com" => "Advertising","himediads.com" => "Advertising","himediatech.com" => "Advertising","adux.com" => "Advertising",
 		}
 
 		@cookiesync=["match","sync","cm","csync","cm.g.doubleclick.net"]
