@@ -173,25 +173,25 @@ class Core
 
 	private
 
-	def	checkCSinURI(urlAll,row,cat)
-        curHost=Utilities.calculateHost(urlAll.first,nil).split(".")[0] # host without TLD
+	def	checkCSinURI(urlParts,row,cat)
+        curHost=Utilities.calculateHost(urlParts.first,nil) # host without TLD
         if cat==nil
-            cat=@filters.getCategory(urlAll,curHost,@curUser)
+            cat=@filters.getCategory(urlParts,curHost,@curUser)
             cat="Other" if cat==nil
         end
-		parts=urlAll.first.split("/")
+		parts=urlParts.first.split("/")
 		for i in 1..parts.size	#skip actual domain
 			parts[i]=parts[i].split("=")[1] if parts[i]!=nil and parts[i].include? "="
-			if @filters.is_it_ID?(nil,parts[i])# and (["turn","atwola","tacoda"].any? {|word| urlAll.first.include? word})
-				if @params_cs[@curUser][parts[i]]!=nil
-					prev=@params_cs[@curUser][parts[i]].last
-					if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil) 
-						it_is_CM(row,prev,curHost,[parts[i-1],parts[i]],urlAll,-1,cat,-1)
+			if @filters.is_it_ID?(nil,parts[i],false)# and (["turn","atwola","tacoda"].any? {|word| urlParts.first.include? word})
+				if @params_cs[@curUser][parts[i]]==nil #first seen ID
+                    @params_cs[@curUser][parts[i]]=Array.new
+                else    #have seen that ID before -> possible cookieSync
+                    prev=@params_cs[@curUser][parts[i]].last
+                    if prev['host'].split(".")[0]!=curHost.split(".")[0] and @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil) 
+						it_is_CM(row,prev,curHost,[parts[i-1],parts[i]],urlParts,-1,cat,-1) if row['types'].to_s!="video" and parts[i-1].include? "." 
 					end
-				else	#first seen ID
-					@params_cs[@curUser][parts[i]]=Array.new
 				end
-				@params_cs[@curUser][parts[i]].push({"url"=>urlAll,"paramName"=>parts[i-1],"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>curHost,"httpRef"=>row["httpRef"]})
+				@params_cs[@curUser][parts[i]].push({"url"=>urlParts,"paramName"=>parts[i-1],"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>curHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"]})
 			end
 		end
 	end
@@ -228,11 +228,11 @@ class Core
 		found=false
 		fields=urlParts.last.split('&')
 		return if fields.size>8 # usually there are very few params_cs (only sessionids)
+		curHost=Utilities.calculateHost(urlParts.first,nil) # host without TLD
 		for field in fields do
             paramPair=field.split("=")
-            if @filters.is_it_ID?(paramPair.first,paramPair.last)
+            if @filters.is_it_ID?(paramPair.first,paramPair.last,true)
                 ids+=1
-                curHost=Utilities.calculateHost(urlParts.first,nil) # host without TLD
 confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.eql?(word)} 
                 if cat==nil
                     cat=@filters.getCategory(urlParts,curHost,@curUser)
