@@ -492,6 +492,20 @@ confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.e
 				@trace.users[@curUser].fileTypes[contenType]={"data"=>Array.new, "gif"=>Array.new,"html"=>Array.new,"image"=>Array.new,"other"=>Array.new,"script"=>Array.new,"styling"=>Array.new,"text"=>Array.new,"video"=>Array.new} 
 			end
 			@trace.users[@curUser].fileTypes[contenType][type].push(row['dataSz'].to_i)
+			if @defines.options["webVsApp?"]
+				if row['browser']!="unknown"
+					if @webTrace.users[@curUser].fileTypes[contenType]==nil
+						@webTrace.users[@curUser].fileTypes[contenType]={"data"=>Array.new, "gif"=>Array.new,"html"=>Array.new,"image"=>Array.new,"other"=>Array.new,"script"=>Array.new,"styling"=>Array.new,"text"=>Array.new,"video"=>Array.new} 
+					end
+					@webTrace.users[@curUser].fileTypes[contenType][type].push(row['dataSz'].to_i)
+				else
+					if @appTrace.users[@curUser].fileTypes[contenType]==nil
+					@appTrace.users[@curUser].fileTypes[contenType]={"data"=>Array.new, "gif"=>Array.new,"html"=>Array.new,"image"=>Array.new,"other"=>Array.new,"script"=>Array.new,"styling"=>Array.new,"text"=>Array.new,"video"=>Array.new} 
+					end
+					@appTrace.users[@curUser].fileTypes[contenType][type].push(row['dataSz'].to_i)
+				end
+			end
+
 		end
 	end
 

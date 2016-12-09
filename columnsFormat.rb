@@ -90,7 +90,7 @@ module Format
 			else
 				Utilities.warning  "--------> UKNOWN HTTP VERB: "+h['verb']
 			end
-			h['types']=filter.getTypeOfContent(h['url'],nil)
+			h['types']=filter.getTypeOfContent(h['url'],part[15])
 		else
 			h['uIP']=part[1]
 			h['url']=part[2]
