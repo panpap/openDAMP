@@ -98,8 +98,8 @@ class Filters
 		end
 		if httpContent!=nil and httpContent!=""
 			#Fallback to HTTP content field
-			t1=httpContent.split(";")[0]
-			type=t1.split(":")[0].gsub(" ","").downcase
+			type=httpContent.split(";").first
+			type=type.split(":").first.gsub(" ","").downcase if httpContent.include? ";"
 			return @lists.types[type] if @lists.types[type]!=nil
 		end
 		return -1
