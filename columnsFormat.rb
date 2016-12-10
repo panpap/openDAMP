@@ -72,7 +72,7 @@ module Format
 				return nil
 			end
 			h['host']=part[13]
-			if h['host'].include? ".." or h['host']=="" or h['host']=="." or h['host'].size<3
+			if h['host'].include? ".." or h['host']=="" or h['host']=="." or h['host'].size<3 or part[5]=="/"
 				return nil
 			end
 			h['httpRef']=part[6]
@@ -80,7 +80,6 @@ module Format
 			h['length']=part[8]
 		    h['dataSz']=part[9]
  			h['dur']=part[10]
-
 			h['ua']=part[12]
 			h['tmstp']=part[17]
 			if (["get","delete","put","post","head","options"].any? { |word| h['verb'].downcase.eql?(word)})
