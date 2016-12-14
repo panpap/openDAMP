@@ -64,7 +64,6 @@ module Format
 	
 		elsif dataset==3
 #-	nodeIP	userIP	-	verb	url	httpref	HttpStatus	length	dataSz	duration	-	useragent	host	-	type	userID	timestamp	country
-
 			h['IPport']=(part[1]+":"+part[16]).split(":").last
 			h['uIP']=part[2]
 			h['verb']=part[4]
@@ -72,7 +71,7 @@ module Format
 				return nil
 			end
 			h['host']=part[13].gsub(":80","")
-			if h['host'].include? ".." or h['host']=="" or h['host']=="." or h['host'].size<3 or h['host'].include? "??????" or part[5]=="/"
+			if h['host'].include? ".." or h['host']=="" or h['host']=="." or h['host'].size<3 or h['host'].include? "??" or part[5]=="/"
 				return nil
 			end
 			h['httpRef']=part[6]
