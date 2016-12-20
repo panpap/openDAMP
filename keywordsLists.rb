@@ -75,7 +75,7 @@ class KeywordsLists
 			"iacom.s8.com.br"=>"Content", "metrics.uol.com.br"=>"Analytics", "clearsale.com.br"=>"Analytics","amobee.com"=>"Analytics",
 			"clearsalesolutions.com"=>"Analytics","connatix.com" => "Advertising", "connexity.net"=>"Analytics", "ophan.co.uk"=>"Analytics", 
 			"cxpublic.com" => "Content","dataradar.es" => "Content","delicious.com" => "Content","directclicksonly.com"=>"Analytics", 
-			"dmcdn.net" => "Content","cm.dpclk.com"=>"Analytics","dynad.net" => "Advertising", "edgefonts.net" => "Content",
+			"dmcdn.net" => "Content","cm.dpclk.com"=>"Analytics","dynad.net" => "Advertising", "edgefonts.net" => "Content","bidtheatre.com" => "Advertising",
 			"elasticad.net" => "Advertising","fastly.net"=>"Content","freegeoip.net"=>"Analytics","gannett-cdn.com" => "Content",
 			"gdmdigital.com" => "Advertising","genesismedia.com" => "Advertising","georiot.com"=>"Analytics", "geni.us"=>"Analytics", 
 			"go-mpulse.net"=>"Analytics","apis.google.com"=>"Content","accounts.google.com"=>"Content","gg.google.com"=>"Analytics",
@@ -103,6 +103,7 @@ class KeywordsLists
 			"zanox.com" => "Advertising","scmspain.com" => "Advertising","schibsted.es"=> "Advertising", "254a.com"=> "Advertising","dyntrk.com" => "Analytics",
 			"gltrkk.net" => "Analytics","sponsorpay.com" => "Advertising","fyber.com" => "Advertising","epartner.es" => "Advertising", "affili.net" => "Advertising",
 			"himediagroup.com" => "Advertising","himediads.com" => "Advertising","himediatech.com" => "Advertising","adux.com" => "Advertising",
+			"wideorbit.com" => "Advertising",
 		}
 
 		@cookiesync=["match","sync","cm","csync","cm.g.doubleclick.net"]
