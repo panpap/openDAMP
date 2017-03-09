@@ -40,8 +40,9 @@ Dir.entries(folderPath).each {|f|
 		month=timestmp[4...6]
 		fw=File.new("month_2015"+month,"w")
 	end
+	system("sort "+folderPath+"/"+traceFile+" | uniq > tempSort")
 	puts month
-	File.foreach(folderPath+"/"+traceFile) {|line|
+	File.foreach("tempSort") {|line|
 		next if line.include? "/awazzaredirect/" # Duplicate removal
 		row=tokenize(line.chop.force_encoding("iso-8859-1"))
 		next if row["Country"]!="ES"
@@ -51,3 +52,4 @@ Dir.entries(folderPath).each {|f|
 	}
 }
 fw.close
+system("rm -rf tempSort")
