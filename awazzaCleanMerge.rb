@@ -26,7 +26,6 @@ def tokenize(line)
 end
 
 folderPath="/home/sysadmin/data/log_done/"
-folderPath="./temp/"
 month=nil
 fw=nil
 Dir.entries(folderPath).each {|f| 
