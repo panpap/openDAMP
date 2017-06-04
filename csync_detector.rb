@@ -17,7 +17,7 @@ class CSync
 		curNoTLDHost=Utilities.calculateHost(urlAll.first,nil) # host without TLD
 		if not checkCSinParams(urlAll,row,cat,curNoTLDHost)
 			if not checkCSinURI(urlAll,row,cat,curNoTLDHost)
-				checkCSinReferrer(row,cat)
+				checkCSinReferrer(row)
 			end
 		end
 	end
@@ -118,17 +118,18 @@ confirmed+=1 if @params_cs[curUser].keys.any?{ |word| paramPair.last.downcase.eq
 		return found
 	end
 
-	def	checkCSinReferrer(row,cat)
+	def	checkCSinReferrer(row)
 		found=false
 		newRow=row
 		return found if newRow['httpRef']==-1 or newRow['httpRef']=="-"
 		newRow['url']=newRow['httpRef'].gsub("http://","")
 		newRow['httpRef']="REFANALYSIS"
 		urlAll=newRow['url'].split("?")[0..1]
+		newCat=@filters.getCategory(urlAll,Utilities.calculateHost(row['url'],row['host']),row['IPport'])
 		noTLDHost=Utilities.calculateHost(urlAll.first,nil) # host without TLD
 		refHost=Utilities.calculateHost(urlAll.first,nil) # host without TLD
-		found=checkCSinParams(urlAll,newRow,cat,noTLDHost)
-		found=checkCSinURI(urlAll,newRow,cat,noTLDHost) if not found
+		found=checkCSinParams(urlAll,newRow,newCat,noTLDHost)
+		found=checkCSinURI(urlAll,newRow,newCat,noTLDHost) if not found
 		return found
 	end
 end

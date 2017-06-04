@@ -19,6 +19,9 @@
   {"Acquisio": {"http://www.acquisio.com/": [
     "acquisio.com", "clickequations.net"
   ]}},
+  {"Glispa": {"http://www.glispa.com/": [
+    "glispa.com", "gltrkk.net"
+  ]}},
   {"Act-On": {"http://www.act-on.com/": ["act-on.com", "actonsoftware.com"]}},
   {"Actisens": {"http://www.actisens.com/": [
     "actisens.com", "gestionpub.com"
