@@ -1,5 +1,6 @@
 load 'convert.rb'
 load 'trace.rb'
+load 'csync_detector.rb'
 load 'filters.rb'
 require 'digest/sha1'
 
@@ -12,14 +13,14 @@ class Core
 		@defines=defs
 		@skipped=0
 		@convert=Convert.new(@defines)
-		@filters=filters	
+		@filters=filters
 		@trace=Trace.new(@defines)
 		@webTrace=Trace.new(@defines)
-		@appTrace=Trace.new(@defines)
+		@appTrace=Trace.new(@defines)		
+		@csync=CSync.new(@filters,@trace,@defines.options["webVsApp?"],@webTrace,@appTrace)
 		@options=@defines.options
 		@window=-1
 		@cwd=nil
-		@params_cs=Hash.new(nil)
 		@database=nil
 	end
 	
@@ -154,11 +155,7 @@ class Core
 
 	def cookieSyncing(row,cat)
 		firstSeenUser?(row)
-		return if row['status']!=nil and (row['status']=="200" or row['status']=="204" or row['status']=="404" or row['status']=="522") # usually 303,302,307 redirect status
-		@params_cs[@curUser]=Hash.new(nil) if @params_cs[@curUser]==nil
-		urlAll=row['url'].split("?")[0..1]
-		return if (urlAll.last==nil)
-		checkCSinURI(urlAll,row,cat) if not checkCSinParams(urlAll,row,cat)
+		@csync.checkForSync(row,cat)
 	#	puts row['url']+" "+ids.to_s if ids>0
 	end
 
@@ -172,92 +169,6 @@ class Core
 
 
 	private
-
-	def	checkCSinURI(urlParts,row,cat)
-        curHost=Utilities.calculateHost(urlParts.first,nil) # host without TLD
-        if cat==nil
-            cat=@filters.getCategory(urlParts,curHost,@curUser)
-            cat="Other" if cat==nil
-        end
-		parts=urlParts.first.split("/")
-		for i in 1..parts.size	#skip actual domain
-			parts[i]=parts[i].split("=")[1] if parts[i]!=nil and parts[i].include? "="
-			if @filters.is_it_ID?(nil,parts[i],false)# and (["turn","atwola","tacoda"].any? {|word| urlParts.first.include? word})
-				if @params_cs[@curUser][parts[i]]==nil #first seen ID
-                    @params_cs[@curUser][parts[i]]=Array.new
-                else    #have seen that ID before -> possible cookieSync
-                    prev=@params_cs[@curUser][parts[i]].last
-                    if prev['host'].split(".")[0]!=curHost.split(".")[0] and @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil) 
-						it_is_CM(row,prev,curHost,[parts[i-1],parts[i]],urlParts,-1,cat,-1) if row['types'].to_s!="video" and parts[i-1].include? "." 
-					end
-				end
-				@params_cs[@curUser][parts[i]].push({"url"=>urlParts,"paramName"=>parts[i-1],"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>curHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"]})
-			end
-		end
-	end
-
-	def it_is_CM(row,prev,curHost,paramPair,urlAll,ids,curCat,confirmed)
-#prevTimestamp|curTimestamp|hostPrev|prevCat|hostCur|curCat|paramNamePrev|userID|paramNameCur|possibleNumberOfIDs|prevStatus|curStatus|allParamsPrev|allParamsCur
-		prevHost=prev['host']
-		params=[@curUser,prev['tmstp'],row['tmstp'],prevHost,prev['cat'],curHost,curCat,prev["paramName"], paramPair.last, paramPair.first, prev['status'],row["status"],ids,confirmed,prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s, prev["url"].first+"?"+prev["url"].last,row["url"], prev['httpRef'], row['httpRef']]
-		id=Digest::SHA256.hexdigest (params.join("|")+prev['url'].first+"|"+urlAll.first)
-		@trace.users[@curUser].csync.push(params.push(row["dev"].to_s))
-		@trace.users[@curUser].csync.push(params.push(prev["browser"].to_s))
-		@trace.users[@curUser].csync.push(params.push(row["browser"].to_s))
-		@trace.users[@curUser].csync.push(params.push(prev["ua"].to_s))
-		@trace.users[@curUser].csync.push(params.push(row["ua"].to_s))
-		@trace.users[@curUser].csync.push(params.push(id))
-		@trace.users[@curUser].csyncIDs[paramPair.last]=0 if @trace.users[@curUser].csyncIDs[paramPair.last]==nil
-		@trace.users[@curUser].csyncHosts[prevHost+">"+curHost]=Array.new if @trace.users[@curUser].csyncHosts[prevHost+">"+curHost]==nil
-		@trace.users[@curUser].csyncHosts[prevHost+">"+curHost].push(confirmed)
-		@trace.users[@curUser].csyncIDs[paramPair.last]+=1
-		@trace.cooksyncs+=1
-		if @defines.options["webVsApp?"]
-			if row['browser']!="unknown"
-				@webTrace.cooksyncs+=1
-			else
-				@appTrace.cooksyncs+=1
-			end
-		end
-	end
-
-	def checkCSinParams(urlParts,row,cat)
-		exclude=["cb","token", "nocache"]
-		confirmed=0
-		ids=0
-		found=false
-		fields=urlParts.last.split('&')
-		return if fields.size>8 # usually there are very few params_cs (only sessionids)
-		curHost=Utilities.calculateHost(urlParts.first,nil) # host without TLD
-		for field in fields do
-            paramPair=field.split("=")
-            if @filters.is_it_ID?(paramPair.first,paramPair.last,true)
-                ids+=1
-confirmed+=1 if @params_cs[@curUser].keys.any?{ |word| paramPair.last.downcase.eql?(word)} 
-                if cat==nil
-                    cat=@filters.getCategory(urlParts,curHost,@curUser)
-                    cat="Other" if cat==nil
-                end
-                if @params_cs[@curUser][paramPair.last]==nil #first seen ID
-                    @params_cs[@curUser][paramPair.last]=Array.new
-                else    #have seen that ID before -> possible cookieSync
-                    prev=@params_cs[@curUser][paramPair.last].last
-                    if prev['host'].split(".")[0]!=curHost.split(".")[0] and @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil) 
-						if not urlParts.last.include? prev['host'] 								#CASE OF PIGGYBACKED URLS
-							if row['types'].to_s!="video"
-						#puts paramPair.last.size
-                    			it_is_CM(row,prev,curHost,paramPair,urlParts,ids,cat,confirmed)
-								found=true
-							end
-						end
-                    end
-                end
-				@params_cs[@curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>curHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"]})
-            end
-        end
-		return found
-	end
-
 
 	def firstSeenUser?(row)
 		@curUser=row['IPport']

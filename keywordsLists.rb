@@ -103,7 +103,7 @@ class KeywordsLists
 			"zanox.com" => "Advertising","scmspain.com" => "Advertising","schibsted.es"=> "Advertising", "254a.com"=> "Advertising","dyntrk.com" => "Analytics",
 			"gltrkk.net" => "Analytics","sponsorpay.com" => "Advertising","fyber.com" => "Advertising","epartner.es" => "Advertising", "affili.net" => "Advertising",
 			"himediagroup.com" => "Advertising","himediads.com" => "Advertising","himediatech.com" => "Advertising","adux.com" => "Advertising",
-			"wideorbit.com" => "Advertising",
+			"wideorbit.com" => "Advertising", "doubleclick.net"=> "Advertising",
 		}
 
 		@cookiesync=["match","sync","cm","csync","cm.g.doubleclick.net"]
