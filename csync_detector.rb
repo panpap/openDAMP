@@ -15,10 +15,9 @@ class CSync
 		return if (urlAll.last==nil)
 		@params_cs[curUser]=Hash.new(nil) if @params_cs[curUser]==nil
 		curNoTLDHost=Utilities.calculateHost(urlAll.first,nil) # host without TLD
-		if not checkCSinParams(urlAll,row,cat,curNoTLDHost)
-			if not checkCSinURI(urlAll,row,cat,curNoTLDHost)
-				checkCSinReferrer(row)
-			end
+		checkCSinReffererParams(Marshal.load( Marshal.dump(row) ))
+		if not checkCSinParams(urlAll,row,cat,curNoTLDHost) 
+			checkCSinURI(urlAll,row,cat,curNoTLDHost)
 		end
 	end
 
@@ -44,32 +43,44 @@ private
                     prev=@params_cs[curUser][parts[i]].last
                     if prev['host'].split(".")[0]!=noTLDHost.split(".")[0] and @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(noTLDHost,nil) 
 						if row['types'].to_s!="video" and parts[i-1].include? "." 
-							it_is_CM(row,prev,noTLDHost,[parts[i-1],parts[i]],urlParts,-1,cat,-1) 
+							it_is_CM(row,prev,noTLDHost,[parts[i-1],parts[i]],"URI",urlParts,-1,cat) 
 							found=true
 						end
 					end
 				end
-				@params_cs[curUser][parts[i]].push({"url"=>urlParts,"paramName"=>parts[i-1],"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"]})
+				@params_cs[curUser][parts[i]].push({"url"=>urlParts,"paramName"=>parts[i-1],"tmstp"=>row['tmstp']+"-REF","cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"], "piggybacked" => "URI"})
 			end
 		end
 		return found
 	end
 
-	def it_is_CM(row,prev,noTLDHost,paramPair,urlAll,ids,curCat,confirmed)
+	def it_is_CM(row,prev,noTLDHost,paramPair,piggybacked,urlAll,ids,curCat)
 		curUser=row['IPport']
 #prevTimestamp|curTimestamp|hostPrev|prevCat|hostCur|curCat|paramNamePrev|userID|paramNameCur|possibleNumberOfIDs|prevStatus|curStatus|allParamsPrev|allParamsCur
 		prevHost=prev['host']
-		params=[curUser,prev['tmstp'],row['tmstp'],prevHost,prev['cat'],noTLDHost,curCat,prev["paramName"], paramPair.last, paramPair.first, prev['status'],row["status"],ids,confirmed,prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s, prev["url"].first+"?"+prev["url"].last,row["url"], prev['httpRef'], row['httpRef']]
-		id=Digest::SHA256.hexdigest (params.join("|")+prev['url'].first+"|"+urlAll.first)
+		params=[curUser,prevHost,prev['cat'],noTLDHost,curCat,prev["paramName"], paramPair.last, paramPair.first,ids.to_s,prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s, prev["url"].first+"?"+prev["url"].last,row["url"],prev['piggybacked'],piggybacked]
+
+
+		id=Digest::SHA256.hexdigest (params.sort.join("|"))
+
+		str=params.sort.join("|")
+puts "\n----->>> "+str+" "+id if str.include? "smartadserver."
+
+		@trace.users[curUser].csync.push(params.push(prev['status']))
+		@trace.users[curUser].csync.push(params.push(row["status"]))
+		@trace.users[curUser].csync.push(params.push(prev['httpRef']))
+		@trace.users[curUser].csync.push(params.push(row['httpRef']))
 		@trace.users[curUser].csync.push(params.push(row["dev"].to_s))
 		@trace.users[curUser].csync.push(params.push(prev["browser"].to_s))
 		@trace.users[curUser].csync.push(params.push(row["browser"].to_s))
 		@trace.users[curUser].csync.push(params.push(prev["ua"].to_s))
 		@trace.users[curUser].csync.push(params.push(row["ua"].to_s))
+		@trace.users[curUser].csync.push(params.push(prev['tmstp']))
+		@trace.users[curUser].csync.push(params.push(row['tmstp']))
 		@trace.users[curUser].csync.push(params.push(id))
 		@trace.users[curUser].csyncIDs[paramPair.last]=0 if @trace.users[curUser].csyncIDs[paramPair.last]==nil
-		@trace.users[curUser].csyncHosts[prevHost+">"+noTLDHost]=Array.new if @trace.users[curUser].csyncHosts[prevHost+">"+noTLDHost]==nil
-		@trace.users[curUser].csyncHosts[prevHost+">"+noTLDHost].push(confirmed)
+		#@trace.users[curUser].csyncHosts[prevHost+">"+noTLDHost]=Array.new if @trace.users[curUser].csyncHosts[prevHost+">"+noTLDHost]==nil
+		#@trace.users[curUser].csyncHosts[prevHost+">"+noTLDHost].push(confirmed)
 		@trace.users[curUser].csyncIDs[paramPair.last]+=1
 		@trace.cooksyncs+=1
 		if @webVsApp
@@ -84,7 +95,7 @@ private
 	def checkCSinParams(urlParts,row,cat,noTLDHost)
 		curUser=row['IPport']
 		exclude=["cb","token", "nocache"]
-		confirmed=0
+#		confirmed=0
 		ids=0
 		found=false
 		fields=urlParts.last.split('&')
@@ -93,7 +104,7 @@ private
             paramPair=field.split("=")
             if @filters.is_it_ID?(paramPair.first,paramPair.last,true)
                 ids+=1
-confirmed+=1 if @params_cs[curUser].keys.any?{ |word| paramPair.last.downcase.eql?(word)} 
+#confirmed+=1 if @params_cs[curUser].keys.any?{ |word| paramPair.last.downcase.eql?(word)} 
                 if cat==nil
                     cat=@filters.getCategory(urlParts,noTLDHost,curUser)
                     cat="Other" if cat==nil
@@ -106,30 +117,56 @@ confirmed+=1 if @params_cs[curUser].keys.any?{ |word| paramPair.last.downcase.eq
 						if not urlParts.last.include? prev['host'] 								#CASE OF PIGGYBACKED URLS
 							if row['types'].to_s!="video"
 						#puts paramPair.last.size
-                    			it_is_CM(row,prev,noTLDHost,paramPair,urlParts,ids,cat,confirmed)
+                    			it_is_CM(row,prev,noTLDHost,paramPair,"PARAM",urlParts,ids,cat)
 								found=true
 							end
 						end
                     end
                 end
-				@params_cs[curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"]})
+				@params_cs[curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"], "piggybacked" => "PARAM"})
             end
         end
 		return found
 	end
 
-	def	checkCSinReferrer(row)
+	def checkCSinReffererParams(curRow)	
 		found=false
-		newRow=row
-		return found if newRow['httpRef']==-1 or newRow['httpRef']=="-"
-		newRow['url']=newRow['httpRef'].gsub("http://","")
-		newRow['httpRef']="REFANALYSIS"
-		urlAll=newRow['url'].split("?")[0..1]
-		newCat=@filters.getCategory(urlAll,Utilities.calculateHost(row['url'],row['host']),row['IPport'])
-		noTLDHost=Utilities.calculateHost(urlAll.first,nil) # host without TLD
-		refHost=Utilities.calculateHost(urlAll.first,nil) # host without TLD
-		found=checkCSinParams(urlAll,newRow,newCat,noTLDHost)
-		found=checkCSinURI(urlAll,newRow,newCat,noTLDHost) if not found
+		return found if curRow['httpRef']==-1 or curRow['httpRef']=="-"
+		curUser=curRow['IPport']
+		exclude=["cb","token", "nocache"]
+		ids=0
+		curRow['url']=curRow['httpRef'].gsub("http://","")
+		urlParts=curRow['url'].split("?")[0..1]
+		return found if (urlParts.last==nil)
+		curHost=Utilities.calculateHost(urlParts.first,nil)
+		curRow['host']=curHost
+		curRow['httpRef']="REFANALYSIS" 
+		cat=@filters.getCategory(urlParts,curHost,curUser)
+		cat="Other" if cat==nil
+		fields=urlParts.last.split('&')
+		return found if fields.size>12 # usually there are very few params_cs (only sessionids)
+		for field in fields do
+            paramPair=field.split("=")
+            if @filters.is_it_ID?(paramPair.first,paramPair.last,true)
+                ids+=1
+                if @params_cs[curUser][paramPair.last]==nil #first seen ID
+                    @params_cs[curUser][paramPair.last]=Array.new
+                else    #have seen that ID before -> possible cookieSync
+                    prev=@params_cs[curUser][paramPair.last].last
+                    if prev['host'].split(".")[0]!=curHost.split(".")[0] and @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil) 
+						if not urlParts.last.include? prev['host'] 								#CASE OF PIGGYBACKED URLS
+							if curRow['types'].to_s!="video"
+						#puts paramPair.last.size
+                    			it_is_CM(curRow,prev,curHost,paramPair,"REFF",urlParts,ids,cat)
+								found=true
+							end
+						end
+                    end
+                end
+				@params_cs[curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>curRow['tmstp'],"cat"=>cat,"status"=>curRow["status"],"host"=>curHost,"httpRef"=>curRow["httpRef"], "browser" => curRow["browser"] , "ua" => curRow["ua"], "piggybacked" => "REFF"})
+            end
+        end
 		return found
 	end
+
 end
