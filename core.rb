@@ -71,6 +71,7 @@ class Core
 		end
 		total=Thread.new {
 			@defines.puts "> Calculating Statistics about detected ads..."
+			@defines.puts "---> Internal CSync: "+@csync.samepartyCS.to_s if @options['tablesDB'][@defines.tables["csyncTable"].keys.first]
 			@defines.puts @trace.results_toString(0,@database,@defines.tables['traceTable'])
 			@trace.dumpRes(@database,@defines.tables['traceTable'],@defines.tables['bcnTable'],@defines.tables['advertiserTable'])
 			if @defines.options["webVsApp?"]

@@ -83,7 +83,7 @@ class KeywordsLists
 			"hi-mediaserver.com" => "Content","hotjar.com"=>"Analytics", "hwcdn.net" => "Content","iadbox.com" => "Advertising", 
 			"impdesk.com"=>"Advertising","imrk.net"=>"Analytics","ipredictive.com"=>"Advertising","ixiaa.com"=>"Analytics", "stickyadstv.com" => "Advertising",
 			"janrain.com"=>"Analytics","janrainbackplane.com"=>"Analytics","jquery.com" => "Content","jquerytools.org" => "Content",
-			"jsdelivr.net" => "Content","justpremium.com" => "Advertising","jwpcdn.com" => "Content","jwpsrv.com" => "Content",
+			"jsdelivr.net" => "Content","justpremium.com" => "Advertising","jwpcdn.com" => "Content","jwpsrv.com" => "Content","tdblog.es" => "Advertising",
 			"lomadee.com" => "Advertising","madnet.ru" => "Advertising","madnetex.com" => "Advertising","marfeel.com"=>"Analytics",
 			"matheranalytics.com"=>"Analytics","media-imdb.com" => "Content","mediavoice.com" => "Advertising","polar.me" => "Advertising",
 			"medium.com" => "Content","micpn.com"=>"Analytics","movableink.com"=>"Analytics","video.microcontenidos.com" => "Content",
@@ -104,10 +104,18 @@ class KeywordsLists
 			"gltrkk.net" => "Analytics","sponsorpay.com" => "Advertising","fyber.com" => "Advertising","epartner.es" => "Advertising", "affili.net" => "Advertising",
 			"himediagroup.com" => "Advertising","himediads.com" => "Advertising","himediatech.com" => "Advertising","adux.com" => "Advertising",
 			"wideorbit.com" => "Advertising", "doubleclick.net"=> "Advertising","offer-dynamics.com"=> "Advertising", "a2g-secure.com"=> "Advertising",
-			"metaffiliation.com"=> "Advertising", "linkbolic.com"=> "Advertising",
-
-
-
+			"metaffiliation.com"=> "Advertising", "linkbolic.com"=> "Advertising", "superfish.com"=> "Advertising","uuidcshmg.com"=>"Advertising", "facetz.net"=> "Advertising",
+			"magnuum.com"=>"Content","rvty.net"=> "Advertising", "leadbolt.net" => "Advertising", "digitalturbine.com"=> "Advertising", "appia.com"=> "Advertising",
+			"mads.com"=> "Advertising","madsone.com"=> "Advertising","motiveinteractive.com"=> "Advertising","traktum.com"=> "Advertising", "goclickon.us"=>"Analytics",
+			"revmobmobileadnetwork.com"=> "Advertising","revmob.com"=> "Advertising","voluumtrk.com"=>"Analytics","beezup.com"=>"Analytics", "brandcrumb.com"=> "Advertising",
+			"cabestan.com"=> "Advertising", "appsflyer.com"=>"Analytics", "appliedq.com"=>"Analytics", "c4tw.net"=>"Analytics", "ijinshan.com"=>"Analytics", "reactivpub.fr"=>"Analytics",
+			"brucelead.com"=>"Analytics","betweendigital.com"=> "Advertising","affiliaxe.com"=> "Advertising","a2pub.com"=> "Advertising", "a91apps.com"=> "Advertising",
+			"affiliatetrackback.com"=> "Advertising","inner-active.mobi"=> "Advertising","inner-active.com"=> "Advertising", "appiris.com"=> "Advertising",
+			"yesadsrv.com"=> "Advertising","lenzmx.com"=> "Advertising","mobvista.com"=> "Advertising","utappymobile.com"=> "Advertising","idtargeting.com"=> "Advertising",
+			"redintelligence.net"=> "Advertising","vungle.com"=> "Advertising","epmads.com"=> "Advertising","morgdm.ru"=> "Advertising", "smartyads.com"=> "Advertising",
+			"ucozadserving.com"=> "Advertising","n52adshostnet.com"=> "Advertising","cogocast.net"=> "Advertising","revmob.com"=> "Advertising","reactivpub-track17.com"=>"Analytics",
+			"bettyads.com"=> "Advertising","tradedoubler.com"=> "Advertising","sniperlog.ru"=> "Advertising","mobilda.com"=> "Advertising","integral-marketing.com"=> "Advertising",
+			"coolmobile.com"=> "Advertising","linkbucksmedia.com"=> "Advertising","datafastguru.info"=> "Advertising","faggrim.com"=> "Advertising","apploop.com"=> "Advertising",
 		}
 
 		@cookiesync=["match","sync","cm","csync","cm.g.doubleclick.net"]

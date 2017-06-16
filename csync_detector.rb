@@ -1,4 +1,6 @@
 class CSync
+	attr_accessor :samepartyCS
+
 	def initialize(filters,trace,webVsApp,webTrace,appTrace)
 		@trace=trace
 		@webVsApp=webVsApp
@@ -6,6 +8,7 @@ class CSync
 		@webTrace=webTrace
 		@appTrace=appTrace
 		@params_cs=Hash.new(nil)
+		@samepartyCS={"app"=>0,"web"=>0}
 	end
 
 	def checkForSync(row,cat)
@@ -24,7 +27,6 @@ class CSync
 
 private
 	@@shortURLs=["//t.co/", "//bit.ly/", "//goo.gl/","//ow.ly/","//youtu.be/","tinyurl.com/","//deck.ly/","//lnk.co/","//su.pr/","//fur.ly/"]
-
 	def	checkCSinURI(urlParts,row,cat,noTLDHost)
 		curUser=row['IPport']
 		found=false
@@ -41,10 +43,18 @@ private
                     @params_cs[curUser][parts[i]]=Array.new
                 else    #have seen that ID before -> possible cookieSync
                     prev=@params_cs[curUser][parts[i]].last
-                    if prev['host'].split(".")[0]!=noTLDHost.split(".")[0] and @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(noTLDHost,nil) 
-						if row['types'].to_s!="video" and parts[i-1].include? "." 
-							it_is_CM(row,prev,noTLDHost,[parts[i-1],parts[i]],"URI",urlParts,-1,cat) 
-							found=true
+                    if prev['host'].split(".")[0]!=noTLDHost.split(".")[0] 
+						if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(noTLDHost,nil) 
+							if row['types'].to_s!="video" and parts[i-1].include? "." 
+								it_is_CM(row,prev,noTLDHost,[parts[i-1],parts[i]],"URI",urlParts,-1,cat) 
+								found=true
+							end
+						else
+							if row['browser']!="unknown"
+								@samepartyCS["web"]+=1
+							else
+								@samepartyCS["app"]+=1
+							end
 						end
 					end
 				end
@@ -64,8 +74,6 @@ private
 		id=Digest::SHA256.hexdigest (params.sort.join("|"))
 
 		str=params.sort.join("|")
-puts "\n----->>> "+str+" "+id if str.include? "smartadserver."
-
 		@trace.users[curUser].csync.push(params.push(prev['status']))
 		@trace.users[curUser].csync.push(params.push(row["status"]))
 		@trace.users[curUser].csync.push(params.push(prev['httpRef']))
@@ -113,16 +121,24 @@ puts "\n----->>> "+str+" "+id if str.include? "smartadserver."
                     @params_cs[curUser][paramPair.last]=Array.new
                 else    #have seen that ID before -> possible cookieSync
                     prev=@params_cs[curUser][paramPair.last].last
-                    if prev['host'].split(".")[0]!=noTLDHost.split(".")[0] and @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(noTLDHost,nil) 
-						if not urlParts.last.include? prev['host'] 								#CASE OF PIGGYBACKED URLS
-							if row['types'].to_s!="video"
-						#puts paramPair.last.size
-                    			it_is_CM(row,prev,noTLDHost,paramPair,"PARAM",urlParts,ids,cat)
-								found=true
+                    if prev['host'].split(".")[0]!=noTLDHost.split(".")[0] 
+						if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(noTLDHost,nil) 
+							if not urlParts.last.include? prev['host'] 								#CASE OF PIGGYBACKED URLS
+								if row['types'].to_s!="video"
+							#puts paramPair.last.size
+		                			it_is_CM(row,prev,noTLDHost,paramPair,"PARAM",urlParts,ids,cat)
+									found=true
+								end
 							end
-						end
-                    end
-                end
+						else
+							if row['browser']!="unknown"
+								@samepartyCS["web"]+=1
+							else
+								@samepartyCS["app"]+=1
+							end
+      		            end
+                	end
+				end
 				@params_cs[curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"], "piggybacked" => "PARAM"})
             end
         end
@@ -153,15 +169,23 @@ puts "\n----->>> "+str+" "+id if str.include? "smartadserver."
                     @params_cs[curUser][paramPair.last]=Array.new
                 else    #have seen that ID before -> possible cookieSync
                     prev=@params_cs[curUser][paramPair.last].last
-                    if prev['host'].split(".")[0]!=curHost.split(".")[0] and @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil) 
-						if not urlParts.last.include? prev['host'] 								#CASE OF PIGGYBACKED URLS
-							if curRow['types'].to_s!="video"
-						#puts paramPair.last.size
-                    			it_is_CM(curRow,prev,curHost,paramPair,"REFF",urlParts,ids,cat)
-								found=true
+                    if prev['host'].split(".")[0]!=curHost.split(".")[0] 
+						if  @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil) 
+							if not urlParts.last.include? prev['host'] 								#CASE OF PIGGYBACKED URLS
+								if curRow['types'].to_s!="video"
+							#puts paramPair.last.size
+		                			it_is_CM(curRow,prev,curHost,paramPair,"REFF",urlParts,ids,cat)
+									found=true
+								end
 							end
-						end
-                    end
+						else
+							if row['browser']!="unknown"
+								@samepartyCS["web"]+=1
+							else
+								@samepartyCS["app"]+=1
+							end
+		                end
+					end
                 end
 				@params_cs[curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>curRow['tmstp'],"cat"=>cat,"status"=>curRow["status"],"host"=>curHost,"httpRef"=>curRow["httpRef"], "browser" => curRow["browser"] , "ua" => curRow["ua"], "piggybacked" => "REFF"})
             end
