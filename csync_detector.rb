@@ -37,6 +37,8 @@ private
 		return found if @@shortURLs.any? {|word| urlParts.first.downcase.include?(word)}
 		parts=urlParts.first.split("/")
 		for i in 1..parts.size	#skip actual domain
+			paramName=parts[i-1]
+			paramName=parts[i].split("=").first if parts[i]!=nil and parts[i].include? "="
 			parts[i]=parts[i].split("=")[1] if parts[i]!=nil and parts[i].include? "="
 			if @filters.is_it_ID?(nil,parts[i],false)# and (["turn","atwola","tacoda"].any? {|word| urlParts.first.include? word})
 				if @params_cs[curUser][parts[i]]==nil #first seen ID
@@ -45,8 +47,8 @@ private
                     prev=@params_cs[curUser][parts[i]].last
                     if prev['host'].split(".")[0]!=noTLDHost.split(".")[0] 
 						if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(noTLDHost,nil) 
-							if row['types'].to_s!="video" and parts[i-1].include? "." 
-								it_is_CM(row,prev,noTLDHost,[parts[i-1],parts[i]],"URI",urlParts,-1,cat) 
+							if row['types'].to_s!="video" and paramName.include? "." 
+								it_is_CM(row,prev,noTLDHost,[paramName,parts[i]],"URI",urlParts,-1,cat) 
 								found=true
 							end
 						else
@@ -58,7 +60,7 @@ private
 						end
 					end
 				end
-				@params_cs[curUser][parts[i]].push({"url"=>urlParts,"paramName"=>parts[i-1],"tmstp"=>row['tmstp']+"-REF","cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"], "piggybacked" => "URI"})
+				@params_cs[curUser][parts[i]].push({"url"=>urlParts,"paramName"=>paramName,"tmstp"=>row['tmstp']+"-REF","cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"], "piggybacked" => "URI"})
 			end
 		end
 		return found
