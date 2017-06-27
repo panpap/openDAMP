@@ -41,14 +41,15 @@ private
 			paramName=parts[i].split("=").first if parts[i]!=nil and parts[i].include? "="
 			parts[i]=parts[i].split("=")[1] if parts[i]!=nil and parts[i].include? "="
 			if @filters.is_it_ID?(nil,parts[i],false)# and (["turn","atwola","tacoda"].any? {|word| urlParts.first.include? word})
+				wasSynced=false
 				if @params_cs[curUser][parts[i]]==nil #first seen ID
                     @params_cs[curUser][parts[i]]=Array.new
                 else    #have seen that ID before -> possible cookieSync
-                    prev=@params_cs[curUser][parts[i]].last
+					prev=@params_cs[curUser][parts[i]].last
                     if prev['host'].split(".")[0]!=noTLDHost.split(".")[0] 
 						if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(noTLDHost,nil) 
 							if row['types'].to_s!="video" and paramName.include? "." 
-								it_is_CM(row,prev,noTLDHost,[paramName,parts[i]],"URI",urlParts,-1,cat) 
+								wasSynced=it_is_CM(row,prev,noTLDHost,[paramName,parts[i]],"URI",urlParts,-1,cat) 
 								found=true
 							end
 						else
@@ -60,7 +61,7 @@ private
 						end
 					end
 				end
-				@params_cs[curUser][parts[i]].push({"url"=>urlParts,"paramName"=>paramName,"tmstp"=>row['tmstp']+"-REF","cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"], "piggybacked" => "URI"})
+				@params_cs[curUser][parts[i]].push({"url"=>urlParts,"paramName"=>paramName,"tmstp"=>row['tmstp']+"-REF","cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"], "piggybacked" => "URI","wasSynced"=>wasSynced})
 			end
 		end
 		return found
@@ -100,6 +101,7 @@ private
 				@appTrace.cooksyncs+=1
 			end
 		end
+		return true
 	end
 
 	def checkCSinParams(urlParts,row,cat,noTLDHost)
@@ -114,21 +116,23 @@ private
             paramPair=field.split("=")
             if @filters.is_it_ID?(paramPair.first,paramPair.last,true)
                 ids+=1
+				wasSynced=false
 #confirmed+=1 if @params_cs[curUser].keys.any?{ |word| paramPair.last.downcase.eql?(word)} 
                 if cat==nil
                     cat=@filters.getCategory(urlParts,noTLDHost,curUser)
                     cat="Other" if cat==nil
                 end
-                if @params_cs[curUser][paramPair.last]==nil #first seen ID
+				prev,notAbsolute=firstSeen(paramPair.last,@params_cs[curUser])
+                if  prev==nil #first seen ID
                     @params_cs[curUser][paramPair.last]=Array.new
                 else    #have seen that ID before -> possible cookieSync
-                    prev=@params_cs[curUser][paramPair.last].last
+					@params_cs[curUser][paramPair.last]=Array.new if notAbsolute
                     if prev['host'].split(".")[0]!=noTLDHost.split(".")[0] 
 						if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(noTLDHost,nil) 
 							if not urlParts.last.include? prev['host'] 								#CASE OF PIGGYBACKED URLS
 								if row['types'].to_s!="video"
 							#puts paramPair.last.size
-		                			it_is_CM(row,prev,noTLDHost,paramPair,"PARAM",urlParts,ids,cat)
+		                			wasSynced=it_is_CM(row,prev,noTLDHost,paramPair,"PARAM",urlParts,ids,cat)
 									found=true
 								end
 							end
@@ -141,7 +145,7 @@ private
       		            end
                 	end
 				end
-				@params_cs[curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"], "piggybacked" => "PARAM"})
+				@params_cs[curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>row['tmstp'],"cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"], "ua" => row["ua"], "piggybacked" => "PARAM","wasSynced"=>wasSynced})
             end
         end
 		return found
@@ -167,16 +171,18 @@ private
             paramPair=field.split("=")
             if @filters.is_it_ID?(paramPair.first,paramPair.last,true)
                 ids+=1
-                if @params_cs[curUser][paramPair.last]==nil #first seen ID
+				wasSynced=false
+				prev,notAbsolute=firstSeen(paramPair.last,@params_cs[curUser])
+                if  prev==nil#first seen ID
                     @params_cs[curUser][paramPair.last]=Array.new
                 else    #have seen that ID before -> possible cookieSync
-                    prev=@params_cs[curUser][paramPair.last].last
+					@params_cs[curUser][paramPair.last]=Array.new if notAbsolute
                     if prev['host'].split(".")[0]!=curHost.split(".")[0] 
 						if  @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(curHost,nil) 
-							if not urlParts.last.include? prev['host'] 								#CASE OF PIGGYBACKED URLS
+							if not urlParts.last.include? prev['host'] 		#CASE OF PIGGYBACKED URLS
 								if curRow['types'].to_s!="video"
 							#puts paramPair.last.size
-		                			it_is_CM(curRow,prev,curHost,paramPair,"REFF",urlParts,ids,cat)
+		                			wasSynced=it_is_CM(curRow,prev,curHost,paramPair,"REFF",urlParts,ids,cat)
 									found=true
 								end
 							end
@@ -189,10 +195,17 @@ private
 		                end
 					end
                 end
-				@params_cs[curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>curRow['tmstp'],"cat"=>cat,"status"=>curRow["status"],"host"=>curHost,"httpRef"=>curRow["httpRef"], "browser" => curRow["browser"] , "ua" => curRow["ua"], "piggybacked" => "REFF"})
+				@params_cs[curUser][paramPair.last].push({"url"=>urlParts,"paramName"=>paramPair.first,"tmstp"=>curRow['tmstp'],"cat"=>cat,"status"=>curRow["status"],"host"=>curHost,"httpRef"=>curRow["httpRef"], "browser" => curRow["browser"] , "ua" => curRow["ua"], "piggybacked" => "REFF","wasSynced"=>wasSynced})
             end
         end
 		return found
 	end
 
+	def firstSeen(id,csParams_User)
+		if id.size>=15
+			csParams_User.keys.each{|uid| return csParams_User[uid].last,true if uid.include? id}
+		end
+		return csParams_User[id].last,false if csParams_User[id]!=nil
+		return nil,false
+	end
 end
