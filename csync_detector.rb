@@ -187,7 +187,7 @@ private
 								end
 							end
 						else
-							if row['browser']!="unknown"
+							if curRow['browser']!="unknown"
 								@samepartyCS["web"]+=1
 							else
 								@samepartyCS["app"]+=1
