@@ -160,9 +160,10 @@ private
 		curRow['url']=curRow['httpRef'].gsub("http://","")
 		urlParts=curRow['url'].split("?")[0..1]
 		return found if (urlParts.last==nil)
+		return found if urlParts.first=="::0"
 		curHost=Utilities.calculateHost(urlParts.first,nil)
 		curRow['host']=curHost
-		curRow['httpRef']="REFANALYSIS" 
+		curRow['httpRef']="REFANALYSIS"
 		cat=@filters.getCategory(urlParts,curHost,curUser)
 		cat="Other" if cat==nil
 		fields=urlParts.last.split('&')
