@@ -157,8 +157,9 @@ private
 		curUser=curRow['IPport']
 		exclude=["cb","token", "nocache"]
 		ids=0
-		curRow['url']=curRow['httpRef'].gsub("http://","")
-		curRow['url'].gsub("?https","https") if curRow['url'].include? "?https://"
+		curRow['httpRef']=curRow['httpRef'].gsub("??","").gsub("?https","https") if curRow['httpRef'].include? "?https://"
+		curRow['url']=curRow['httpRef'].gsub("http://","").gsub("https://","")
+puts curRow['url']
 		urlParts=curRow['url'].split("?")[0..1]
 		return found if (urlParts.last==nil)
 		return found if urlParts.first=="::0"
