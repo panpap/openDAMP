@@ -158,6 +158,7 @@ private
 		exclude=["cb","token", "nocache"]
 		ids=0
 		curRow['url']=curRow['httpRef'].gsub("http://","")
+		curRow['url'].gsub("?https","https") if curRow['url'].include? "?https://"
 		urlParts=curRow['url'].split("?")[0..1]
 		return found if (urlParts.last==nil)
 		return found if urlParts.first=="::0"
