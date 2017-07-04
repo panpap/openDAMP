@@ -180,7 +180,7 @@ module Utilities
 
 	def Utilities.tokenizeHost(host)
 		parts=host.split(".")
-		if (host.include? 'org.es' or host.include? 'co.jp' or host.include? 'com.uy' or host.include? 'com.mx' or host.include? 'com.mk' or host.include? 'edu.mx' or host.include? 'com.es' or host.include? 'com.ar' or host.include? 'com.do' or host.include? 'co.uk' or host.include? 'co.in' or host.include? 'com.br' or host.include? 'com.au' or host.include? 'org.br' or host.include? 'uk.com' or host.include? 'co.nz' or host.include? 'co.id' or host.include? 'co.kr')
+		if (host.include? 'org.es' or host.include? 'co.jp' or host.include? 'com.uy' or host.include? 'com.mx' or host.include? 'eu.org' or host.include? 'com.hk' or host.include? 'com.mk' or host.include? 'edu.mx' or host.include? 'com.es' or host.include? 'com.ar' or host.include? 'com.do' or host.include? 'co.uk' or host.include? 'co.in' or host.include? 'com.br' or host.include? 'com.au' or host.include? 'org.br' or host.include? 'uk.com' or host.include? 'co.nz' or host.include? 'co.id' or host.include? 'co.kr')
 			tld=parts[parts.size-2]+"."+parts[parts.size-1]
             domain=parts[parts.size-3]
 		else
