@@ -12,7 +12,7 @@ class CSync
 	end
 
 	def checkForSync(row,cat)
-		return if row['status']!=nil and (row['status']=="200" or row['status']=="204" or row['status']=="404" or row['status']=="522") # usually 303,302,307 redirect status
+		return if row['status']!=nil and (row['status']=="404" or row['status']=="522") # usually 303,302,307 redirect status
 		curUser=row['IPport']
 		urlAll=row['url'].split("?")[0..1]
 		return if (urlAll.last==nil)
@@ -121,13 +121,13 @@ private
                 if cat==nil
                     cat=@filters.getCategory(urlParts,noTLDHost,curUser)
                     cat="Other" if cat==nil
-                end
+                end         
 				prev,notAbsolute=firstSeen(paramPair.last,@params_cs[curUser])
                 if  prev==nil #first seen ID
                     @params_cs[curUser][paramPair.last]=Array.new
                 else    #have seen that ID before -> possible cookieSync
 					@params_cs[curUser][paramPair.last]=Array.new if notAbsolute
-                    if prev['host'].split(".")[0]!=noTLDHost.split(".")[0] 
+                    if prev['host'].split(".")[0]!=noTLDHost.split(".")[0]
 						if @filters.getRootHost(prev['host'],nil)!=@filters.getRootHost(noTLDHost,nil) 
 							if not urlParts.last.include? prev['host'] 								#CASE OF PIGGYBACKED URLS
 								if row['types'].to_s!="video"
@@ -159,7 +159,6 @@ private
 		ids=0
 		curRow['httpRef']=curRow['httpRef'].gsub("??","").gsub("?https","https") if curRow['httpRef'].include? "?https://"
 		curRow['url']=curRow['httpRef'].gsub("http://","").gsub("https://","")
-puts curRow['url']
 		urlParts=curRow['url'].split("?")[0..1]
 		return found if (urlParts.last==nil)
 		return found if urlParts.first=="::0"
