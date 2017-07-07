@@ -107,7 +107,7 @@ class KeywordsLists
 			"metaffiliation.com"=> "Advertising", "linkbolic.com"=> "Advertising", "superfish.com"=> "Advertising","uuidcshmg.com"=>"Advertising", "facetz.net"=> "Advertising",
 			"magnuum.com"=>"Content","rvty.net"=> "Advertising", "leadbolt.net" => "Advertising", "digitalturbine.com"=> "Advertising", "appia.com"=> "Advertising",
 			"mads.com"=> "Advertising","madsone.com"=> "Advertising","motiveinteractive.com"=> "Advertising","traktum.com"=> "Advertising", "goclickon.us"=>"Analytics",
-			"revmobmobileadnetwork.com"=> "Advertising","revmob.com"=> "Advertising","voluumtrk.com"=>"Analytics","beezup.com"=>"Analytics", "brandcrumb.com"=> "Advertising",
+			"revmobmobileadnetwork.com"=> "Advertising","voluumtrk.com"=>"Analytics","beezup.com"=>"Analytics", "brandcrumb.com"=> "Advertising",
 			"cabestan.com"=> "Advertising", "appsflyer.com"=>"Analytics", "appliedq.com"=>"Analytics", "c4tw.net"=>"Analytics", "ijinshan.com"=>"Analytics", "reactivpub.fr"=>"Analytics",
 			"brucelead.com"=>"Analytics","betweendigital.com"=> "Advertising","affiliaxe.com"=> "Advertising","a2pub.com"=> "Advertising", "a91apps.com"=> "Advertising",
 			"affiliatetrackback.com"=> "Advertising","inner-active.mobi"=> "Advertising","inner-active.com"=> "Advertising", "appiris.com"=> "Advertising",
