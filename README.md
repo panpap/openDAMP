@@ -1,4 +1,4 @@
-# openDAM
+# openDAMP
 
 Operations of openDAMP (open Digital Advertising Measurement Platform):
 
