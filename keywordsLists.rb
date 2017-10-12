@@ -116,6 +116,11 @@ class KeywordsLists
 			"ucozadserving.com"=> "Advertising","n52adshostnet.com"=> "Advertising","cogocast.net"=> "Advertising","revmob.com"=> "Advertising","reactivpub-track17.com"=>"Analytics",
 			"bettyads.com"=> "Advertising","tradedoubler.com"=> "Advertising","sniperlog.ru"=> "Advertising","mobilda.com"=> "Advertising","integral-marketing.com"=> "Advertising",
 			"coolmobile.com"=> "Advertising","linkbucksmedia.com"=> "Advertising","datafastguru.info"=> "Advertising","faggrim.com"=> "Advertising","apploop.com"=> "Advertising",
+			"impact-ad.jp"=> "Advertising","yieldpartners.com"=> "Advertising","admaym.com"=> "Advertising","adventori.com"=> "Advertising","userdmp.com"=> "Advertising",
+			"kau.li"=> "Advertising","bncnt.com"=> "Advertising","webgains.com"=> "Advertising","pubmine.com"=> "Advertising","truoptik.com"=> "Advertising","ecpmrocks.com"=> "Advertising",
+			"mobiplus.me"=> "Advertising","rtbsrv.com"=> "Advertising","yurmobile.com"=> "Advertising","bdex.com"=> "Advertising","zenoviaexchange.com"=> "Advertising",
+			"theadex.com"=> "Advertising","adklik.pw"=> "Advertising","smartadserver.com"=> "Advertising","rocketadserver.com"=> "Advertising","mobappsdirect.com"=> "Advertising",
+			"doubleclick.net"=> "Advertising","srvpub.com"=> "Advertising","7searchdisplayads.com"=> "Advertising","a3cloud.net"=>"Content"
 		}
 
 		@cookiesync=["match","sync","cm","csync","cm.g.doubleclick.net"]
