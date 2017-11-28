@@ -120,7 +120,8 @@ class KeywordsLists
 			"kau.li"=> "Advertising","bncnt.com"=> "Advertising","webgains.com"=> "Advertising","pubmine.com"=> "Advertising","truoptik.com"=> "Advertising","ecpmrocks.com"=> "Advertising",
 			"mobiplus.me"=> "Advertising","rtbsrv.com"=> "Advertising","yurmobile.com"=> "Advertising","bdex.com"=> "Advertising","zenoviaexchange.com"=> "Advertising",
 			"theadex.com"=> "Advertising","adklik.pw"=> "Advertising","smartadserver.com"=> "Advertising","rocketadserver.com"=> "Advertising","mobappsdirect.com"=> "Advertising",
-			"doubleclick.net"=> "Advertising","srvpub.com"=> "Advertising","7searchdisplayads.com"=> "Advertising","a3cloud.net"=>"Content", "adsnative.com"=> "Advertising","adformdsp.net"=> "Advertising"
+			"doubleclick.net"=> "Advertising","srvpub.com"=> "Advertising","7searchdisplayads.com"=> "Advertising","a3cloud.net"=>"Content", "adsnative.com"=> "Advertising",
+			"adformdsp.net"=> "Advertising","ad-stir.com"=> "Advertising","ad87server.com"=> "Advertising","uberads.com"=> "Advertising","adnow.com"=> "Advertising"
 		}
 
 		@cookiesync=["match","sync","cm","csync","cm.g.doubleclick.net"]
