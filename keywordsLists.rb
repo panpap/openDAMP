@@ -121,7 +121,12 @@ class KeywordsLists
 			"mobiplus.me"=> "Advertising","rtbsrv.com"=> "Advertising","yurmobile.com"=> "Advertising","bdex.com"=> "Advertising","zenoviaexchange.com"=> "Advertising",
 			"theadex.com"=> "Advertising","adklik.pw"=> "Advertising","smartadserver.com"=> "Advertising","rocketadserver.com"=> "Advertising","mobappsdirect.com"=> "Advertising",
 			"doubleclick.net"=> "Advertising","srvpub.com"=> "Advertising","7searchdisplayads.com"=> "Advertising","a3cloud.net"=>"Content", "adsnative.com"=> "Advertising",
-			"adformdsp.net"=> "Advertising","ad-stir.com"=> "Advertising","ad87server.com"=> "Advertising","uberads.com"=> "Advertising","adnow.com"=> "Advertising"
+			"adformdsp.net"=> "Advertising","ad-stir.com"=> "Advertising","ad87server.com"=> "Advertising","uberads.com"=> "Advertising","adnow.com"=> "Advertising",
+			"admobsphere.com"=> "Advertising","adnow.com"=> "Advertising","ads2-adnow.com"=> "Advertising","ads3-adnow.com"=> "Advertising",
+			"adshost1.com"=> "Advertising","adshost2.com"=> "Advertising","adshost3.com"=> "Advertising","adsnative.com"=> "Advertising","geoads.net"=> "Advertising",
+			"adsplatform.com"=> "Advertising","adsurf.co"=> "Advertising","adingo.jp"=> "Advertising","adjal.com"=> "Advertising","12trackway.com"=> "Advertising",
+			"adlucent.com"=> "Advertising","admedo.com"=> "Advertising","adaos-ads.net"=> "Advertising","adeasy.ru"=> "Advertising","bidderplace-redirect.com"=> "Advertising",
+			"adfishmedia.com"=> "Advertising","adxmi.com"=> "Advertising","2000adonline.com"=> "Advertising","ag1track.com"=> "Advertising"
 		}
 
 		@cookiesync=["match","sync","cm","csync","cm.g.doubleclick.net"]
