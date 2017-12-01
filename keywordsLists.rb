@@ -126,8 +126,11 @@ class KeywordsLists
 			"adshost1.com"=> "Advertising","adshost2.com"=> "Advertising","adshost3.com"=> "Advertising","adsnative.com"=> "Advertising","geoads.net"=> "Advertising",
 			"adsplatform.com"=> "Advertising","adsurf.co"=> "Advertising","adingo.jp"=> "Advertising","adjal.com"=> "Advertising","12trackway.com"=> "Advertising",
 			"adlucent.com"=> "Advertising","admedo.com"=> "Advertising","adaos-ads.net"=> "Advertising","adeasy.ru"=> "Advertising","bidderplace-redirect.com"=> "Advertising",
-			"adfishmedia.com"=> "Advertising","adxmi.com"=> "Advertising","2000adonline.com"=> "Advertising","ag1track.com"=> "Advertising"
+			"adfishmedia.com"=> "Advertising","adxmi.com"=> "Advertising","2000adonline.com"=> "Advertising","ag1track.com"=> "Advertising","theadex.com"=> "Advertising",
+			"adventori.com"=> "Advertising",
 		}
+
+
 
 		@cookiesync=["match","sync","cm","csync","cm.g.doubleclick.net"]
 
