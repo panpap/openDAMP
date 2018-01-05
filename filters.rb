@@ -173,7 +173,7 @@ class Filters
 		if dev["uaFamily"]==-1
 			@lists.browsers.any? { |word| browser=word if ua.include?(word) }     # IS BROWSER? 
 		else
-			browser=dev["uaFamily"] if (["chrome", "android browser", "dolfin", "uc browser","blackberry webKit", "internet explorer", "firefox", "opera","nokia browser","maxthon","ovi browser","torbrowser","safari","up.browser","zipbrowser","privatebrowser"].any? { |word| dev["uaFamily"].downcase.include?(word)})
+			browser=dev["uaFamily"] if (["chrome", "android browser", "dolfin", "uc browser","blackberry webKit", "internet explorer", "firefox", "opera","nokia browser","maxthon","ovi browser","torbrowser","safari","up.browser","zipbrowser","privatebrowser", "BlackBerry9700"].any? { |word| dev["uaFamily"].downcase.include?(word)})
 		end
 	    return browser
 	end
