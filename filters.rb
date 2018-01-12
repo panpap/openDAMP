@@ -148,7 +148,8 @@ class Filters
 		return false if last!=nil and (safe.any? {|word| last.downcase.include?(word)}) 
 		return false if first!=nil and first.length>8 and first.include? "favicon"
 	#	if ([".jpeg", ".gif", ".pixel", ".png",".sbxx",".bmp",".gifctl"].any? {|word| url.downcase.include?(word)}) or type=="image"
-	fw=File.new("BEACONS_"+@defines.traceFile,"a")
+	temp=@defines.traceFile.split("/").last
+	fw=File.new(@defines.traceFile.gsub(temp,"BEACONS_"+temp),"a")
 	fw.puts row.to_s
 	fw.close
 #	return false
