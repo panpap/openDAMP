@@ -1,2 +1,2 @@
-sudo apt-get install sqlite3
+sudo apt-get install sqlite3 libsqlite3-dev
 sudo gem install maxminddb sqlite3 descriptive-statistics ipaddress fastimage
