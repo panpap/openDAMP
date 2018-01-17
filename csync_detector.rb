@@ -71,7 +71,7 @@ private
 		curUser=row['IPport']
 #prevTimestamp|curTimestamp|hostPrev|prevCat|hostCur|curCat|paramNamePrev|userID|paramNameCur|possibleNumberOfIDs|prevStatus|curStatus|allParamsPrev|allParamsCur
 		prevHost=prev['host']
-		params=[curUser,prevHost,prev['cat'],noTLDHost,curCat,prev["paramName"], paramPair.last, paramPair.first,ids.to_s,prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s, prev["url"].first+"?"+prev["url"].last,row["url"],prev['piggybacked'],piggybacked]
+		params=[curUser.to_s,prevHost,prev['cat'],noTLDHost,curCat,prev["paramName"], paramPair.last, paramPair.first,ids.to_s,prev['url'].last.split("&").to_s, urlAll.last.split("&").to_s, prev["url"].first+"?"+prev["url"].last,row["url"],prev['piggybacked'],piggybacked]
 
 
 		id=Digest::SHA256.hexdigest (params.sort.join("|"))

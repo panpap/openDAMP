@@ -95,9 +95,10 @@ module Format
 		#	if part[2].include? "http"
 		#		h['url']=part[2].split("://").last
 		#	end
-			h['host']=Utilities.calculateHost(h['url'],nil)
+			h['host']=part[19] if part.size>18
+			h['host']=Utilities.calculateHost(h['url'],nil) if h['host']==nil
 			h['type']=filter.getTypeOfContent(h['url'],part[3])
-			h['type']="other" if h['type']==-1
+			h['type']="other" if h['type']==-1 or h['type']=="" or h['type']==nil
 			h['tmstp']=part[4]
 			h['tmstp']=DateTime.rfc3339(part[4]).to_time.to_i if part[4].include?(":")
 			h['dur']=part[5]
