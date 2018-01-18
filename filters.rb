@@ -349,7 +349,7 @@ class Filters
 		if cat==nil
 			@cats.each{|c| res=@lists.sameParty[c][host]; 
 			if res!=nil
-				return res.gsub("http://","").gsub("/","").gsub("www.","")
+				return res.gsub("https://","").gsub("http://","").gsub("/","").gsub("www.","")
 			end}
 			return host
 		else
