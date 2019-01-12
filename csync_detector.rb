@@ -61,7 +61,7 @@ private
 						end
 					end
 				end
-				@params_cs[curUser][parts[i]].push({"url"=>urlParts,"paramName"=>paramName,"tmstp"=>row['tmstp']+"-REF","cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"], "piggybacked" => "URI","wasSynced"=>wasSynced})
+				@params_cs[curUser][parts[i]].push({"url"=>urlParts,"paramName"=>paramName,"tmstp"=>row['tmstp'].to_s+"-REF","cat"=>cat,"status"=>row["status"],"host"=>noTLDHost,"httpRef"=>row["httpRef"], "browser" => row["browser"] , "ua" => row["ua"], "piggybacked" => "URI","wasSynced"=>wasSynced})
 			end
 		end
 		return found

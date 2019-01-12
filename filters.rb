@@ -74,7 +74,7 @@ class Filters
 	def getTypeOfContent(url,httpContent)
 		#Find content type from filetype
 		type=-1
-		return type if url==nil or url==-1
+		return type if url==nil or url==-1 or not url.include? ("?")
 		temp=url.split("?").first.split("/")
 		if temp.size>1	 
 			temp2=temp.last.split(".")

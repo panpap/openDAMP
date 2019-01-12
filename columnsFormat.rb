@@ -90,22 +90,19 @@ module Format
 			end
 			h['types']=filter.getTypeOfContent(h['url'],part[15])
 		else
-			h['uIP']=part[1]
-			h['url']=part[2]
+			h['uIP']=part[2]
+			h['url']=part[4]
 		#	if part[2].include? "http"
 		#		h['url']=part[2].split("://").last
 		#	end
-			h['host']=part[19] if part.size>18
-			h['host']=Utilities.calculateHost(h['url'],nil) if h['host']==nil
-			h['type']=filter.getTypeOfContent(h['url'],part[3])
-			h['type']="other" if h['type']==-1 or h['type']=="" or h['type']==nil
-			h['tmstp']=part[4]
-			h['tmstp']=DateTime.rfc3339(part[4]).to_time.to_i if part[4].include?(":")
-			h['dur']=part[5]
-			h['dataSz']=part[6]
-			h['status']=part[7] if part.size>7
-			h['verb']=part[8] if part.size>8
-			h['httpRef']=part[9] if part.size>9
+			h['host']=part[5]
+			h['host']=Utilities.calculateHost(h['url'],part[5]) if h['host']==nil or h['host'].size<2
+			h['type']=filter.getTypeOfContent(h['url'],nil)
+			h['tmstp']=part[8]
+			h['tmstp']=DateTime.rfc3339(part[8]).to_time.to_i if part[8].include?(":").to_s
+			h['httpRef']=part[6]
+			h['status']="-"
+			h['cookie']=part[7]
 			#Utilities.error("Wrong column format... File cannot be read!")
 		end
 		return h
