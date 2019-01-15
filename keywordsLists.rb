@@ -134,7 +134,7 @@ class KeywordsLists
 		@cookiesync=["match","sync","cm","csync","cm.g.doubleclick.net"]
 
 		@keywords=["price","pp","pr","bidprice","bid_price","bp","winprice", "computedprice", "pricefloor",
-			           "win_price","wp","chargeprice","charge_price","cp","extcost","tt_bidprice","bdrct",
+			           "win_price","wp","chargeprice","charge_price","cp","extcost","tt_bidprice","bdrct","crtbwp",
 			           "cost","rtbwinprice","rtb_win_price","rtbwp","bidfloor","seatbid","price_paid","maxPriceInUserCurrency"]
 
 		@inria={ "rfihub.net" => "ep","invitemedia.com" => "cost",#"scorecardresearch.com" => "uid" 
